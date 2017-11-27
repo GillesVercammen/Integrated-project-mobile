@@ -19,13 +19,15 @@ import java.util.Map;
 import com.microsoft.identity.client.*;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivityRest {
 
     final static String CLIENT_ID = "0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5";
     final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read"};
     final static String MSGRAPH_URL = "https://graph.microsoft.com/v1.0/me";
     private static final String MAIL_URL = "https://graph.microsoft.com/v1.0/me/messages?$top=25";
+    private JSONObject graphResponse;
 
     /* UI & Debugging Variables */
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -222,53 +224,26 @@ public class MainActivity extends AppCompatActivity {
 
     /* Use Volley to make an HTTP request to the /me endpoint from MS Graph using an access token */
     private void callGraphAPI() {
-        Log.d(TAG, "Starting volley request to graph");
-
-    /* Make sure we have a token to send to graph */
-        if (authResult.getAccessToken() == null) {return;}
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        JSONObject parameters = new JSONObject();
-
         try {
-            parameters.put("key", "value");
-        } catch (Exception e) {
-            Log.d(TAG, "Failed to put parameters: " + e.toString());
+            new GraphAPI(authResult).getRequest("", this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, MSGRAPH_URL,
-                parameters,new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-            /* Successfully called graph, process data and send to UI */
-                Log.d(TAG, "Response: " + response.toString());
-
-                updateGraphUI(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Error: " + error.toString());
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + authResult.getAccessToken());
-                return headers;
-            }
-        };
-
-        Log.d(TAG, "Adding HTTP GET to Queue, Request: " + request.toString());
-
-        request.setRetryPolicy(new DefaultRetryPolicy(
-                3000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        queue.add(request);
     }
 
     /* Sets the Graph response */
     private void updateGraphUI(JSONObject graphResponse) {
+        TextView graphText = (TextView) findViewById(R.id.graphData);
+        graphText.setText(graphResponse.toString());
+    }
+
+    @Override
+    public void setResponse(JSONObject response) {
+        graphResponse = response;
+    }
+
+    @Override
+    public void processResponse() {
         TextView graphText = (TextView) findViewById(R.id.graphData);
         graphText.setText(graphResponse.toString());
     }
