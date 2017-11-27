@@ -18,11 +18,14 @@ import java.util.List;
 import java.util.Map;
 import com.microsoft.identity.client.*;
 
+import ap.student.outlook_mobile_app.BLL.GraphAPI;
+
 public class MainActivity extends AppCompatActivity {
 
     final static String CLIENT_ID = "0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5";
-    final static String SCOPES [] = {"https://graph.microsoft.com/User.Read"};
+    final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read"};
     final static String MSGRAPH_URL = "https://graph.microsoft.com/v1.0/me";
+    private static final String MAIL_URL = "https://graph.microsoft.com/v1.0/me/messages?$top=25";
 
     /* UI & Debugging Variables */
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -86,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "User at this position does not exist: " + e.toString());
         }
 
+    }
+
+    public void getMail() {
+        try {
+            new GraphAPI(authResult).getRequest("/messages?$top10", this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
 //
@@ -192,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.welcome).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.welcome)).setText("Welcome, " +
                 authResult.getUser().getName());
+        getMail();
         findViewById(R.id.graphData).setVisibility(View.VISIBLE);
     }
 
