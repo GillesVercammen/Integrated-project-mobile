@@ -18,6 +18,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
+
 /**
  * Created by alek on 11/27/17.
  */
@@ -33,7 +35,7 @@ public class GraphAPI {
         this.authResult = authResult;
     }
 
-    public JSONObject getRequest(String paramString, AppCompatActivity context) throws IllegalAccessException {
+    public void getRequest(String paramString, final AppCompatActivityRest context) throws IllegalAccessException {
         Log.d(TAG, "Starting volley request to graph");
 
     /* Make sure we have a token to send to graph */
@@ -52,9 +54,9 @@ public class GraphAPI {
             @Override
             public void onResponse(JSONObject response) {
             /* Successfully called graph, process data and send to UI */
-                reply = response;
-                Log.d("allMails", "Response: " + response.toString());
-                //updateGraphUI(response);
+                Log.d(TAG, "Response: " + response.toString());
+                context.setResponse(response);
+                context.processResponse();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -66,7 +68,6 @@ public class GraphAPI {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Authorization", "Bearer " + authResult.getAccessToken());
-                System.out.println(authResult.getAccessToken());
                 return headers;
             }
         };
@@ -78,7 +79,5 @@ public class GraphAPI {
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(request);
-
-        return reply;
     }
 }
