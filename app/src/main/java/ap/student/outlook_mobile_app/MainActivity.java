@@ -24,8 +24,8 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 
 public class MainActivity extends AppCompatActivityRest {
 
-    final static String CLIENT_ID = "0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5";
-    final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read"};
+    private final static String CLIENT_ID = "0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5";
+    private final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read"};
     private JSONObject graphResponse;
     private Authentication authentication;
 
@@ -60,12 +60,9 @@ public class MainActivity extends AppCompatActivityRest {
         });
 
   /* Configure your sample app and save state for this activity */
-        sampleApp = null;
-        if (sampleApp == null) {
-            sampleApp = new PublicClientApplication(
-                    this.getApplicationContext(),
-                    CLIENT_ID);
-        }
+        sampleApp = new PublicClientApplication(
+                this.getApplicationContext(),
+                CLIENT_ID);
 
   /* Attempt to get a user and acquireTokenSilent
    * If this fails we do an interactive request
@@ -146,7 +143,7 @@ public class MainActivity extends AppCompatActivityRest {
     /* Use Volley to make an HTTP request to the /me endpoint from MS Graph using an access token */
     public void callGraphAPI() {
         try {
-            new GraphAPI(authResult).getRequest("", this);
+            new GraphAPI().getRequest("", this);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

@@ -29,10 +29,9 @@ public class GraphAPI {
 
     private static final String MSGRAPH_URL = "https://graph.microsoft.com/v1.0/me";
     private AuthenticationResult authResult;
-    private JSONObject reply;
 
-    public GraphAPI(AuthenticationResult authResult) {
-        this.authResult = authResult;
+    public GraphAPI() {
+        this.authResult = Authentication.getAuthentication().getAuthResult();
     }
 
     public void getRequest(String paramString, final AppCompatActivityRest context) throws IllegalAccessException {
