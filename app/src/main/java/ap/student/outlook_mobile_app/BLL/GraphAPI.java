@@ -1,6 +1,5 @@
 package ap.student.outlook_mobile_app.BLL;
 
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -19,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
+import ap.student.outlook_mobile_app.OutlookObjectCall;
 
 /**
  * Created by alek on 11/27/17.
@@ -34,7 +34,10 @@ public class GraphAPI {
         this.authResult = Authentication.getAuthentication().getAuthResult();
     }
 
-    public void getRequest(String paramString, final AppCompatActivityRest context) throws IllegalAccessException {
+    public void getRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, String params) throws IllegalAccessException {
+        Log.d(TAG, "Logging call id");
+        context.setOutlookObjectCall(objectCall);
+
         Log.d(TAG, "Starting volley request to graph");
 
     /* Make sure we have a token to send to graph */
@@ -48,7 +51,7 @@ public class GraphAPI {
         } catch (Exception e) {
             Log.d(TAG, "Failed to put parameters: " + e.toString());
         }
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, MSGRAPH_URL + paramString,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, MSGRAPH_URL.concat(objectCall.action()).concat(params),
                 parameters,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

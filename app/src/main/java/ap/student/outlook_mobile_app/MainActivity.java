@@ -102,9 +102,23 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     public void processResponse() {
-        /* Sets the Graph response */
-        TextView graphText = (TextView) findViewById(R.id.graphData);
-        graphText.setText(graphResponse.toString());
+
+        switch (outlookObjectCall) {
+            case READUSER: {
+                /* Sets the Graph response */
+                TextView graphText = (TextView) findViewById(R.id.graphData);
+                graphText.setText(graphResponse.toString());
+                try {
+                    new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "");
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            } break;
+            case READMAIL: {
+                System.out.println(this.graphResponse);
+            }
+            break;
+        }
     }
 
     // getActivity() - returns activity so we can acquireToken within a callback
@@ -143,7 +157,7 @@ public class MainActivity extends AppCompatActivityRest {
     /* Use Volley to make an HTTP request to the /me endpoint from MS Graph using an access token */
     public void callGraphAPI() {
         try {
-            new GraphAPI().getRequest("", this);
+            new GraphAPI().getRequest(OutlookObjectCall.READUSER, this, "");
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
