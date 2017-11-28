@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivityRest {
     /* Use Volley to make an HTTP request to the /me endpoint from MS Graph using an access token */
     public void callGraphAPI() {
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.READUSER, this, "");
+            new GraphAPI().getRequest(OutlookObjectCall.READUSER, this);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

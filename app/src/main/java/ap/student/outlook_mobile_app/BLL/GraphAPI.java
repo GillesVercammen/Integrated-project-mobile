@@ -34,7 +34,11 @@ public class GraphAPI {
         this.authResult = Authentication.getAuthentication().getAuthResult();
     }
 
-    public void getRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, String params) throws IllegalAccessException {
+    public void getRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context) throws IllegalAccessException {
+        getRequest(objectCall, context, "");
+    }
+
+    public void getRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
         Log.d(TAG, "Logging call id");
         context.setOutlookObjectCall(objectCall);
 
@@ -44,15 +48,15 @@ public class GraphAPI {
         if (authResult.getAccessToken() == null) {throw new IllegalAccessException("No access token found.");}
 
         RequestQueue queue = Volley.newRequestQueue(context);
-        JSONObject parameters = new JSONObject();
+        JSONObject parametersObject = new JSONObject();
 
         try {
-            parameters.put("key", "value");
+            parametersObject.put("key", "value");
         } catch (Exception e) {
             Log.d(TAG, "Failed to put parameters: " + e.toString());
         }
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, MSGRAPH_URL.concat(objectCall.action()).concat(params),
-                parameters,new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, MSGRAPH_URL.concat(objectCall.action()).concat(parameters),
+                parametersObject,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
             /* Successfully called graph, process data and send to UI */
