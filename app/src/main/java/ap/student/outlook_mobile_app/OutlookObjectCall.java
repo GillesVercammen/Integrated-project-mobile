@@ -9,7 +9,7 @@ public enum OutlookObjectCall {
     READUSER(""),
     READMAIL("/messages"),
     READCALENDAR("/calendar"),
-    SENDMAIL("/messages");
+    SENDMAIL("/sendMail");
     private String action;
 
     OutlookObjectCall(String action) {

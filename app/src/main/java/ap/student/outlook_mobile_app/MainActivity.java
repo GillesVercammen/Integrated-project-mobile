@@ -3,6 +3,7 @@ package ap.student.outlook_mobile_app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,8 @@ import com.microsoft.identity.client.MsalClientException;
 import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.User;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -25,7 +28,7 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 public class MainActivity extends AppCompatActivityRest {
 
     private final static String CLIENT_ID = "0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5";
-    private final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read"};
+    private final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read", "https://graph.microsoft.com/Mail.Send"};
     private JSONObject graphResponse;
     private Authentication authentication;
 
@@ -108,8 +111,22 @@ public class MainActivity extends AppCompatActivityRest {
                 /* Sets the Graph response */
                 TextView graphText = (TextView) findViewById(R.id.graphData);
                 graphText.setText(graphResponse.toString());
+
+
+                JSONObject body = new JSONObject();
                 try {
-                    new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "");
+                    body.put("message", new JSONObject().put("subject", "Meet for lunch")
+                            .put("body", new JSONObject().put("contentType", "Text")
+                            .put("content", "The new cafetaria is open"))
+                            .put("toRecipients", new JSONArray().put(
+                                    new JSONObject().put("emailAddress", new JSONObject().put("address", "spam.yourownmail.com")))));
+                    System.out.println(body);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, body, "");
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -118,6 +135,9 @@ public class MainActivity extends AppCompatActivityRest {
                 System.out.println(this.graphResponse);
             }
             break;
+            case SENDMAIL: {
+                System.out.println("Just send a mail.");
+            }
         }
     }
 
