@@ -38,10 +38,7 @@ public class GraphAPI {
         getRequest(objectCall, context, "");
     }
 
-    public void getRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
-        Log.d(TAG, "Logging call id");
-        context.setOutlookObjectCall(objectCall);
-
+    public void getRequest(final OutlookObjectCall objectCall, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
         Log.d(TAG, "Starting volley request to graph");
 
     /* Make sure we have a token to send to graph */
@@ -61,6 +58,8 @@ public class GraphAPI {
             public void onResponse(JSONObject response) {
             /* Successfully called graph, process data and send to UI */
                 Log.d(TAG, "Response: " + response.toString());
+                Log.d(TAG, "Logging call id");
+                context.setOutlookObjectCall(objectCall);
                 context.setResponse(response);
                 context.processResponse();
             }
