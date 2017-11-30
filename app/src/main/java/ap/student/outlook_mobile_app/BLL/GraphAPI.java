@@ -45,7 +45,11 @@ public class GraphAPI {
         Log.d(TAG, "Starting volley request to graph");
 
     /* Make sure we have a token to send to graph */
-        if (authResult.getAccessToken() == null) {throw new IllegalAccessException("No access token found.");}
+        try {
+            authResult.getAccessToken();
+        } catch (NullPointerException e) {
+            throw new IllegalAccessException("You need to log in before you can perform this action!");
+        }
 
         RequestQueue queue = Volley.newRequestQueue(context);
 

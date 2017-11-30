@@ -3,6 +3,7 @@ package ap.student.outlook_mobile_app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,8 @@ import com.microsoft.identity.client.MsalClientException;
 import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.User;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivityRest {
                 TextView graphText = (TextView) findViewById(R.id.graphData);
                 graphText.setText(graphResponse.toString());
 
-/*
+                /*
                 JSONObject body = new JSONObject();
                 try {
                     body.put("message", new JSONObject().put("subject", "Meet for lunch")
