@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Outlook_Mobile_App</string>
+    <string name="app_name">Outlook Mobile App</string>
+    <string name="action_logout">Log Out</string>
 </resources>

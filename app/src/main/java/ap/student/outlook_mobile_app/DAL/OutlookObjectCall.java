@@ -1,4 +1,4 @@
-package ap.student.outlook_mobile_app;
+package ap.student.outlook_mobile_app.DAL;
 
 /**
  * Created by alek on 11/28/17.

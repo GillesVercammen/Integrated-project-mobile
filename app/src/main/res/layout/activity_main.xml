@@ -7,6 +7,8 @@
     android:orientation="vertical"
     tools:context="ap.student.outlook_mobile_app.MainActivity">
 
+    <include layout="@layout/actionbar" />
+
     <TextView
         android:text="Welcome, "
         android:textColor="#3f3f3f"

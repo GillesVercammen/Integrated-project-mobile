@@ -3,7 +3,6 @@ package ap.student.outlook_mobile_app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.JsonWriter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,14 +14,13 @@ import com.microsoft.identity.client.MsalClientException;
 import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.User;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
 
 import ap.student.outlook_mobile_app.BLL.Authentication;
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 
 public class MainActivity extends AppCompatActivityRest {
@@ -43,8 +41,12 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        /**
+         * need to set layout before calling super
+         * I hope this won't cause any problems later
+          */
         setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState);
 
         authentication = Authentication.getAuthentication();
         callGraphButton = (Button) findViewById(R.id.callGraph);
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivityRest {
                 TextView graphText = (TextView) findViewById(R.id.graphData);
                 graphText.setText(graphResponse.toString());
 
-
+/*
                 JSONObject body = new JSONObject();
                 try {
                     body.put("message", new JSONObject().put("subject", "Meet for lunch")
@@ -129,7 +131,7 @@ public class MainActivity extends AppCompatActivityRest {
                     new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, body, "");
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
-                }
+                }*/
             } break;
             case READMAIL: {
                 System.out.println(this.graphResponse);
