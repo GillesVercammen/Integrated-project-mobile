@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivityRest {
                 TextView graphText = (TextView) findViewById(R.id.graphData);
                 graphText.setText(graphResponse.toString());
 
-
+                /*
                 JSONObject body = new JSONObject();
                 try {
                     body.put("message", new JSONObject().put("subject", "Meet for lunch")
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivityRest {
                     new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, body, "");
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
-                }
+                }*/
             } break;
             case READMAIL: {
                 System.out.println(this.graphResponse);
