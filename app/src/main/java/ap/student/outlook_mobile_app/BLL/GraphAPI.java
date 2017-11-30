@@ -58,7 +58,7 @@ public class GraphAPI {
                 Log.d(TAG, "Logging call id");
                 context.setOutlookObjectCall(objectCall);
                 context.setResponse(response);
-                context.processResponse();
+                context.processResponse(objectCall);
             }
         }, new Response.ErrorListener() {
             @Override

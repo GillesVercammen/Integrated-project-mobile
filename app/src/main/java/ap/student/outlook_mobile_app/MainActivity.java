@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivityRest {
     }
 
     @Override
-    public void processResponse() {
+    public void processResponse(OutlookObjectCall outlookObjectCall) {
 
         switch (outlookObjectCall) {
             case READUSER: {
