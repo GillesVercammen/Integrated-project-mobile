@@ -3,6 +3,8 @@ package ap.student.outlook_mobile_app.Interfaces;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.json.JSONObject;
@@ -33,9 +35,16 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         if (actionBar == null) {
             throw new NullPointerException("'actionBar' couldn't be found. You need to set the activity before calling the super,\n\r and make sure to include the actionbar in said activity.");
         }
-        setSupportActionBar(actionBar);
 
+        setSupportActionBar(actionBar);
         getSupportActionBar().setIcon(R.drawable.ic_launcher_foreground);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     @Override
