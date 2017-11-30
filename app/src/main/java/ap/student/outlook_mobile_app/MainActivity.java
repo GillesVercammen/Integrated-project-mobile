@@ -26,7 +26,7 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 public class MainActivity extends AppCompatActivityRest {
 
     private final static String CLIENT_ID = "0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5";
-    private final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read", "https://graph.microsoft.com/Mail.Send"};
+    private final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read", "https://graph.microsoft.com/Mail.Send", "https://graph.microsoft.com/Calendars.ReadWrite"};
     private JSONObject graphResponse;
     private Authentication authentication;
 
