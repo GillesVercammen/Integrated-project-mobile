@@ -1,6 +1,5 @@
 package ap.student.outlook_mobile_app.BLL;
 
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -13,12 +12,14 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.microsoft.identity.client.AuthenticationResult;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
+import ap.student.outlook_mobile_app.OutlookObjectCall;
 
 /**
  * Created by alek on 11/27/17.
@@ -29,32 +30,33 @@ public class GraphAPI {
 
     private static final String MSGRAPH_URL = "https://graph.microsoft.com/v1.0/me";
     private AuthenticationResult authResult;
-    private JSONObject reply;
 
-    public GraphAPI(AuthenticationResult authResult) {
-        this.authResult = authResult;
+    private JSONObject createEmptyBody() {
+        JSONObject body = new JSONObject();
+        try {
+            body.put("key", "value");
+        } catch (JSONException e) {
+            Log.d(TAG, "Failed to put parameters: " + e.toString());
+        }
+        return body;
     }
 
-    public void getRequest(String paramString, final AppCompatActivityRest context) throws IllegalAccessException {
+    private void sendRequest(int method, final OutlookObjectCall objectCall, JSONObject body, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
         Log.d(TAG, "Starting volley request to graph");
 
     /* Make sure we have a token to send to graph */
         if (authResult.getAccessToken() == null) {throw new IllegalAccessException("No access token found.");}
 
         RequestQueue queue = Volley.newRequestQueue(context);
-        JSONObject parameters = new JSONObject();
 
-        try {
-            parameters.put("key", "value");
-        } catch (Exception e) {
-            Log.d(TAG, "Failed to put parameters: " + e.toString());
-        }
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, MSGRAPH_URL + paramString,
-                parameters,new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(method, MSGRAPH_URL.concat(objectCall.action()).concat(parameters),
+                body,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
             /* Successfully called graph, process data and send to UI */
                 Log.d(TAG, "Response: " + response.toString());
+                Log.d(TAG, "Logging call id");
+                context.setOutlookObjectCall(objectCall);
                 context.setResponse(response);
                 context.processResponse();
             }
@@ -72,12 +74,48 @@ public class GraphAPI {
             }
         };
 
-        Log.d(TAG, "Adding HTTP GET to Queue, Request: " + request.toString());
+        Log.d(TAG, "Adding HTTP request to Queue, Request: " + request.toString());
 
         request.setRetryPolicy(new DefaultRetryPolicy(
                 3000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(request);
+    }
+
+    public GraphAPI() {
+        this.authResult = Authentication.getAuthentication().getAuthResult();
+    }
+
+    /**
+     * Methods for performing GET operations
+     * @param objectCall
+     * @param context
+     * @throws IllegalAccessException
+     */
+    public void getRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context) throws IllegalAccessException {
+        getRequest(objectCall, context, "");
+    }
+
+    public void getRequest(final OutlookObjectCall objectCall, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
+        sendRequest(Request.Method.GET, objectCall, createEmptyBody(), context, parameters);
+    }
+
+    /**
+     * Methods for performing POST operations
+     * @param objectCall
+     * @param context
+     * @throws IllegalAccessException
+     */
+    public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context) throws IllegalAccessException {
+        sendRequest(Request.Method.POST, objectCall, createEmptyBody(), context, "");
+    }
+
+    public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body) throws IllegalAccessException {
+        sendRequest(Request.Method.POST, objectCall, body, context, "");
+    }
+
+    public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body, String parameters) throws IllegalAccessException {
+        sendRequest(Request.Method.POST, objectCall, body, context, parameters);
     }
 }
