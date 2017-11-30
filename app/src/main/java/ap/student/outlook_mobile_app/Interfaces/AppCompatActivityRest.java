@@ -23,7 +23,7 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
     public void setResponse(JSONObject response) {
         this.response = response;
     }
-    public abstract void processResponse();
+    public abstract void processResponse(OutlookObjectCall outlookObjectCall);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
