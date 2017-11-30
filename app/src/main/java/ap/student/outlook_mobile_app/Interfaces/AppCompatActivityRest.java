@@ -18,5 +18,5 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
     public void setResponse(JSONObject response) {
         this.response = response;
     }
-    public abstract void processResponse(OutlookObjectCall outlookObjectCall);
+    public abstract void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response);
 }
