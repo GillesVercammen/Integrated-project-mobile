@@ -1,5 +1,6 @@
 package ap.student.outlook_mobile_app.Interfaces;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,7 +10,9 @@ import android.view.MenuItem;
 
 import org.json.JSONObject;
 
+import ap.student.outlook_mobile_app.CalendarActivity;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.MainActivity;
 import ap.student.outlook_mobile_app.R;
 
 /**
@@ -47,9 +50,19 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         return true;
     }
 
+    /**
+     * Basically a router method
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        boolean closeActivity = false;
+
         switch (item.getItemId()) {
+            case R.id.action_calendar:
+                closeActivity = calendarIntent();
+                break;
             case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
                 return true;
@@ -63,7 +76,17 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
+
+        if (closeActivity && !this.getClass().equals(MainActivity.class)) {
+            finish();
+        }
+
+        return true;
+    }
+
+    protected boolean calendarIntent() {
+        startActivity(new Intent(this, CalendarActivity.class));
+        return true;
     }
 }
