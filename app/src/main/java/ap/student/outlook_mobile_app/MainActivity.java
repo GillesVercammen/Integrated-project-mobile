@@ -3,7 +3,6 @@ package ap.student.outlook_mobile_app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.JsonWriter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,14 +14,13 @@ import com.microsoft.identity.client.MsalClientException;
 import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.User;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
 
 import ap.student.outlook_mobile_app.BLL.Authentication;
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 
 public class MainActivity extends AppCompatActivityRest {
@@ -36,6 +34,7 @@ public class MainActivity extends AppCompatActivityRest {
     private static final String TAG = MainActivity.class.getSimpleName();
     Button callGraphButton;
     Button signOutButton;
+    Button mailButton;
 
     /* Azure AD Variables */
     private PublicClientApplication sampleApp;
@@ -43,12 +42,17 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        /**
+         * need to set layout before calling super
+         * I hope this won't cause any problems later
+          */
         setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState);
 
         authentication = Authentication.getAuthentication();
         callGraphButton = (Button) findViewById(R.id.callGraph);
         signOutButton = (Button) findViewById(R.id.clearCache);
+        mailButton = (Button) findViewById(R.id.mail);
 
         callGraphButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -59,6 +63,13 @@ public class MainActivity extends AppCompatActivityRest {
         signOutButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onSignOutClicked();
+            }
+        });
+
+        mailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mailButtonClicked();
             }
         });
 
@@ -92,6 +103,10 @@ public class MainActivity extends AppCompatActivityRest {
             Log.d(TAG, "User at this position does not exist: " + e.toString());
         }
 
+    }
+
+    private void mailButtonClicked() {
+        startActivity(new Intent(this, MailActivity.class));
     }
 
     public void setAuthResult(AuthenticationResult authResult) {
@@ -155,6 +170,7 @@ public class MainActivity extends AppCompatActivityRest {
     public void updateSuccessUI() {
         callGraphButton.setVisibility(View.INVISIBLE);
         signOutButton.setVisibility(View.VISIBLE);
+        mailButton.setVisibility(View.VISIBLE);
         findViewById(R.id.welcome).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.welcome)).setText("Welcome, " +
                 authResult.getUser().getName());
@@ -226,6 +242,7 @@ public class MainActivity extends AppCompatActivityRest {
     private void updateSignedOutUI() {
         callGraphButton.setVisibility(View.VISIBLE);
         signOutButton.setVisibility(View.INVISIBLE);
+        mailButton.setVisibility(View.INVISIBLE);
         findViewById(R.id.welcome).setVisibility(View.INVISIBLE);
         findViewById(R.id.graphData).setVisibility(View.INVISIBLE);
         ((TextView) findViewById(R.id.graphData)).setText("No Data");

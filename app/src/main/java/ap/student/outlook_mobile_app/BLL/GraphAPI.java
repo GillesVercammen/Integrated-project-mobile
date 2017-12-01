@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
-import ap.student.outlook_mobile_app.OutlookObjectCall;
+import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 
 /**
  * Created by alek on 11/27/17.
