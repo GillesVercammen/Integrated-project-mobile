@@ -47,6 +47,17 @@
         android:orientation="vertical" >
 
         <Button
+            android:text="MAIL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textColor="#FFFFFF"
+            android:background="#00a1f1"
+            android:textAllCaps="false"
+            android:id="@+id/mail"
+            android:visibility="invisible" />
+
+        <Button
             android:text="Sign Out"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

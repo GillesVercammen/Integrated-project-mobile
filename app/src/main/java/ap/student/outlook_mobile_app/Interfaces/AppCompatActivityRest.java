@@ -50,9 +50,9 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            /*case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
-                return true;
+                return true;*/
 
             case R.id.action_logout:
                 // User chose the "Favorite" action, mark the current item
