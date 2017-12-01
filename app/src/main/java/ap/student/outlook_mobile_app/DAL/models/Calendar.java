@@ -12,7 +12,7 @@ public class Calendar {
     private String color;
     private String id;
     private String name;
-    private String owner;
+    private EmailAddress owner;
 
     public boolean isCanEdit() {
         return canEdit;
@@ -70,11 +70,11 @@ public class Calendar {
         this.name = name;
     }
 
-    public String getOwner() {
+    public EmailAddress getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(EmailAddress owner) {
         this.owner = owner;
     }
 }
