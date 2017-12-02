@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import org.json.JSONObject;
 
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.MainActivity;
 import ap.student.outlook_mobile_app.R;
 
 /**
@@ -47,23 +48,39 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         return true;
     }
 
+    /**
+     * Basically a router method
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        boolean closeActivity = false;
+
         switch (item.getItemId()) {
             /*case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
                 return true;*/
 
-            case R.id.action_logout:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                return true;
-
+            case R.id.action_logout: {
+                closeActivity = actionLogout();
+            }
+            break;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
         }
+
+        if (closeActivity && !this.getClass().equals(MainActivity.class)) {
+            this.finish();
+        }
+
+        return true;
+    }
+
+    protected boolean actionLogout() {
+        return true;
     }
 }

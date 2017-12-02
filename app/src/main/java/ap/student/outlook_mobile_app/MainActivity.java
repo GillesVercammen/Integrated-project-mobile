@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivityRest {
 
         signOutButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                onSignOutClicked();
+                actionLogout();
             }
         });
 
@@ -73,14 +73,14 @@ public class MainActivity extends AppCompatActivityRest {
             }
         });
 
-  /* Configure your sample app and save state for this activity */
+    /* Configure your sample app and save state for this activity */
         sampleApp = new PublicClientApplication(
                 this.getApplicationContext(),
                 CLIENT_ID);
 
-  /* Attempt to get a user and acquireTokenSilent
-   * If this fails we do an interactive request
-   */
+    /* Attempt to get a user and acquireTokenSilent
+    * If this fails we do an interactive request
+    */
         List<User> users = null;
 
         try {
@@ -126,33 +126,11 @@ public class MainActivity extends AppCompatActivityRest {
                 /* Sets the Graph response */
                 TextView graphText = (TextView) findViewById(R.id.graphData);
                 graphText.setText(graphResponse.toString());
-
-                /*
-                JSONObject body = new JSONObject();
-                try {
-                    body.put("message", new JSONObject().put("subject", "Meet for lunch")
-                            .put("body", new JSONObject().put("contentType", "Text")
-                            .put("content", "The new cafetaria is open"))
-                            .put("toRecipients", new JSONArray().put(
-                                    new JSONObject().put("emailAddress", new JSONObject().put("address", "spam.yourownmail.com")))));
-                    System.out.println(body);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, body, "");
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }*/
             } break;
             case READMAIL: {
                 System.out.println(this.graphResponse);
             }
             break;
-            case SENDMAIL: {
-                System.out.println("Just send a mail.");
-            }
         }
     }
 
@@ -200,10 +178,10 @@ public class MainActivity extends AppCompatActivityRest {
     }
 
     /* Clears a user's tokens from the cache.
- * Logically similar to "sign out" but only signs out of this app.
- */
-    private void onSignOutClicked() {
-
+    * Logically similar to "sign out" but only signs out of this app.
+    */
+    @Override
+    protected boolean actionLogout() {
     /* Attempt to get a user and remove their cookies from cache */
         List<User> users = null;
 
@@ -236,6 +214,8 @@ public class MainActivity extends AppCompatActivityRest {
         } catch (IndexOutOfBoundsException e) {
             Log.d(TAG, "User at this position does not exist: " + e.toString());
         }
+
+        return false;
     }
 
     /* Set the UI for signed-out user */
