@@ -124,8 +124,7 @@ public class MainActivity extends AppCompatActivityRest {
         switch (outlookObjectCall) {
             case READUSER: {
                 /* Sets the Graph response */
-                TextView graphText = (TextView) findViewById(R.id.graphData);
-                graphText.setText(graphResponse.toString());
+
 
                 /*
                 JSONObject body = new JSONObject();
@@ -174,7 +173,6 @@ public class MainActivity extends AppCompatActivityRest {
         findViewById(R.id.welcome).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.welcome)).setText("Welcome, " +
                 authResult.getUser().getName());
-        findViewById(R.id.graphData).setVisibility(View.VISIBLE);
     }
 
     /* Use MSAL to acquireToken for the end-user
@@ -244,8 +242,6 @@ public class MainActivity extends AppCompatActivityRest {
         signOutButton.setVisibility(View.INVISIBLE);
         mailButton.setVisibility(View.INVISIBLE);
         findViewById(R.id.welcome).setVisibility(View.INVISIBLE);
-        findViewById(R.id.graphData).setVisibility(View.INVISIBLE);
-        ((TextView) findViewById(R.id.graphData)).setText("No Data");
     }
 
 }

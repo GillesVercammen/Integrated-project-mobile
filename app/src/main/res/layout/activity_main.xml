@@ -30,15 +30,6 @@
         android:layout_marginTop="200dp"
         android:textAllCaps="false" />
 
-    <TextView
-        android:text="Getting Graph Data..."
-        android:textColor="#3f3f3f"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:id="@+id/graphData"
-        android:visibility="invisible"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
