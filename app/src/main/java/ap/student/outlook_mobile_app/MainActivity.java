@@ -14,6 +14,7 @@ import com.microsoft.identity.client.MsalClientException;
 import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.User;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -106,7 +107,18 @@ public class MainActivity extends AppCompatActivityRest {
     }
 
     private void mailButtonClicked() {
-        startActivity(new Intent(this, MailActivity.class));
+        try {
+            startActivity(new Intent(this, MailActivity.class)
+            .putExtra("USER_EMAIL", graphResponse.getString("userPrincipalName"))
+                    .putExtra("USER_NAME", graphResponse.getString("displayName")
+
+            ));
+        } catch (JSONException e) {
+            Toast.makeText(getBaseContext(), "No user found", Toast.LENGTH_SHORT)
+                    .show();
+
+            e.printStackTrace();
+        }
     }
 
     public void setAuthResult(AuthenticationResult authResult) {

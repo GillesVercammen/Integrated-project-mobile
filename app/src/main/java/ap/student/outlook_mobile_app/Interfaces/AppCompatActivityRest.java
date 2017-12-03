@@ -37,7 +37,6 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         }
 
         setSupportActionBar(actionBar);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher_foreground);
     }
 
     @Override

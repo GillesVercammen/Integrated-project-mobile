@@ -1,7 +1,9 @@
 package ap.student.outlook_mobile_app;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -18,20 +20,29 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 public class MailActivity extends AppCompatActivityRest {
 
     private ListView mListView;
-    String[] listItems = {"een", "twee", "drie", "vier", "vijf"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_mail);
         super.onCreate(savedInstanceState);
 
-        getAllMails();
+        //set actionbar
+        setActionBarMail("POSTVAK IN", getIntent().getStringExtra("USER_EMAIL"));
+
+        //top x mails verkrijgen
+        getAllMails(15);
 
     }
 
-    public void getAllMails() {
+    private void setActionBarMail(String title, String subtitle) {
+        System.out.println("TEST: " + subtitle);
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setSubtitle(subtitle);
+    }
+
+    public void getAllMails(int aantalMails) {
         try {
-            int aantalMails = 15;
             new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "?$top=" + aantalMails);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
