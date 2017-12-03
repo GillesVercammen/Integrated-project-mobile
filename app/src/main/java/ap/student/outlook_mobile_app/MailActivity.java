@@ -31,7 +31,8 @@ public class MailActivity extends AppCompatActivityRest {
 
     public void getAllMails() {
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this);
+            int aantalMails = 15;
+            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "?$top=" + aantalMails);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -58,6 +59,7 @@ public class MailActivity extends AppCompatActivityRest {
                     mListView = (ListView) findViewById(R.id.mail_list);
                     ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, fromObject_list);
                     mListView.setAdapter(adapter);
+                    System.out.println(fromObject_list);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
