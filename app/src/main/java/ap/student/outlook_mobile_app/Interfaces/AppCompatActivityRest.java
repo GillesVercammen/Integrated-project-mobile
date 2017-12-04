@@ -97,7 +97,7 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         if (interactive) {
             new UserAuth(this).interActiveLogin();
         }
-        actionLogin();
+        else { actionLogin(); }
     }
 
     public void loginSuccessfull() {
