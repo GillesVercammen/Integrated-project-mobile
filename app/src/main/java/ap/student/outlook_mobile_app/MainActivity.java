@@ -48,18 +48,17 @@ public class MainActivity extends AppCompatActivityRest {
         startActivity(new Intent(this, HomeActivity.class));
         this.finish();
         //callGraphAPI();
-        //updateSuccessUI();
+        updateSuccessUI();
     }
 
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject graphResponse) {
-
+        //bad practice
     }
 
     /* Set the UI for successful token acquisition data */
     public void updateSuccessUI() {
         callGraphButton.setVisibility(View.INVISIBLE);
-        findViewById(R.id.welcome).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.welcome)).setText("Welcome, " +
                 Authentication.getAuthentication().getAuthResult().getUser().getName());
     }
@@ -73,6 +72,7 @@ public class MainActivity extends AppCompatActivityRest {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         handleInteractiveRequestRedirect(requestCode, resultCode, data);
         callGraphButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.welcome).setVisibility(View.VISIBLE);
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
@@ -89,13 +89,6 @@ public class MainActivity extends AppCompatActivityRest {
     protected boolean actionLogout() {
         super.actionLogout();
         this.finish();
-        updateSignedOutUI();
         return false;
-    }
-
-    /* Set the UI for signed-out user */
-    private void updateSignedOutUI() {
-        callGraphButton.setVisibility(View.VISIBLE);
-        findViewById(R.id.welcome).setVisibility(View.INVISIBLE);
     }
 }
