@@ -2,6 +2,7 @@ package ap.student.outlook_mobile_app.Interfaces;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -80,7 +81,9 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
     protected boolean actionLogout() {
         new UserAuth(this).logout();
         startActivity(new Intent(this, MainActivity.class));
-        return true;
+        // just finishAffinity() for newer version, don't know why I did this backwards compatible.
+        ActivityCompat.finishAffinity(this);
+        return false;
     }
 
     protected void actionLogin() {

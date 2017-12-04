@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivityRest {
     public void loginSuccessfull() {
         startActivity(new Intent(this, HomeActivity.class));
         this.finish();
-        callGraphAPI();
-        updateSuccessUI();
+        //callGraphAPI();
+        //updateSuccessUI();
     }
 
     @Override
@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivityRest {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         handleInteractiveRequestRedirect(requestCode, resultCode, data);
+        callGraphButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
     /* Use Volley to make an HTTP request to the /me endpoint from MS Graph using an access token */
