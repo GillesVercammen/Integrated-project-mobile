@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivityRest {
 
     /* Azure AD Variables */
     private PublicClientApplication sampleApp;
-    private AuthenticationResult authResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,12 +88,12 @@ public class MainActivity extends AppCompatActivityRest {
             if (users != null && users.size() == 1) {
           /* We have 1 user */
 
-                sampleApp.acquireTokenSilentAsync(SCOPES, users.get(0), authentication.getAuthSilentCallback(this));
+                sampleApp.acquireTokenSilentAsync(SCOPES, users.get(0), authentication.getAuthCallback(this));
             } else {
           /* We have no user */
 
           /* Let's do an interactive request */
-                sampleApp.acquireToken(this, SCOPES, authentication.getAuthInteractiveCallback(this));
+                sampleApp.acquireToken(this, SCOPES, authentication.getAuthCallback(this));
             }
         } catch (MsalClientException e) {
             Log.d(TAG, "MSAL Exception Generated while getting users: " + e.toString());
@@ -109,8 +108,10 @@ public class MainActivity extends AppCompatActivityRest {
         startActivity(new Intent(this, MailActivity.class));
     }
 
-    public void setAuthResult(AuthenticationResult authResult) {
-        this.authResult = authResult;
+    @Override
+    public void loginSuccessfull() {
+        callGraphAPI();
+        updateSuccessUI();
     }
 
     @Override
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivityRest {
         mailButton.setVisibility(View.VISIBLE);
         findViewById(R.id.welcome).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.welcome)).setText("Welcome, " +
-                authResult.getUser().getName());
+                Authentication.getAuthentication().getAuthResult().getUser().getName());
         findViewById(R.id.graphData).setVisibility(View.VISIBLE);
     }
 
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivityRest {
      * Callback will call Graph api w/ access token & update UI
      */
     private void onCallGraphClicked() {
-        sampleApp.acquireToken(getActivity(), SCOPES, authentication.getAuthInteractiveCallback(this));
+        sampleApp.acquireToken(getActivity(), SCOPES, authentication.getAuthCallback(this));
     }
 
     /* Handles the redirect from the System Browser */

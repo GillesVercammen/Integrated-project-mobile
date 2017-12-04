@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.microsoft.identity.client.AuthenticationResult;
+
 import org.json.JSONObject;
 
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
@@ -82,5 +84,9 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
 
     protected boolean actionLogout() {
         return true;
+    }
+
+    public void loginSuccessfull() {
+        System.out.println("Login successfull");
     }
 }
