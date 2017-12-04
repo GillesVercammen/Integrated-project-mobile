@@ -2,6 +2,7 @@ package ap.student.outlook_mobile_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -37,6 +38,12 @@ public class MainActivity extends AppCompatActivityRest {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // this is bad practice
+        return true;
+    }
+
+    @Override
     public void loginSuccessfull() {
         startActivity(new Intent(this, HomeActivity.class));
         this.finish();
@@ -47,21 +54,7 @@ public class MainActivity extends AppCompatActivityRest {
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject graphResponse) {
 
-        switch (outlookObjectCall) {
-            case READUSER: {
-                System.out.println(graphResponse);
-            } break;
-            case READMAIL: {
-                System.out.println(graphResponse);
-            }
-            break;
-        }
     }
-
-    /* Callback method for acquireTokenSilent calls
-     * Looks if tokens are in the cache (refreshes if necessary and if we don't forceRefresh)
-     * else errors that we need to do an interactive request.
-     */
 
     /* Set the UI for successful token acquisition data */
     public void updateSuccessUI() {
@@ -71,9 +64,6 @@ public class MainActivity extends AppCompatActivityRest {
                 Authentication.getAuthentication().getAuthResult().getUser().getName());
     }
 
-    /* Use MSAL to acquireToken for the end-user
-     * Callback will call Graph api w/ access token & update UI
-     */
     private void onCallGraphClicked() {
         actionLogin(true);
     }
@@ -93,12 +83,10 @@ public class MainActivity extends AppCompatActivityRest {
         }
     }
 
-    /* Clears a user's tokens from the cache.
-    * Logically similar to "sign out" but only signs out of this app.
-    */
     @Override
     protected boolean actionLogout() {
         super.actionLogout();
+        this.finish();
         updateSignedOutUI();
         return false;
     }
