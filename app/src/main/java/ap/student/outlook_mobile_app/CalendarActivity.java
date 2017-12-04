@@ -24,11 +24,6 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     @Override
-    protected boolean calendarIntent() {
-        return false;
-    }
-
-    @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
         System.out.println(response);
     }

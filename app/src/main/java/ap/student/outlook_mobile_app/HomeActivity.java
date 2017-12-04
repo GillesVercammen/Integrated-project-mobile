@@ -47,6 +47,6 @@ public class HomeActivity extends AppCompatActivityRest {
     }
 
     private void onCalendarButtonClicked() {
-        new Toast(this).makeText(this.getApplicationContext(), "Calendar Button clicked!", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, CalendarActivity.class));
     }
 }
