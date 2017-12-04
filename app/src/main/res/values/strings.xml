@@ -2,5 +2,6 @@
     <string name="app_name">Outlook Mobile App</string>
     <string name="action_logout">Log Out</string>
     <string name="action_settings">Settings</string>
-    <string name="action_calendar">Calendar</string>
+    <string name="action_login">Log In</string>
+    <string name="sign_in_request">Please sign in to use this app.</string>
 </resources>
