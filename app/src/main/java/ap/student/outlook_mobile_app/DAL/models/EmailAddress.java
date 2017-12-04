@@ -1,20 +1,12 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
 /**
- * Created by Gilles on 27-11-2017.
+ * Created by alek on 12/1/17.
  */
 
 public class EmailAddress {
-    private String name;
     private String address;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String name;
 
     public String getAddress() {
         return address;
@@ -22,5 +14,13 @@ public class EmailAddress {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

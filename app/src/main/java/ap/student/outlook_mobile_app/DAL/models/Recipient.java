@@ -1,11 +1,11 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
 /**
- * Created by Gilles on 27-11-2017.
+ * Created by alek on 12/1/17.
  */
 
 public class Recipient {
-
+    //Microsoft is fucking retarded
     private EmailAddress emailAddress;
 
     public EmailAddress getEmailAddress() {
