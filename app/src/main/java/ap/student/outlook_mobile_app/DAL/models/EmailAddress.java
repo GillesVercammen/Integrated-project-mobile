@@ -1,0 +1,26 @@
+package ap.student.outlook_mobile_app.DAL.models;
+
+/**
+ * Created by Gilles on 27-11-2017.
+ */
+
+public class EmailAddress {
+    private String name;
+    private String address;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+}

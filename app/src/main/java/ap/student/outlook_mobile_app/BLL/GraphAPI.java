@@ -60,8 +60,6 @@ public class GraphAPI {
             /* Successfully called graph, process data and send to UI */
                 Log.d(TAG, "Response: " + response.toString());
                 Log.d(TAG, "Logging call id");
-                //context.setOutlookObjectCall(objectCall);
-                //context.setResponse(response);
                 context.processResponse(objectCall, response);
             }
         }, new Response.ErrorListener() {
