@@ -24,20 +24,13 @@ import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 
 public class MainActivity extends AppCompatActivityRest {
-
-    private final static String CLIENT_ID = "0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5";
-    private final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read", "https://graph.microsoft.com/Mail.Send"};
     private JSONObject graphResponse;
-    private Authentication authentication;
 
     /* UI & Debugging Variables */
     private static final String TAG = MainActivity.class.getSimpleName();
     Button callGraphButton;
     Button signOutButton;
     Button mailButton;
-
-    /* Azure AD Variables */
-    private PublicClientApplication sampleApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +41,6 @@ public class MainActivity extends AppCompatActivityRest {
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
 
-        authentication = Authentication.getAuthentication();
         callGraphButton = (Button) findViewById(R.id.callGraph);
         signOutButton = (Button) findViewById(R.id.clearCache);
         mailButton = (Button) findViewById(R.id.mail);
@@ -72,36 +64,7 @@ public class MainActivity extends AppCompatActivityRest {
             }
         });
 
-    /* Configure your sample app and save state for this activity */
-        sampleApp = new PublicClientApplication(
-                this.getApplicationContext(),
-                CLIENT_ID);
-
-    /* Attempt to get a user and acquireTokenSilent
-    * If this fails we do an interactive request
-    */
-        List<User> users = null;
-
-        try {
-            users = sampleApp.getUsers();
-
-            if (users != null && users.size() == 1) {
-          /* We have 1 user */
-
-                sampleApp.acquireTokenSilentAsync(SCOPES, users.get(0), authentication.getAuthCallback(this));
-            } else {
-          /* We have no user */
-
-          /* Let's do an interactive request */
-                sampleApp.acquireToken(this, SCOPES, authentication.getAuthCallback(this));
-            }
-        } catch (MsalClientException e) {
-            Log.d(TAG, "MSAL Exception Generated while getting users: " + e.toString());
-
-        } catch (IndexOutOfBoundsException e) {
-            Log.d(TAG, "User at this position does not exist: " + e.toString());
-        }
-
+        actionLogin();
     }
 
     private void mailButtonClicked() {
@@ -135,11 +98,6 @@ public class MainActivity extends AppCompatActivityRest {
         }
     }
 
-    // getActivity() - returns activity so we can acquireToken within a callback
-    public Activity getActivity() {
-        return this;
-    }
-
     /* Callback method for acquireTokenSilent calls
      * Looks if tokens are in the cache (refreshes if necessary and if we don't forceRefresh)
      * else errors that we need to do an interactive request.
@@ -160,13 +118,13 @@ public class MainActivity extends AppCompatActivityRest {
      * Callback will call Graph api w/ access token & update UI
      */
     private void onCallGraphClicked() {
-        sampleApp.acquireToken(getActivity(), SCOPES, authentication.getAuthCallback(this));
+        actionLogin(true);
     }
 
     /* Handles the redirect from the System Browser */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        sampleApp.handleInteractiveRequestRedirect(requestCode, resultCode, data);
+        handleInteractiveRequestRedirect(requestCode, resultCode, data);
     }
 
     /* Use Volley to make an HTTP request to the /me endpoint from MS Graph using an access token */
@@ -183,39 +141,8 @@ public class MainActivity extends AppCompatActivityRest {
     */
     @Override
     protected boolean actionLogout() {
-    /* Attempt to get a user and remove their cookies from cache */
-        List<User> users = null;
-
-        try {
-            users = sampleApp.getUsers();
-
-            if (users == null) {
-            /* We have no users */
-
-            } else if (users.size() == 1) {
-            /* We have 1 user */
-            /* Remove from token cache */
-                sampleApp.remove(users.get(0));
-                updateSignedOutUI();
-
-            }
-            else {
-            /* We have multiple users */
-                for (int i = 0; i < users.size(); i++) {
-                    sampleApp.remove(users.get(i));
-                }
-            }
-
-            Toast.makeText(getBaseContext(), "Signed Out!", Toast.LENGTH_SHORT)
-                    .show();
-
-        } catch (MsalClientException e) {
-            Log.d(TAG, "MSAL Exception Generated while getting users: " + e.toString());
-
-        } catch (IndexOutOfBoundsException e) {
-            Log.d(TAG, "User at this position does not exist: " + e.toString());
-        }
-
+        super.actionLogout();
+        updateSignedOutUI();
         return false;
     }
 
@@ -228,5 +155,4 @@ public class MainActivity extends AppCompatActivityRest {
         findViewById(R.id.graphData).setVisibility(View.INVISIBLE);
         ((TextView) findViewById(R.id.graphData)).setText("No Data");
     }
-
 }

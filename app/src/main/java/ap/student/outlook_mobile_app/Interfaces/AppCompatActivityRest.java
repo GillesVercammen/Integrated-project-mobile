@@ -1,5 +1,6 @@
 package ap.student.outlook_mobile_app.Interfaces;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +12,7 @@ import com.microsoft.identity.client.AuthenticationResult;
 
 import org.json.JSONObject;
 
+import ap.student.outlook_mobile_app.BLL.UserAuth;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.MainActivity;
 import ap.student.outlook_mobile_app.R;
@@ -83,10 +85,26 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
     }
 
     protected boolean actionLogout() {
+        new UserAuth(this).logout();
         return true;
+    }
+
+    protected void actionLogin() {
+        new UserAuth(this).login();
+    }
+
+    protected void actionLogin(boolean interactive) {
+        if (interactive) {
+            new UserAuth(this).interActiveLogin();
+        }
+        actionLogin();
     }
 
     public void loginSuccessfull() {
         System.out.println("Login successfull");
+    }
+
+    protected void handleInteractiveRequestRedirect(int requestCode, int resultCode, Intent data) {
+        new UserAuth(this).handleInteractiveRequestRedirect(requestCode, resultCode, data);
     }
 }
