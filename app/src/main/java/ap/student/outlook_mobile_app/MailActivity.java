@@ -10,17 +10,18 @@ import android.widget.ListView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 
-public class MailActivity extends AppCompatActivityRest {
+public class MailActivity extends AppCompatActivityRest  {
 
     private ListView mListView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,6 @@ public class MailActivity extends AppCompatActivityRest {
     }
 
     private void setActionBarMail(String title, String subtitle) {
-        System.out.println("TEST: " + subtitle);
         getSupportActionBar().setTitle(title);
         getSupportActionBar().setSubtitle(subtitle);
     }
@@ -61,28 +61,34 @@ public class MailActivity extends AppCompatActivityRest {
                 try {
                     JSONArray mails = list.getJSONArray("value");
 
-                    ArrayList<String> fromObject_list = new ArrayList<>();
+                    ArrayList<JSONObject> json_emails = new ArrayList<>();
 
                     for (int i = 0; i < mails.length(); i++) {
-                        fromObject_list.add(String.valueOf(mails.getJSONObject(i).getJSONObject("from").getJSONObject("emailAddress").getString("address")));
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("id", mails.getJSONObject(i).getString("id"));
+                        jsonObject.put("hasAttachments", mails.getJSONObject(i).getString("hasAttachments"));
+                        jsonObject.put("subject", mails.getJSONObject(i).getString("subject"));
+                        jsonObject.put("receivedDateTime", mails.getJSONObject(i).getString("receivedDateTime"));
+                        jsonObject.put("from", mails.getJSONObject(i).getJSONObject("from"));
+                        json_emails.add(jsonObject);
                     }
 
+
                     mListView = (ListView) findViewById(R.id.mail_list);
-                    ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, fromObject_list);
+                    MyCustomAdapter adapter = new MyCustomAdapter(this, json_emails);
                     mListView.setAdapter(adapter);
-                    System.out.println(fromObject_list);
+
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
             }
             break;
             case SENDMAIL: {
                 System.out.println("Just send a mail." );
             }
         }
-
     }
+
 }
