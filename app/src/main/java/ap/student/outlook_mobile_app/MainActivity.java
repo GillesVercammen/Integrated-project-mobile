@@ -24,10 +24,6 @@ import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 
 public class MainActivity extends AppCompatActivityRest {
-    private JSONObject graphResponse;
-
-    /* UI & Debugging Variables */
-    private static final String TAG = MainActivity.class.getSimpleName();
     Button callGraphButton;
     Button signOutButton;
     Button mailButton;
@@ -73,13 +69,10 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     public void loginSuccessfull() {
+        startActivity(new Intent(this, HomeActivity.class));
+        this.finish();
         callGraphAPI();
         updateSuccessUI();
-    }
-
-    @Override
-    public void setResponse(JSONObject response) {
-        graphResponse = response;
     }
 
     @Override
@@ -92,7 +85,7 @@ public class MainActivity extends AppCompatActivityRest {
                 graphText.setText(graphResponse.toString());
             } break;
             case READMAIL: {
-                System.out.println(this.graphResponse);
+                System.out.println(graphResponse);
             }
             break;
         }

@@ -22,14 +22,14 @@ import ap.student.outlook_mobile_app.R;
  */
 
 public abstract class AppCompatActivityRest extends AppCompatActivity implements IActivity {
-    protected JSONObject response;
-    protected OutlookObjectCall outlookObjectCall;
+    //protected JSONObject response;
+    //protected OutlookObjectCall outlookObjectCall;
     protected Toolbar actionBar = null;
 
-    public void setOutlookObjectCall(OutlookObjectCall outlookObjectCall) { this.outlookObjectCall = outlookObjectCall; }
-    public void setResponse(JSONObject response) {
+    /*public void setOutlookObjectCall(OutlookObjectCall outlookObjectCall) { this.outlookObjectCall = outlookObjectCall; }
+    /*public void setResponse(JSONObject response) {
         this.response = response;
-    }
+    }*/
     public abstract void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response);
 
     @Override
@@ -86,6 +86,7 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
 
     protected boolean actionLogout() {
         new UserAuth(this).logout();
+        startActivity(new Intent(this, MainActivity.class));
         return true;
     }
 

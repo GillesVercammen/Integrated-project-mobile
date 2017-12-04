@@ -9,6 +9,6 @@ import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
  */
 
 public interface IActivity {
-    public void setResponse(JSONObject response);
+    //public void setResponse(JSONObject response);
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response);
 }

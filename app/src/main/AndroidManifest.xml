@@ -31,7 +31,8 @@
                     android:scheme="msal0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5" />
             </intent-filter>
         </activity>
-        <activity android:name=".MailActivity"></activity>
+        <activity android:name=".MailActivity" />
+        <activity android:name=".HomeActivity"></activity>
     </application>
 
 </manifest>
