@@ -43,7 +43,7 @@ public class MailActivity extends AppCompatActivityRest  {
 
     public void getAllMails(int aantalMails) {
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "?$top=" + aantalMails);
+            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "/inbox/messages?$top=" + aantalMails);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -70,6 +70,7 @@ public class MailActivity extends AppCompatActivityRest  {
                         jsonObject.put("subject", mails.getJSONObject(i).getString("subject"));
                         jsonObject.put("receivedDateTime", mails.getJSONObject(i).getString("receivedDateTime"));
                         jsonObject.put("from", mails.getJSONObject(i).getJSONObject("from"));
+                        jsonObject.put("isRead", mails.getJSONObject(i).getString("isRead"));
                         json_emails.add(jsonObject);
                     }
 

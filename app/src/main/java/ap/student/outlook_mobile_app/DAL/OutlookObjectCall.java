@@ -7,7 +7,7 @@ package ap.student.outlook_mobile_app.DAL;
 
 public enum OutlookObjectCall {
     READUSER(""),
-    READMAIL("/messages"),
+    READMAIL("/mailfolders"),
     READCALENDAR("/calendars"),
     SENDMAIL("/sendMail");
     private String action;
