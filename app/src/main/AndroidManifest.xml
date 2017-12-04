@@ -33,6 +33,7 @@
         </activity>
         <activity android:name=".MailActivity" />
         <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".CalendarActivity"></activity>
     </application>
 
 </manifest>
