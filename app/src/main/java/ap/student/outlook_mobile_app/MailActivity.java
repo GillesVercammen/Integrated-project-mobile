@@ -12,6 +12,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -22,14 +26,15 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 public class MailActivity extends AppCompatActivityRest  {
 
     private ListView mListView;
+    private String inbox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_mail);
         super.onCreate(savedInstanceState);
-
+        inbox = getString(R.string.inbox);
         //set actionbar
-        setActionBarMail("POSTVAK IN", getIntent().getStringExtra("USER_EMAIL"));
+        setActionBarMail(inbox, getIntent().getStringExtra("USER_EMAIL"));
 
         //top x mails verkrijgen
         getAllMails(15);

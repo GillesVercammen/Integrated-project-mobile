@@ -58,9 +58,10 @@ public class MainActivity extends AppCompatActivityRest {
 
     /* Set the UI for successful token acquisition data */
     public void updateSuccessUI() {
+        String paramString = Authentication.getAuthentication().getAuthResult().getUser().getName();
+        String formattedString = getString(R.string.welcome, paramString);
         callGraphButton.setVisibility(View.INVISIBLE);
-        ((TextView) findViewById(R.id.welcome)).setText("Welcome, " +
-                Authentication.getAuthentication().getAuthResult().getUser().getName());
+        ((TextView) findViewById(R.id.welcome)).setText(formattedString);
     }
 
     private void onCallGraphClicked() {
