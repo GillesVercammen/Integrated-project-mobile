@@ -1,6 +1,6 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * Created by alek on 11/30/17.
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class ResponseStatus {
     private String response;
-    private LocalDateTime time;
+    private String time;
 
     public String getResponse() {
         return response;
@@ -18,11 +18,11 @@ public class ResponseStatus {
         this.response = response;
     }
 
-    public LocalDateTime getTime() {
-        return time;
+    public ZonedDateTime getTime() {
+        return ZonedDateTime.parse(time);
     }
 
-    public void setTime(LocalDateTime time) {
-        this.time = time;
+    public void setTime(ZonedDateTime time) {
+        this.time = time.toString();
     }
 }

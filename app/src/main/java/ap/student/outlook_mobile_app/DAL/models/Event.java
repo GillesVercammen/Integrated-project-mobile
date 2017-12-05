@@ -1,18 +1,18 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * Created by alek on 11/30/17.
  */
-
 public class Event {
+    private Event[] value;
     private Attendee[] attendees;
     private Body itemBody;
     private String bodyPreview;
     private String[] categories;
     private String changeKey;
-    private LocalDateTime createdDateTime;
+    private String createdDateTime;
     private DateTimeTimeZone end;
     private boolean hasAttachments;
     private String iCalUId;
@@ -22,11 +22,11 @@ public class Event {
     private boolean isCancelled;
     private boolean isOrganizer;
     private boolean isReminderOn;
-    private LocalDateTime lastModifiedDateTime;
+    private String lastModifiedDateTime;
     private String onlineMeetingUrl;
     private Recipient organizer;
     private String originalEndTimeZone;
-    private LocalDateTime dateTimeOffset;
+    private String dateTimeOffset;
     private String originalStartTimeZone;
     private PatternedRecurrence recurrence;
     private int reminderMinutesBeforeStart;
@@ -39,6 +39,18 @@ public class Event {
     private String subject;
     private String type;
     private String webLink;
+
+    public Event[] getEvents() {
+        return value;
+    }
+
+    public void setValue(Event[] events) {
+        this.value = events;
+    }
+
+    public void setEvents(Event[] events) {
+        this.value = events;
+    }
 
     public Attendee[] getAttendees() {
         return attendees;
@@ -80,12 +92,12 @@ public class Event {
         this.changeKey = changeKey;
     }
 
-    public LocalDateTime getCreatedDateTime() {
-        return createdDateTime;
+    public ZonedDateTime getCreatedDateTime() {
+        return ZonedDateTime.parse(createdDateTime);
     }
 
-    public void setCreatedDateTime(LocalDateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
+    public void setCreatedDateTime(ZonedDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime.toString();
     }
 
     public DateTimeTimeZone getEnd() {
@@ -160,12 +172,12 @@ public class Event {
         isReminderOn = reminderOn;
     }
 
-    public LocalDateTime getLastModifiedDateTime() {
-        return lastModifiedDateTime;
+    public ZonedDateTime getLastModifiedDateTime() {
+        return ZonedDateTime.parse(lastModifiedDateTime);
     }
 
-    public void setLastModifiedDateTime(LocalDateTime lastModifiedDateTime) {
-        this.lastModifiedDateTime = lastModifiedDateTime;
+    public void setLastModifiedDateTime(ZonedDateTime lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime.toString();
     }
 
     public String getOnlineMeetingUrl() {
@@ -192,12 +204,12 @@ public class Event {
         this.originalEndTimeZone = originalEndTimeZone;
     }
 
-    public LocalDateTime getDateTimeOffset() {
-        return dateTimeOffset;
+    public ZonedDateTime getDateTimeOffset() {
+        return ZonedDateTime.parse(dateTimeOffset);
     }
 
-    public void setDateTimeOffset(LocalDateTime dateTimeOffset) {
-        this.dateTimeOffset = dateTimeOffset;
+    public void setDateTimeOffset(ZonedDateTime dateTimeOffset) {
+        this.dateTimeOffset = dateTimeOffset.toString();
     }
 
     public String getOriginalStartTimeZone() {
