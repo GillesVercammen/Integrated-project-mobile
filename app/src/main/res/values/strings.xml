@@ -5,6 +5,7 @@
     <string name="action_login">Log In</string>
     <string name="sign_in_request">Please sign in to use this app.</string>
     <string name="current_month_string">This month</string>
+    <string name="current_year_string">This Year</string>
     <string name="month_tableheader_monday">M</string>
     <string name="month_tableheader_tuesday">T</string>
     <string name="month_tableheader_wednesday">W</string>
