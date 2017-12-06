@@ -12,6 +12,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +37,8 @@ import ap.student.outlook_mobile_app.mailing.model.Message;
 
 public class MailActivity extends AppCompatActivityRest implements SwipeRefreshLayout.OnRefreshListener, MessagesAdapter.MessageAdapterListener {
 
-    private String inbox;
+    private String currentFolder;
+    private String currentUser;
     private List<Message> messages = new ArrayList<>();
     private RecyclerView recyclerView;
     private MessagesAdapter mAdapter;
@@ -49,10 +51,11 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         setContentView(R.layout.activity_mail);
         super.onCreate(savedInstanceState);
 
-
-        //set actionbar
-        inbox = getString(R.string.inbox);
-        setActionBarMail(inbox, getIntent().getStringExtra("USER_EMAIL"));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        currentFolder = getString(R.string.inbox);
+        currentUser = getIntent().getStringExtra("USER_EMAIL");
+        setActionBarMail(currentFolder, currentUser);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -62,9 +65,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                         .setAction("Action", null).show();
             }
         });
-
-
-
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -87,22 +87,29 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     }
                 }
         );
-
     }
 
-    private void setActionBarMail(String title, String subtitle) {
-        getSupportActionBar().setTitle(title);
-        getSupportActionBar().setSubtitle(subtitle);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
-    public void getAllMails(int aantalMails) {
-        swipeRefreshLayout.setRefreshing(true);
-        try {
-            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "/inbox/messages?$top=" + aantalMails);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
 
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_search) {
+            Toast.makeText(getApplicationContext(), "Search...", Toast.LENGTH_SHORT).show();
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -142,22 +149,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 System.out.println("Just send a mail." );
             }
         }
-    }
-
-    /**
-     * chooses a random color from array.xml
-     */
-    private int getRandomMaterialColor(String typeColor) {
-        int returnColor = Color.GRAY;
-        int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getPackageName());
-
-        if (arrayId != 0) {
-            TypedArray colors = getResources().obtainTypedArray(arrayId);
-            int index = (int) (Math.random() * colors.length());
-            returnColor = colors.getColor(index, Color.GRAY);
-            colors.recycle();
-        }
-        return returnColor;
     }
 
     @Override
@@ -281,6 +272,34 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             mAdapter.removeData(selectedItemPositions.get(i));
         }
         mAdapter.notifyDataSetChanged();
+    }
+
+    private void setActionBarMail(String title, String subtitle) {
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setSubtitle(subtitle);
+    }
+
+    private void getAllMails(int aantalMails) {
+        swipeRefreshLayout.setRefreshing(true);
+        try {
+            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "/inbox/messages?$top=" + aantalMails);
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int getRandomMaterialColor(String typeColor) {
+        int returnColor = Color.GRAY;
+        int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getPackageName());
+
+        if (arrayId != 0) {
+            TypedArray colors = getResources().obtainTypedArray(arrayId);
+            int index = (int) (Math.random() * colors.length());
+            returnColor = colors.getColor(index, Color.GRAY);
+            colors.recycle();
+        }
+        return returnColor;
     }
 
 }

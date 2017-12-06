@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     public void loginSuccessfull() {
-        startActivity(new Intent(this, HomeActivity.class));
+        startActivity(new Intent(this, HomeActivity.class)
+            .putExtra("USER_NAME", Authentication.getAuthentication().getAuthResult().getUser().getName())
+            .putExtra("USER_EMAIL", Authentication.getAuthentication().getAuthResult().getUser().getDisplayableId()));
         this.finish();
         //callGraphAPI();
         updateSuccessUI();

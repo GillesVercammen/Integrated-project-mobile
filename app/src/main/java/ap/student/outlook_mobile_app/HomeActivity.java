@@ -43,7 +43,12 @@ public class HomeActivity extends AppCompatActivityRest {
     }
 
     private void onMailButtonClicked() {
-        startActivity(new Intent(this, MailActivity.class));
+        String user_email = getIntent().getStringExtra("USER_EMAIL");
+        String user_name = getIntent().getStringExtra("USER_NAME");
+        startActivity(new Intent(this, MailActivity.class)
+            .putExtra("USER_NAME", user_name)
+            .putExtra("USER_EMAIL", user_email));
+
     }
 
     private void onCalendarButtonClicked() {
