@@ -8,4 +8,7 @@
     <dimen name="icon_star">25dp</dimen>
     <dimen name="icon_text">22dp</dimen>
     <dimen name="timestamp">12dp</dimen>
+    <dimen name="msg_text_tertiary">12sp</dimen>
+    <dimen name="icon_bijlage_width_height">22dp</dimen>
+    <dimen name="padding_attachement">6dp</dimen>
 </resources>

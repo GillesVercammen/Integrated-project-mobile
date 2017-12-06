@@ -7,19 +7,10 @@ import android.view.View;
 
 import ap.student.outlook_mobile_app.R;
 
-
-/**
- * Created by Ravi Tamada on 22/02/17.
- * www.androidhive.info
- */
-
 public class FlipAnimator {
     private static String TAG = FlipAnimator.class.getSimpleName();
     private static AnimatorSet leftIn, rightOut, leftOut, rightIn;
 
-    /**
-     * Performs flip animation on two views
-     */
     public static void flipView(Context context, final View back, final View front, boolean showFront) {
         leftIn = (AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.card_flip_left_in);
         rightOut = (AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.card_flip_right_out);

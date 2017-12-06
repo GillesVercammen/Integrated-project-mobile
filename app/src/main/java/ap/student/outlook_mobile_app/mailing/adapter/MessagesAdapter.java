@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.SparseBooleanArray;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -14,21 +14,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.mailing.helpers.FlipAnimator;
 import ap.student.outlook_mobile_app.mailing.model.Message;
 
-/**
- * Created by Ravi Tamada on 21/02/17.
- * www.androidhive.info
- */
 
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyViewHolder> {
     private Context mContext;
@@ -46,7 +41,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         public TextView from, subject, message, iconText, timestamp;
-        public ImageView iconImp, imgProfile;
+        public ImageView iconImp, imgProfile, imgBijlage;
         public LinearLayout messageContainer;
         public RelativeLayout iconContainer, iconBack, iconFront;
 
@@ -63,6 +58,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
             imgProfile = (ImageView) view.findViewById(R.id.icon_profile);
             messageContainer = (LinearLayout) view.findViewById(R.id.message_container);
             iconContainer = (RelativeLayout) view.findViewById(R.id.icon_container);
+            imgBijlage = (ImageView) view.findViewById(R.id.icon_attachement);
             view.setOnLongClickListener(this);
         }
 
@@ -99,7 +95,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
         holder.from.setText(message.getFrom().getEmailAddress().getName());
         holder.subject.setText(message.getSubject());
         holder.message.setText(message.getBodyPreview());
-        holder.timestamp.setText(message.getReceivedDateTime());
+        setBijlage(message, holder);
+        try {
+            setDate(message, holder);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         // displaying the first letter of From in icon text
         holder.iconText.setText(message.getFrom().getEmailAddress().getName().substring(0, 1));
@@ -121,6 +122,47 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
 
         // apply click events
         applyClickEvents(holder, position);
+    }
+
+    private void setDate(Message message, MyViewHolder holder) throws ParseException {
+        String stringDate = message.getReceivedDateTime();
+        String COMPARE_FORMAT = "yyyy/MM/dd";
+        String OUTPUT_FORMAT_NOT_TODAY = "dd MMM";
+        String JSON_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(COMPARE_FORMAT);
+        SimpleDateFormat formatter = new SimpleDateFormat(JSON_FORMAT);
+        SimpleDateFormat defaultFormat = new SimpleDateFormat(OUTPUT_FORMAT_NOT_TODAY);
+
+        //today date (check if today)
+        Date today = new Date();
+        String currentDate = dateFormat.format(today);
+        //hours (if today
+        Date date = formatter.parse(stringDate);
+        formatter.applyPattern(COMPARE_FORMAT);
+        String mailDate = formatter.format(date);
+        //dd/month (if not today)
+
+
+        boolean is24 = DateFormat.is24HourFormat(mContext);
+
+        if (mailDate.equals(currentDate)) {
+            if (is24) {
+                SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm");
+                holder.timestamp.setText(outputFormat.format(date));
+            } else {
+                SimpleDateFormat outputFormat = new SimpleDateFormat("hh:mm a");
+                holder.timestamp.setText(outputFormat.format(date));
+            }
+        } else {
+            holder.timestamp.setText(defaultFormat.format(date));
+        }
+    }
+
+    private void setBijlage(Message message, MyViewHolder holder){
+        //set bijlage
+        if (message.getHasAttachments().toLowerCase().equals("true")){
+            holder.imgBijlage.setImageResource(R.drawable.ic_bijlage);
+        }
     }
 
     private void applyClickEvents(MyViewHolder holder, final int position) {
@@ -183,7 +225,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
             }
         }
     }
-
 
     // As the views will be reused, sometimes the icon appears as
     // flipped because older view is reused. Reset the Y-axis to 0

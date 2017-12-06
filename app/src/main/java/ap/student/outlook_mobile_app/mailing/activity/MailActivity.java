@@ -5,19 +5,16 @@ import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -26,30 +23,19 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
-import ap.student.outlook_mobile_app.MyCustomAdapter;
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.mailing.adapter.MessagesAdapter;
 import ap.student.outlook_mobile_app.mailing.helpers.DividerItemDecoration;
 import ap.student.outlook_mobile_app.mailing.model.Message;
-import retrofit2.Call;
 
 public class MailActivity extends AppCompatActivityRest implements SwipeRefreshLayout.OnRefreshListener, MessagesAdapter.MessageAdapterListener {
 
-    private ListView mListView;
     private String inbox;
     private List<Message> messages = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -84,12 +70,11 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        mAdapter = new MessagesAdapter(this, messages, this);
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
 
         actionModeCallback = new ActionModeCallback();
 
@@ -140,12 +125,17 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                         message.setColor(getRandomMaterialColor("400"));
                     }
                     System.out.println(messages.get(2).getFrom().getEmailAddress().getName());
+
+                    mAdapter = new MessagesAdapter(this, messages, this);
+                    recyclerView.setAdapter(mAdapter);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 mAdapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
+
             }
             break;
             case SENDMAIL: {

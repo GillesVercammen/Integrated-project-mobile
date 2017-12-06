@@ -31,7 +31,9 @@
                     android:scheme="msal0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5" />
             </intent-filter>
         </activity>
-        <activity android:name=".mailing.activity.MailActivity" />
+        <activity android:name=".mailing.activity.MailActivity"
+            android:screenOrientation="sensorPortrait"
+            />
         <activity android:name=".HomeActivity"></activity>
         <activity android:name=".CalendarActivity"></activity>
     </application>

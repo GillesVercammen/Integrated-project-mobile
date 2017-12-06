@@ -2,10 +2,6 @@ package ap.student.outlook_mobile_app.mailing.model;
 
 import java.util.Date;
 
-/**
- * Created by Gilles on 27-11-2017.
- */
-
 public class Message {
 
     private int autoId;
