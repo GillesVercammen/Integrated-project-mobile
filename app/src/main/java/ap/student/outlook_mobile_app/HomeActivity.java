@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
+import ap.student.outlook_mobile_app.mailing.activity.MailActivity;
 
 public class HomeActivity extends AppCompatActivityRest {
     private ImageButton mailButton;

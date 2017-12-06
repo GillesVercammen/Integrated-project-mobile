@@ -8,4 +8,6 @@
     <string name="inbox">Inbox</string>
     <string name="attachement">Attachement</string>
     <string name="no_subject">(No subject)</string>
+    <string name="action_search">Search</string>
+    <string name="action_delete">Delete</string>
 </resources>

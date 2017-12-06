@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ap.student.outlook_mobile_app.MailActivity"
-    tools:layout_editor_absoluteY="25dp">
+    tools:context="ap.student.outlook_mobile_app.mailing.activity.MailActivity">
 
     <include layout="@layout/actionbar" />
 
-    <ListView
-        android:id="@+id/mail_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/action_bar"
-        app:layout_constraintVertical_bias="0.0" />
+    <include layout="@layout/content_main" />
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorPrimary"
+        app:srcCompat="@drawable/ic_edit_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>
