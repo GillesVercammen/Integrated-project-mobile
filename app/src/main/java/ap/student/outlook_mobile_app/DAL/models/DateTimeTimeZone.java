@@ -1,5 +1,8 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+
 /**
  * Created by alek on 12/1/17.
  */
@@ -8,12 +11,17 @@ public class DateTimeTimeZone {
     private String dateTime;
     private String timeZone;
 
-    public String getDateTime() {
-        return dateTime;
+    public DateTimeTimeZone(String dateTime, String timeZone) {
+        this.dateTime = dateTime;
+        this.timeZone = timeZone;
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.parse(dateTime);
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime.toString();
     }
 
     public String getTimeZone() {

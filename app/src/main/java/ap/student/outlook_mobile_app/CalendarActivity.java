@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 
+import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.Event;
@@ -37,14 +38,14 @@ public class CalendarActivity extends AppCompatActivityRest {
         setContentView(R.layout.activity_calendar);
         super.onCreate(savedInstanceState);
 
+        /**
+         * Settings for the month calendar view
+         */
         nextMonthButton = (ImageButton) findViewById(R.id.nextMonthButton);
         previousMonthButton = (ImageButton) findViewById(R.id.previousMonthButton);
-
         monthCalendar = (TableLayout) findViewById(R.id.monthCalendar);
         monthCalendarMonthTextView = (TextView) findViewById(R.id.currentMonthTextView);
         monthCalendarYearTextView = (TextView) findViewById(R.id.currentYearTextView);
-        selectedTime = LocalDateTime.now();
-        buildMonthCalendar();
 
         nextMonthButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,20 +71,20 @@ public class CalendarActivity extends AppCompatActivityRest {
         });
 
 
-        /*gson = new Gson();
+        /**
+         * global settings
+         */
+        event = null;
+        selectedTime = LocalDateTime.now();
+
+        gson = new Gson();
 
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.READCALENDARS, this);
+            //new GraphAPI().getRequest(OutlookObjectCall.READCALENDARS, this);
             new GraphAPI().getRequest(OutlookObjectCall.READEVENTS, this);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        }*/
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        buildMonthCalendar();
+        }
     }
 
     @Override
@@ -96,10 +97,8 @@ public class CalendarActivity extends AppCompatActivityRest {
             }
             break;
             case READEVENTS: {
-                System.out.println(response);
                 event = gson.fromJson(response.toString(), Event.class);
-                System.out.println(event.getEvents()[0].getOrganizer().getEmailAddress().getName());
-                System.out.println(event.getEvents()[0].getCreatedDateTime().toString());
+                buildMonthCalendar();
             }
             break;
         }
@@ -114,6 +113,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         buildMonthCalendar();
     }
 
+    //TODO : clean up this monster
     private void buildMonthCalendar() {
         int width = monthCalendar.getWidth() / 7;
 
@@ -127,26 +127,36 @@ public class CalendarActivity extends AppCompatActivityRest {
         int today = selectedTime.getDayOfMonth();
         int day = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).getDayOfWeek().getValue();
         if (day == 7) day = 0;
-        int lastDayOfMonth = selectedTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
-        int index = 1;
+        LocalDateTime lastDayOfMonth = selectedTime.with(TemporalAdjusters.lastDayOfMonth());
+        LocalDateTime index = selectedTime.with(TemporalAdjusters.firstDayOfMonth());
 
-        while (index <= lastDayOfMonth) {
+
+        while (index.isBefore(lastDayOfMonth) || index.equals(lastDayOfMonth)) {
             TableRow tableRow = new TableRow(this);
-            while (index <= lastDayOfMonth && day < 7) {
+            while ((index.isBefore(lastDayOfMonth) || index.equals(lastDayOfMonth)) && day < 7) {
                 TextView textView = new TextView(this);
-                textView.setText(Integer.toString(index));
-                textView.setGravity(Gravity.CENTER_HORIZONTAL);
+                textView.setText(Integer.toString(index.getDayOfMonth()));
+                textView.setGravity(Gravity.CENTER);
                 textView.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button_Borderless_Colored);
-                //textView.setPadding(1, 10, 1, 10);
                 textView.setWidth(width);
                 textView.setHeight(width);
+
+                if (event != null) {
+                    for (Event event : event.getEvents()) {
+                        LocalDateTime eventTime = event.getStart().getDateTime();
+                        if (eventTime.getYear() == index.getYear() && eventTime.getDayOfYear() == index.getDayOfYear()) {
+                            textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        }
+                    }
+                }
+
                 textView.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 tableRow.addView(textView);
                 day++;
-                index++;
+                index = index.plusDays(1);
             }
             tableRow.setGravity(Gravity.START);
-            if (index <= 7) {
+            if (index.getDayOfMonth() <= 7) {
                 tableRow.setGravity(Gravity.END);
             }
             monthCalendar.addView(tableRow);
