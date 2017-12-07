@@ -25,6 +25,7 @@ import ap.student.outlook_mobile_app.R;
 public abstract class AppCompatActivityRest extends AppCompatActivity implements IActivity {
     protected Toolbar actionBar = null;
 
+
     public abstract void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response);
 
     @Override
@@ -32,10 +33,15 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         actionBar = (Toolbar) findViewById(R.id.action_bar);
+        // NEED REVIEW BY ALEK, STILL GETTING EXCEPTIONS WHEN NOT USING ACTION BAR
       /*  if (actionBar == null) {
             throw new NullPointerException("'actionBar' couldn't be found. You need to set the activity before calling the super,\n\r and make sure to include the actionbar in said activity.");
         }
        */
+        /*        if (!actionBar.equals(null)) {,
+            setSupportActionBar(actionBar);
+        }
+        */
         setSupportActionBar(actionBar);
     }
 
