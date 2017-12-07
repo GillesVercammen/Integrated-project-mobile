@@ -4,6 +4,11 @@
     <string name="action_settings">Settings</string>
     <string name="action_login">Log In</string>
     <string name="sign_in_request">Please sign in to use this app.</string>
+
+    <!--
+        Main calendar view strings
+    -->
+
     <string name="current_month_string">This month</string>
     <string name="current_year_string">This Year</string>
     <string name="month_tableheader_monday">M</string>
@@ -13,4 +18,21 @@
     <string name="month_tableheader_friday">F</string>
     <string name="month_tableheader_saturday">S</string>
     <string name="month_tableheader_sunday">S</string>
+    <string name="month_edit_day_button">Edit this day</string>
+
+    <!--
+        Event view strings
+    -->
+
+    <string name="event_details_header">Details</string>
+    <string name="event_title_textview">Add a title for the event.</string>
+    <string name="event_location_textview">Add a location or space.</string>
+    <string name="event_begin_header">Begin</string>
+    <string name="event_end_header">End</string>
+    <string name="event_set_start_time_button">Set start time</string>
+    <string name="event_set_end_time_button">Set end time</string>
+    <string name="event_start_text_display">Event start: </string>
+    <string name="event_end_text_display">Event end: </string>
+    <string name="event_private_checkbox">Private</string>
+    <string name="event_all_day_checkbox">All day</string>
 </resources>

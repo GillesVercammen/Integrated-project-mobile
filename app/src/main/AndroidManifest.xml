@@ -32,8 +32,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".MailActivity" />
-        <activity android:name=".HomeActivity"></activity>
-        <activity android:name=".CalendarActivity"></activity>
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".CalendarActivity" />
+        <activity android:name=".EventActivity"></activity>
     </application>
 
 </manifest>
