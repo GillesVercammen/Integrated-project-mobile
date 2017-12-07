@@ -5,7 +5,7 @@ import java.util.Date;
 public class Message {
 
     private int autoId;
-    private String uniqueId;
+    private String id;
     private String receivedDateTime;
     private Recipient from;
     private String subject;
@@ -28,12 +28,12 @@ public class Message {
         this.autoId = autoId;
     }
 
-    public String getUniqueId() {
-        return uniqueId;
+    public String getId() {
+        return id;
     }
 
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getReceivedDateTime() {

@@ -116,11 +116,9 @@ public class MyCustomAdapter extends BaseAdapter {
         Date date = formatter.parse(stringDate);
         formatter.applyPattern(COMPARE_FORMAT);
         String mailDate = formatter.format(date);
-        //dd/month (if not today)
 
-
+        //Check device setting 12 or 24 hours
         boolean is24 = DateFormat.is24HourFormat(mContext);
-
         if (mailDate.equals(currentDate)) {
             if (is24) {
                 SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm");
@@ -141,6 +139,8 @@ public class MyCustomAdapter extends BaseAdapter {
         //set bijlage
         if (jsonObject.getString("hasAttachments").toLowerCase().equals("true")){
             thumbnailImageView.setBackground(ContextCompat.getDrawable(mContext, R.drawable.ic_bijlage));
+        } else {
+            thumbnailImageView.setVisibility(View.GONE);
         }
     }
 }

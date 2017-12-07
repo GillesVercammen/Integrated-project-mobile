@@ -120,4 +120,23 @@ public class GraphAPI {
     public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body, String parameters) throws IllegalAccessException {
         sendRequest(Request.Method.POST, objectCall, body, context, parameters);
     }
+
+
+    /**
+     * Methods for performing PATCH operations
+     * @param objectCall
+     * @param context
+     * @throws IllegalAccessException
+     */
+    public void patchRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context) throws IllegalAccessException {
+        sendRequest(Request.Method.PATCH, objectCall, createEmptyBody(), context, "");
+    }
+
+    public void patchRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body) throws IllegalAccessException {
+        sendRequest(Request.Method.PATCH, objectCall, body, context, "");
+    }
+
+    public void patchRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body, String parameters) throws IllegalAccessException {
+        sendRequest(Request.Method.PATCH, objectCall, body, context, parameters);
+    }
 }

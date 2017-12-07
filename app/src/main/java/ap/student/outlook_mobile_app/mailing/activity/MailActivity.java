@@ -4,6 +4,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
@@ -52,10 +53,10 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         super.onCreate(savedInstanceState);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         currentFolder = getString(R.string.inbox);
         currentUser = getIntent().getStringExtra("USER_EMAIL");
-        setActionBarMail(currentFolder, currentUser);
+        setActionBarMail(currentFolder, currentUser, toolbar);
+        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -188,8 +189,20 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             message.setIsRead("true");
             messages.set(position, message);
             mAdapter.notifyDataSetChanged();
+            JSONObject body = new JSONObject();
+            try {
+                body.put("isRead", true);
+                System.out.println(body);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                new GraphAPI().patchRequest(OutlookObjectCall.UPDATEMAIL,this, body, "/" + message.getId());
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
 
-            Toast.makeText(getApplicationContext(), "Read: " + message.getBodyPreview(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Read: " + message.getId(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -274,9 +287,11 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         mAdapter.notifyDataSetChanged();
     }
 
-    private void setActionBarMail(String title, String subtitle) {
-        getSupportActionBar().setTitle(title);
-        getSupportActionBar().setSubtitle(subtitle);
+    private void setActionBarMail(String title, String subtitle, Toolbar toolbar) {
+        toolbar.setTitle(title);
+        toolbar.setSubtitle(subtitle);
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+        toolbar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
     }
 
     private void getAllMails(int aantalMails) {

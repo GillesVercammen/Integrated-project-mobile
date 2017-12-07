@@ -6,8 +6,9 @@
     <string name="sign_in_request">Please sign in to use this app.</string>
     <string name="welcome">Welcome, %1$s!</string>
     <string name="inbox">Inbox</string>
-    <string name="attachement">Attachement</string>
+    <string name="attachment">Attachment</string>
     <string name="no_subject">(No subject)</string>
+    <string name="no_message">(No message)</string>
     <string name="action_search">Search</string>
     <string name="action_delete">Delete</string>
 </resources>

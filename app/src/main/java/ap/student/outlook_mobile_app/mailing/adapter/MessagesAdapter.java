@@ -93,8 +93,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
 
         // displaying text view data
         holder.from.setText(message.getFrom().getEmailAddress().getName());
-        holder.subject.setText(message.getSubject());
-        holder.message.setText(message.getBodyPreview());
+        setSubject(message, holder);
+        setMessage(message, holder);
+        holder.imgBijlage.setImageResource(R.drawable.ic_bijlage);
         setBijlage(message, holder);
         try {
             setDate(message, holder);
@@ -123,7 +124,23 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
         // apply click events
         applyClickEvents(holder, position);
     }
+    private void setSubject(Message message, MyViewHolder holder) {
+        String subject = message.getSubject();
+        if(!subject.isEmpty()){
+            holder.subject.setText(message.getSubject());
+        } else {
+            holder.subject.setText(R.string.no_subject);
+        }
+    }
 
+    private void setMessage(Message message, MyViewHolder holder) {
+        String preview = message.getBodyPreview();
+        if (!preview.isEmpty()){
+            holder.message.setText(message.getBodyPreview());
+        } else {
+            holder.message.setText(R.string.no_message);
+        }
+    }
     private void setDate(Message message, MyViewHolder holder) throws ParseException {
         String stringDate = message.getReceivedDateTime();
         String COMPARE_FORMAT = "yyyy/MM/dd";
@@ -161,7 +178,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
     private void setBijlage(Message message, MyViewHolder holder){
         //set bijlage
         if (message.getHasAttachments().toLowerCase().equals("true")){
-            holder.imgBijlage.setImageResource(R.drawable.ic_bijlage);
+            holder.imgBijlage.setVisibility(View.VISIBLE);
+        }else {
+            holder.imgBijlage.setVisibility(View.INVISIBLE);
         }
     }
 
