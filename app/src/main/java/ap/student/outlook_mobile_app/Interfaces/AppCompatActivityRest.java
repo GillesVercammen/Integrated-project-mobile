@@ -32,11 +32,9 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         actionBar = (Toolbar) findViewById(R.id.action_bar);
-        if (actionBar == null) {
-            throw new NullPointerException("'actionBar' couldn't be found. You need to set the activity before calling the super,\n\r and make sure to include the actionbar in said activity.");
+        if (!actionBar.equals(null)) {
+            setSupportActionBar(actionBar);
         }
-
-        setSupportActionBar(actionBar);
     }
 
     @Override
