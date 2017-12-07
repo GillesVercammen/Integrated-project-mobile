@@ -104,7 +104,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
         }
 
         // displaying the first letter of From in icon text
-        holder.iconText.setText(message.getFrom().getEmailAddress().getName().substring(0, 1));
+        holder.iconText.setText(message.getFrom().getEmailAddress().getName().substring(0, 1).toUpperCase());
 
         // change the row state to activated
         holder.itemView.setActivated(selectedItems.get(position, false));
@@ -327,6 +327,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
         messages.remove(position);
         resetCurrentIndex();
     }
+
+
+
+
 
     private void resetCurrentIndex() {
         currentSelectedIndex = -1;

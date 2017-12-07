@@ -38,6 +38,9 @@ import ap.student.outlook_mobile_app.mailing.model.Message;
 
 public class MailActivity extends AppCompatActivityRest implements SwipeRefreshLayout.OnRefreshListener, MessagesAdapter.MessageAdapterListener {
 
+    final static int START_AMOUNT_OF_EMAILS = 15;
+    final static int LOAD_MORE_EMAILS = 10;
+    static boolean loadmore=true;
     private String currentFolder;
     private String currentUser;
     private List<Message> messages = new ArrayList<>();
@@ -70,24 +73,37 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-
-
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-
         actionModeCallback = new ActionModeCallback();
-
         // show loader and fetch messages
         swipeRefreshLayout.post(
                 new Runnable() {
                     @Override
                     public void run() {
-                        getAllMails(15);
+                        getAllMails(START_AMOUNT_OF_EMAILS);
                     }
                 }
         );
+
+        // FOR LOADMORE
+        final LinearLayoutManager layoutManager = ((LinearLayoutManager)recyclerView.getLayoutManager());
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+                if (lastVisiblePosition == recyclerView.getAdapter().getItemCount() -1 &&
+                        recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom() <= recyclerView.getHeight()) {
+                    if (loadmore) {
+                        loadmore = false;
+                        loadMoreEmails(recyclerView.getAdapter().getItemCount(), LOAD_MORE_EMAILS);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -132,8 +148,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     for (Message message : messages) {
                         message.setColor(getRandomMaterialColor("400"));
                     }
-                    System.out.println(messages.get(2).getFrom().getEmailAddress().getName());
-
                     mAdapter = new MessagesAdapter(this, messages, this);
                     recyclerView.setAdapter(mAdapter);
 
@@ -172,7 +186,26 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         // Star icon is clicked,
         // mark the message as important
         Message message = messages.get(position);
-        message.setImportance("normal");
+        JSONObject body = new JSONObject();
+
+        //message.setImportance within Try block because if fail, keep previous. Can opt to put it outside try block to update it locally anyhow :)
+        if(message.getImportance().toLowerCase().equals("high")){
+            try {
+                body.put("importance", "normal");
+                new GraphAPI().patchRequest(OutlookObjectCall.UPDATEMAIL,this, body, "/" + message.getId());
+                message.setImportance("normal");
+            } catch (JSONException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (message.getImportance().toLowerCase().equals("normal") || message.getImportance().toLowerCase().equals("low")){
+            try {
+                body.put("importance", "high");
+                new GraphAPI().patchRequest(OutlookObjectCall.UPDATEMAIL,this, body, "/" + message.getId());
+                message.setImportance("high");
+            } catch (JSONException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
         messages.set(position, message);
         mAdapter.notifyDataSetChanged();
     }
@@ -186,23 +219,22 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         } else {
             // read the message which removes bold from the row
             Message message = messages.get(position);
-            message.setIsRead("true");
+
+            if (!message.getIsRead().toLowerCase().equals("true")){
+                JSONObject body = new JSONObject();
+                try {
+                    body.put("isRead", true);
+                    new GraphAPI().patchRequest(OutlookObjectCall.UPDATEMAIL,this, body, "/" + message.getId());
+                    message.setIsRead("true");
+                } catch (JSONException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
             messages.set(position, message);
             mAdapter.notifyDataSetChanged();
-            JSONObject body = new JSONObject();
-            try {
-                body.put("isRead", true);
-                System.out.println(body);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-                new GraphAPI().patchRequest(OutlookObjectCall.UPDATEMAIL,this, body, "/" + message.getId());
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
 
-            Toast.makeText(getApplicationContext(), "Read: " + message.getId(), Toast.LENGTH_SHORT).show();
+            // change toast --> intent to READ MAIL SCREEN
+            Toast.makeText(getApplicationContext(), "Read: " + message.getIsRead(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -276,12 +308,20 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
     }
 
+
     // deleting the messages from recycler view
     private void deleteMessages() {
         mAdapter.resetAnimationIndex();
         List<Integer> selectedItemPositions =
                 mAdapter.getSelectedItems();
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
+            Message message = messages.get(i);
+            try {
+                new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this, "/" + message.getId());
+                System.out.println("DELETED: " + message.getSubject() );
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
             mAdapter.removeData(selectedItemPositions.get(i));
         }
         mAdapter.notifyDataSetChanged();
@@ -298,7 +338,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         swipeRefreshLayout.setRefreshing(true);
         try {
             new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "/inbox/messages?$top=" + aantalMails);
-
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -315,6 +354,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             colors.recycle();
         }
         return returnColor;
+    }
+
+    //FOR LOADMORE
+    private void loadMoreEmails(int currentMailSize, int loadMoreSize){
+        getAllMails(currentMailSize + loadMoreSize);
+        loadmore=true;
     }
 
 }
