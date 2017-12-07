@@ -3,6 +3,7 @@ package ap.student.outlook_mobile_app;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -59,6 +60,16 @@ public class CalendarActivity extends AppCompatActivityRest {
             }
         });
 
+        ViewTreeObserver vto = monthCalendar.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener (new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                monthCalendar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                buildMonthCalendar();
+            }
+        });
+
+
         /*gson = new Gson();
 
         try {
@@ -67,6 +78,12 @@ public class CalendarActivity extends AppCompatActivityRest {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }*/
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        buildMonthCalendar();
     }
 
     @Override
@@ -98,7 +115,11 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void buildMonthCalendar() {
+        int width = monthCalendar.getWidth() / 7;
+
         monthCalendar.removeViews(1, monthCalendar.getChildCount() - 1);
+
+        monthCalendar.getChildAt(0).setMinimumHeight(width);
 
         monthCalendarYearTextView.setText(Integer.toString(selectedTime.getYear()));
         monthCalendarMonthTextView.setText(selectedTime.getMonth().name());
@@ -116,7 +137,9 @@ public class CalendarActivity extends AppCompatActivityRest {
                 textView.setText(Integer.toString(index));
                 textView.setGravity(Gravity.CENTER_HORIZONTAL);
                 textView.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button_Borderless_Colored);
-                textView.setPadding(1, 10, 1, 10);
+                //textView.setPadding(1, 10, 1, 10);
+                textView.setWidth(width);
+                textView.setHeight(width);
                 textView.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 tableRow.addView(textView);
                 day++;
