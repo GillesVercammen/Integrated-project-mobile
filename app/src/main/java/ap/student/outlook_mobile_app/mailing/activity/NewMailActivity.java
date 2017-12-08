@@ -19,14 +19,18 @@ import ap.student.outlook_mobile_app.R;
 
 public class NewMailActivity extends AppCompatActivityRest {
 
-    final EditText recipientTextField = (EditText) findViewById(R.id.recipientTextField);
-    final EditText subjectTextField = (EditText) findViewById(R.id.subjectTextField);
-    final EditText messageTextField = (EditText) findViewById(R.id.messageTextField);
+    private EditText recipientTextField;
+    private EditText subjectTextField;
+    private EditText messageTextField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_mail);
+
+        recipientTextField = (EditText) findViewById(R.id.recipientTextField);
+        subjectTextField = (EditText) findViewById(R.id.subjectTextField);
+        messageTextField = (EditText) findViewById(R.id.messageTextField);
     }
 
     @Override
