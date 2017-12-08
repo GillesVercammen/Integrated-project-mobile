@@ -17,8 +17,13 @@ import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.MonthCalendarCell;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.Event;
@@ -40,6 +45,8 @@ public class CalendarActivity extends AppCompatActivityRest {
     private static final int monthCalendarChildId = 8;
     private int lastId = 0;
 
+    private Map<Integer, MonthCalendarCell> monthCalendarCellMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_calendar);
@@ -53,6 +60,8 @@ public class CalendarActivity extends AppCompatActivityRest {
         monthCalendar = (TableLayout) findViewById(R.id.monthCalendar);
         monthCalendarMonthTextView = (TextView) findViewById(R.id.currentMonthTextView);
         monthCalendarYearTextView = (TextView) findViewById(R.id.currentYearTextView);
+
+        monthCalendarCellMap = new HashMap<>();
 
         nextMonthButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,14 +142,17 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void monthCalendarChildClicked(int id) {
-        findViewById(lastId).setBackgroundColor(getResources().getColor(R.color.colorBackgroundLight));
-
-        if (checkIfEvent(LocalDateTime.of(selectedTime.getYear(), selectedTime.getMonth(), lastId - monthCalendarChildId, selectedTime.getHour(), selectedTime.getMinute()))) {
-            findViewById(lastId).setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        MonthCalendarCell calendarCell = monthCalendarCellMap.get(lastId);
+        if (calendarCell.isHasEvent()) {
+            calendarCell.getTextView().setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        }
+        else {
+            calendarCell.getTextView().setBackgroundColor(getResources().getColor(R.color.colorBackgroundLight));
         }
 
-        selectedTime = LocalDateTime.of(selectedTime.getYear(), selectedTime.getMonth(), id - monthCalendarChildId, selectedTime.getHour(), selectedTime.getMinute());
-        findViewById(id).setBackgroundResource(R.drawable.monthcalendar_select);
+        MonthCalendarCell selectedCell = monthCalendarCellMap.get(id);
+        selectedCell.getTextView().setBackgroundResource(R.drawable.monthcalendar_select);
+
         lastId = id;
     }
 
@@ -149,6 +161,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         int width = monthCalendar.getWidth() / 7;
 
         monthCalendar.removeViews(1, monthCalendar.getChildCount() - 1);
+        monthCalendarCellMap.clear();
 
         monthCalendar.getChildAt(0).setMinimumHeight(width);
 
@@ -158,12 +171,17 @@ public class CalendarActivity extends AppCompatActivityRest {
         int day = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).getDayOfWeek().getValue();
         if (day == 7) day = 0;
         LocalDateTime lastDayOfMonth = selectedTime.with(TemporalAdjusters.lastDayOfMonth());
-        LocalDateTime index = selectedTime.with(TemporalAdjusters.firstDayOfMonth());
+        LocalDateTime index = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).withHour(8).withMinute(0).withSecond(0).withNano(0);
 
+        System.out.println(index);
 
         while (index.isBefore(lastDayOfMonth) || index.equals(lastDayOfMonth)) {
             TableRow tableRow = new TableRow(this);
             while ((index.isBefore(lastDayOfMonth) || index.equals(lastDayOfMonth)) && day < 7) {
+
+                boolean hasEvent = false;
+                boolean isSelected = false;
+
                 final TextView textView = new TextView(this);
                 textView.setText(Integer.toString(index.getDayOfMonth()));
                 textView.setGravity(Gravity.CENTER);
@@ -182,14 +200,19 @@ public class CalendarActivity extends AppCompatActivityRest {
 
                 if (index.getDayOfYear() == selectedTime.getDayOfYear()) {
                     textView.setBackgroundResource(R.drawable.monthcalendar_select);
+                    isSelected = true;
                     lastId = textView.getId();
                 }
                 else if (checkIfEvent(index)) {
                     textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    hasEvent = true;
                 }
 
                 textView.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 tableRow.addView(textView);
+
+                monthCalendarCellMap.put(textView.getId(), new MonthCalendarCell(textView.getId(), textView, index, hasEvent, isSelected));
+
                 day++;
                 index = index.plusDays(1);
             }
