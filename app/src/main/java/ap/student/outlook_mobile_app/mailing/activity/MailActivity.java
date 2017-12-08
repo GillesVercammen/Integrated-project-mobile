@@ -1,5 +1,6 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
@@ -61,6 +62,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                onNewMailButtonClicked();
+
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -300,6 +303,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             colors.recycle();
         }
         return returnColor;
+    }
+
+    private void onNewMailButtonClicked() {
+        startActivity(new Intent(this, NewMailActivity.class));
+
+
     }
 
 }
