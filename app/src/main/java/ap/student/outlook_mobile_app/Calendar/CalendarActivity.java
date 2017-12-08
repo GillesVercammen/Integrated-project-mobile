@@ -17,9 +17,7 @@ import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
@@ -92,7 +90,7 @@ public class CalendarActivity extends AppCompatActivityRest {
          */
         event = null;
         selectedTime = LocalDateTime.now();
-        editDayButton = (Button) findViewById(R.id.editDayButton);
+        editDayButton = (Button) findViewById(R.id.createNewEventButton);
 
         editDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +127,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void editDayButtonClicked() {
-        startActivity(new Intent(this, EventActivity.class));
+        startActivity(new Intent(this, EventActivity.class).putExtra("dateTime", monthCalendarCellMap.get(lastId).getDateTime().toString()));
     }
 
     private void calendarSetMonthButtonClicked(boolean next) {
