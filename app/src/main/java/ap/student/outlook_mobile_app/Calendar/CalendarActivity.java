@@ -1,4 +1,4 @@
-package ap.student.outlook_mobile_app;
+package ap.student.outlook_mobile_app.Calendar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +23,7 @@ import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.Event;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
+import ap.student.outlook_mobile_app.R;
 
 public class CalendarActivity extends AppCompatActivityRest {
     private Calendar calendar;

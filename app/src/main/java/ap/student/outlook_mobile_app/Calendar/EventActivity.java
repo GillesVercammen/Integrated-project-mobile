@@ -1,4 +1,4 @@
-package ap.student.outlook_mobile_app;
+package ap.student.outlook_mobile_app.Calendar;
 
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
+import ap.student.outlook_mobile_app.R;
 
 public class EventActivity extends AppCompatActivityRest {
 

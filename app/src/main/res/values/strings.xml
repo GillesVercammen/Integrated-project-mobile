@@ -35,4 +35,11 @@
     <string name="event_end_text_display">Event end: </string>
     <string name="event_private_checkbox">Private</string>
     <string name="event_all_day_checkbox">All day</string>
+    <string name="event_timezone_text">Set timezone</string>
+    <string name="event_repeat_event_text">Repeat</string>
+    <string name="event_agenda_text">Agenda</string>
+    <string name="event_remind_text">Remind</string>
+    <string name="event_displayas_text">Display as</string>
+    <string name="event_send_reminder_button">Send reminder per email</string>
+    <string name="event_confirm_button">Confirm Event</string>
 </resources>
