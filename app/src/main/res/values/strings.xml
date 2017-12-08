@@ -11,4 +11,5 @@
     <string name="no_message">(No message)</string>
     <string name="action_search">Search</string>
     <string name="action_delete">Delete</string>
+    <string name="search_field">Search&#8230;</string>
 </resources>

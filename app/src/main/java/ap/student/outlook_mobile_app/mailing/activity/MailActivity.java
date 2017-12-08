@@ -1,5 +1,6 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
@@ -14,9 +15,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -56,6 +62,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         super.onCreate(savedInstanceState);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         currentFolder = getString(R.string.inbox);
         currentUser = getIntent().getStringExtra("USER_EMAIL");
         setActionBarMail(currentFolder, currentUser, toolbar);
@@ -96,7 +103,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 super.onScrolled(recyclerView, dx, dy);
                 int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
                 if (lastVisiblePosition == recyclerView.getAdapter().getItemCount() -1 &&
-                        recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom() <= recyclerView.getHeight()) {
+                        recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom() <= recyclerView.getHeight() && recyclerView.getAdapter().getItemCount() > 5) {
                     if (loadmore) {
                         loadmore = false;
                         loadMoreEmails(recyclerView.getAdapter().getItemCount(), LOAD_MORE_EMAILS);
@@ -122,10 +129,67 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
-            Toast.makeText(getApplicationContext(), "Search...", Toast.LENGTH_SHORT).show();
+            //Can't refresh or load more when using search
+            swipeRefreshLayout.setEnabled(false);
+            loadmore = false;
+
+            //change actionbar
+            getSupportActionBar().setSubtitle("");
+            getSupportActionBar().setTitle("");
+            final EditText searchField = (EditText) findViewById(R.id.search_field);
+            searchField.setVisibility(View.VISIBLE);
+            final ImageView backbtn = (ImageView) findViewById(R.id.search_back);
+            backbtn.setImageResource(R.drawable.ic_chevron_left_whitevector_24dp);
+            backbtn.setVisibility(View.VISIBLE);
+
+            //listen for enterkey pushed and hide keyboard when pushed
+            searchField.setOnKeyListener(new View.OnKeyListener() {
+                public boolean onKey(View v, int keyCode,KeyEvent event){
+                    if((event.getAction()==KeyEvent.ACTION_DOWN)&& (keyCode==KeyEvent.KEYCODE_ENTER)){
+                        searchField.setVisibility(View.GONE);
+                        String inputWord = searchField.getText().toString();
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(searchField.getWindowToken(),0);
+                        //Check if input is email or stringtext
+                        if (!isEmailValid(inputWord)) {
+                            try {
+                                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/inbox/messages?$search=" + inputWord);
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/inbox/messages?$filter=from/emailAddress/address eq '" + inputWord + "'");
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            backbtn.setOnClickListener(new View.OnClickListener() {
+                //@Override
+                public void onClick(View v) {
+                    getSupportActionBar().setTitle(getString(R.string.inbox));
+                    getSupportActionBar().setSubtitle(getIntent().getStringExtra("USER_EMAIL"));
+                    searchField.setVisibility(View.GONE);
+                    backbtn.setVisibility(View.GONE);
+                    swipeRefreshLayout.post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    getAllMails(START_AMOUNT_OF_EMAILS);
+                                }
+                            }
+                    );
+                    swipeRefreshLayout.setEnabled(true);
+                    loadmore = true;
+                }
+            });
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -138,7 +202,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             } break;
             case READMAIL: {
                 messages.clear();
-
                 JSONObject list = response;
                 try {
                     JSONArray mails = list.getJSONArray("value");
@@ -332,6 +395,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         toolbar.setSubtitle(subtitle);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
         toolbar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
+        toolbar.setTitleMarginStart(30);
     }
 
     private void getAllMails(int aantalMails) {
@@ -360,6 +424,10 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     private void loadMoreEmails(int currentMailSize, int loadMoreSize){
         getAllMails(currentMailSize + loadMoreSize);
         loadmore=true;
+    }
+
+    private boolean isEmailValid(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
 }

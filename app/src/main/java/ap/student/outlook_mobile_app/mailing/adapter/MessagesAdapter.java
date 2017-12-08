@@ -95,7 +95,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
         holder.from.setText(message.getFrom().getEmailAddress().getName());
         setSubject(message, holder);
         setMessage(message, holder);
-        holder.imgBijlage.setImageResource(R.drawable.ic_bijlage);
+        holder.imgBijlage.setImageResource(R.drawable.ic_attach_file_blackvector_24dp);
         setBijlage(message, holder);
         try {
             setDate(message, holder);
@@ -265,10 +265,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
 
     private void applyImportant(MyViewHolder holder, Message message) {
         if (message.getImportance().toLowerCase().equals("high")) {
-            holder.iconImp.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_star_black_24dp));
+            holder.iconImp.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_star_blackvector_24dp));
             holder.iconImp.setColorFilter(ContextCompat.getColor(mContext, R.color.icon_tint_selected));
         } else {
-            holder.iconImp.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_star_border_black_24dp));
+            holder.iconImp.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_star_border_blackvector_24dp));
             holder.iconImp.setColorFilter(ContextCompat.getColor(mContext, R.color.icon_tint_normal));
         }
     }
