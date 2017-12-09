@@ -3,6 +3,7 @@ package ap.student.outlook_mobile_app.mailing.activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.media.Image;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -137,9 +138,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             getSupportActionBar().setSubtitle("");
             getSupportActionBar().setTitle("");
             final EditText searchField = (EditText) findViewById(R.id.search_field);
-            searchField.setVisibility(View.VISIBLE);
             final ImageView backbtn = (ImageView) findViewById(R.id.search_back);
+            final ImageView speechbtn = (ImageView) findViewById(R.id.search_speech);
+            speechbtn.setImageResource(R.drawable.ic_mic_whitevector_24dp);
             backbtn.setImageResource(R.drawable.ic_chevron_left_whitevector_24dp);
+            searchField.setVisibility(View.VISIBLE);
+            speechbtn.setVisibility(View.VISIBLE);
             backbtn.setVisibility(View.VISIBLE);
 
             //listen for enterkey pushed and hide keyboard when pushed
@@ -176,6 +180,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     getSupportActionBar().setSubtitle(getIntent().getStringExtra("USER_EMAIL"));
                     searchField.setVisibility(View.GONE);
                     backbtn.setVisibility(View.GONE);
+                    speechbtn.setVisibility(View.GONE);
                     swipeRefreshLayout.post(
                             new Runnable() {
                                 @Override
