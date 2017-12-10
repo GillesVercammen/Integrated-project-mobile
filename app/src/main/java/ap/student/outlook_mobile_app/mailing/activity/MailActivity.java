@@ -23,10 +23,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -63,6 +65,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     private ActionModeCallback actionModeCallback;
     private ActionMode actionMode;
     private EditText searchField;
+    private ViewGroup linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +145,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             loadmore = false;
 
             //change actionbar
+            linearLayout = (ViewGroup)findViewById(R.id.linear_tool);
+            linearLayout.setVisibility(View.VISIBLE);
             getSupportActionBar().setSubtitle("");
             getSupportActionBar().setTitle("");
             searchField = (EditText) findViewById(R.id.search_field);
@@ -156,6 +161,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             speechbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    System.out.println("SPEECH DETECTED");
                     startVoiceInput();
                 }
             });
@@ -163,8 +169,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             //listen for enterkey pushed and hide keyboard when pushed
             searchField.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode,KeyEvent event){
-                    if((event.getAction()==KeyEvent.ACTION_DOWN)&& (keyCode==KeyEvent.KEYCODE_ENTER)){
-                        searchField.setVisibility(View.GONE);
+                    if((event.getAction()==KeyEvent.ACTION_DOWN) && (keyCode==KeyEvent.KEYCODE_ENTER)){
                         String inputWord = searchField.getText().toString();
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(searchField.getWindowToken(),0);
@@ -192,9 +197,11 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 public void onClick(View v) {
                     getSupportActionBar().setTitle(getString(R.string.inbox));
                     getSupportActionBar().setSubtitle(getIntent().getStringExtra("USER_EMAIL"));
+                    linearLayout.setVisibility(View.GONE);
                     searchField.setVisibility(View.GONE);
                     backbtn.setVisibility(View.GONE);
                     speechbtn.setVisibility(View.GONE);
+
                     swipeRefreshLayout.post(
                             new Runnable() {
                                 @Override
@@ -223,13 +230,21 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 messages.clear();
                 JSONObject list = response;
                 try {
+                    TextView noEmail = (TextView) findViewById(R.id.no_email);
                     JSONArray mails = list.getJSONArray("value");
                     Type listType = new TypeToken<List<Message>>() {
                     }.getType();
                     messages = new Gson().fromJson(String.valueOf(mails), listType);
-                    for (Message message : messages) {
-                        message.setColor(getRandomMaterialColor("400"));
+                    if (!messages.isEmpty()){
+                        noEmail.setVisibility(View.GONE);
+                        for (Message message : messages) {
+                            message.setColor(getRandomMaterialColor("400"));
+                        }
+                    } else {
+                        noEmail.setVisibility(View.VISIBLE);
+                        noEmail.setText(getString(R.string.no_email));
                     }
+
                     mAdapter = new MessagesAdapter(this, messages, this);
                     recyclerView.setAdapter(mAdapter);
 
@@ -454,7 +469,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "What do you want to search for?");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, R.string.speech_text);
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
         } catch (ActivityNotFoundException a) {
