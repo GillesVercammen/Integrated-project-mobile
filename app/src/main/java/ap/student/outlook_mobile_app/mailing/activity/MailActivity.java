@@ -1,9 +1,12 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.media.Image;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +38,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
@@ -45,6 +50,7 @@ import ap.student.outlook_mobile_app.mailing.model.Message;
 
 public class MailActivity extends AppCompatActivityRest implements SwipeRefreshLayout.OnRefreshListener, MessagesAdapter.MessageAdapterListener {
 
+    private static final int REQ_CODE_SPEECH_INPUT = 100;
     final static int START_AMOUNT_OF_EMAILS = 15;
     final static int LOAD_MORE_EMAILS = 10;
     static boolean loadmore=true;
@@ -56,6 +62,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     private SwipeRefreshLayout swipeRefreshLayout;
     private ActionModeCallback actionModeCallback;
     private ActionMode actionMode;
+    private EditText searchField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +144,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             //change actionbar
             getSupportActionBar().setSubtitle("");
             getSupportActionBar().setTitle("");
-            final EditText searchField = (EditText) findViewById(R.id.search_field);
+            searchField = (EditText) findViewById(R.id.search_field);
             final ImageView backbtn = (ImageView) findViewById(R.id.search_back);
             final ImageView speechbtn = (ImageView) findViewById(R.id.search_speech);
             speechbtn.setImageResource(R.drawable.ic_mic_whitevector_24dp);
@@ -145,6 +152,13 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             searchField.setVisibility(View.VISIBLE);
             speechbtn.setVisibility(View.VISIBLE);
             backbtn.setVisibility(View.VISIBLE);
+
+            speechbtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startVoiceInput();
+                }
+            });
 
             //listen for enterkey pushed and hide keyboard when pushed
             searchField.setOnKeyListener(new View.OnKeyListener() {
@@ -433,6 +447,35 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
     private boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    //VOICE INPUT
+    private void startVoiceInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "What do you want to search for?");
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    searchField.setText(result.get(0));
+                }
+                break;
+            }
+
+        }
     }
 
 }
