@@ -22,9 +22,9 @@ import ap.student.outlook_mobile_app.R;
 
 public class NewMailActivity extends AppCompatActivityRest {
 
-    EditText recipientTextField;
-    EditText subjectTextField;
-    EditText messageTextField;
+    private EditText recipientTextField;
+    private EditText subjectTextField;
+    private EditText messageTextField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
