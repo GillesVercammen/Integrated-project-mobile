@@ -14,4 +14,8 @@
     <string name="search_field">Search&#8230;</string>
     <string name="speech_text">What do you want to search for?</string>
     <string name="no_email">No emails found</string>
+    <string name="title_activity_test">testActivity</string>
+    <string name="folders">mailfolders</string>
+    <string name="title_activity_mail_other">MailActivityOther</string>
+    <string name="concept">Concept Message</string>
 </resources>

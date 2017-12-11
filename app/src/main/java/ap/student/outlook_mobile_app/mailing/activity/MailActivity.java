@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.media.Image;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,17 +25,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.BadgeStyle;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +57,7 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.mailing.adapter.MessagesAdapter;
 import ap.student.outlook_mobile_app.mailing.helpers.DividerItemDecoration;
+import ap.student.outlook_mobile_app.mailing.model.MailFolder;
 import ap.student.outlook_mobile_app.mailing.model.Message;
 
 public class MailActivity extends AppCompatActivityRest implements SwipeRefreshLayout.OnRefreshListener, MessagesAdapter.MessageAdapterListener {
@@ -56,8 +66,11 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     final static int START_AMOUNT_OF_EMAILS = 15;
     final static int LOAD_MORE_EMAILS = 10;
     static boolean loadmore=true;
-    private String currentFolder;
-    private String currentUser;
+    private String currentFolderId;
+    private String currentFolderName;
+    private String currentUserEmail;
+    private String currentUserName;
+    private int readClicked;
     private List<Message> messages = new ArrayList<>();
     private RecyclerView recyclerView;
     private MessagesAdapter mAdapter;
@@ -66,28 +79,57 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     private ActionMode actionMode;
     private EditText searchField;
     private ViewGroup linearLayout;
+    private Drawer drawer;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_mail);
         super.onCreate(savedInstanceState);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        currentFolder = getString(R.string.inbox);
-        currentUser = getIntent().getStringExtra("USER_EMAIL");
-        setActionBarMail(currentFolder, currentUser, toolbar);
+        /*
+        * CHECK IF THIS IS FIRST ARRIVAL OR NEXT ARRIVAL
+        * IF FIRST ARRIVAL: FOLDER + INBOX
+        * ELSE: FOLDER IS CLICKED FOLDER
+         */
+        if (getIntent().getSerializableExtra("FOLDER_INFO") == null){
+            currentFolderName = getString(R.string.inbox);
+            currentFolderId = getString(R.string.inbox).toLowerCase();
+        } else {
+            MailFolder folderInfo = (MailFolder) getIntent().getSerializableExtra("FOLDER_INFO");
+            currentFolderName = folderInfo.getDisplayName();
+            currentFolderId = folderInfo.getId();
+        }
+
+        // SET # OF CLICK ON NON_READ ITEMS
+        readClicked = 0;
+
+        Bundle args = getIntent().getBundleExtra("BUNDLE");
+        ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
+
+        // SET TOOLBAR
+        currentUserEmail = getIntent().getStringExtra("USER_EMAIL");
+        currentUserName = getIntent().getStringExtra("USER_NAME");
+        setActionBarMail(currentFolderName, currentUserEmail, toolbar);
         setSupportActionBar(toolbar);
 
+        // SET DRAWER (HAMBURGER MENU)
+        createMenu(toolbar, currentUserName, currentUserEmail);
+
+        // SET FLOATINGBUTTON
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                       .setAction("Action", null).show();
+
             }
         });
 
+        // SET RECYCLERVIEW
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -96,7 +138,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         actionModeCallback = new ActionModeCallback();
-        // show loader and fetch messages
+        // SHOW LOADER AND FETCH MESSAGES
         swipeRefreshLayout.post(
                 new Runnable() {
                     @Override
@@ -126,26 +168,26 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        //INFLATE THE MENU, ADDS ITEMS TO THE BAR IF PRESENT
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // HANDLE ACTIONBAR CLICKS.
+        // AUTOMATICLY SPECIFY HOME/BACK BUTTON IF PARENTACTIVTY IS SET IN MANIFEST
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_search) {
-            //Can't refresh or load more when using search
+            // UNABLE TO REFRESH/LOADMORE WHEN SEARCH I CLICKED
             swipeRefreshLayout.setEnabled(false);
             loadmore = false;
 
-            //change actionbar
+            // CHANGE ACTIONBAR TO SEARCH ACTIONBAR
             linearLayout = (ViewGroup)findViewById(R.id.linear_tool);
+            drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
             linearLayout.setVisibility(View.VISIBLE);
             getSupportActionBar().setSubtitle("");
             getSupportActionBar().setTitle("");
@@ -158,6 +200,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             speechbtn.setVisibility(View.VISIBLE);
             backbtn.setVisibility(View.VISIBLE);
 
+            // SPEECHLISTENER
             speechbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -166,23 +209,23 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 }
             });
 
-            //listen for enterkey pushed and hide keyboard when pushed
+            // LISTEN FOR ENTERKEY PUSHED --> HIDE KEYBOARD, SEARCH WITH GIVEN STRING/EMAIL
             searchField.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode,KeyEvent event){
                     if((event.getAction()==KeyEvent.ACTION_DOWN) && (keyCode==KeyEvent.KEYCODE_ENTER)){
                         String inputWord = searchField.getText().toString();
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(searchField.getWindowToken(),0);
-                        //Check if input is email or stringtext
+                        // CHECK IF INPUT IS EMAIL OR STRING
                         if (!isEmailValid(inputWord)) {
                             try {
-                                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/inbox/messages?$search=" + inputWord);
+                                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/" + currentFolderId + "/messages?$search=" + inputWord);
                             } catch (IllegalAccessException e) {
                                 e.printStackTrace();
                             }
                         } else {
                             try {
-                                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/inbox/messages?$filter=from/emailAddress/address eq '" + inputWord + "'");
+                                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/" + currentFolderId + "/messages?$filter=from/emailAddress/address eq '" + inputWord + "'");
                             } catch (IllegalAccessException e) {
                                 e.printStackTrace();
                             }
@@ -192,11 +235,13 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     return false;
                 }
             });
+            // BACKBUTTON ON SEARCHBAR IS CLICK --> LEAVE SEARCHBACK AND GO BACK TO NORMAL STATE
             backbtn.setOnClickListener(new View.OnClickListener() {
-                //@Override
+                @Override
                 public void onClick(View v) {
-                    getSupportActionBar().setTitle(getString(R.string.inbox));
+                    getSupportActionBar().setTitle(currentFolderName);
                     getSupportActionBar().setSubtitle(getIntent().getStringExtra("USER_EMAIL"));
+                    drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                     linearLayout.setVisibility(View.GONE);
                     searchField.setVisibility(View.GONE);
                     backbtn.setVisibility(View.GONE);
@@ -232,19 +277,21 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 try {
                     TextView noEmail = (TextView) findViewById(R.id.no_email);
                     JSONArray mails = list.getJSONArray("value");
+                    // MAP ON POJO
                     Type listType = new TypeToken<List<Message>>() {
                     }.getType();
                     messages = new Gson().fromJson(String.valueOf(mails), listType);
+                    //IF RESPONSE IS EMPTY SHOW: NO EMAILS FOUND
                     if (!messages.isEmpty()){
                         noEmail.setVisibility(View.GONE);
                         for (Message message : messages) {
+                            // RANDOM COLOR OF ICON
                             message.setColor(getRandomMaterialColor("400"));
                         }
                     } else {
                         noEmail.setVisibility(View.VISIBLE);
                         noEmail.setText(getString(R.string.no_email));
                     }
-
                     mAdapter = new MessagesAdapter(this, messages, this);
                     recyclerView.setAdapter(mAdapter);
 
@@ -263,9 +310,10 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
     }
 
+
     @Override
     public void onRefresh() {
-        // swipe refresh is performed, fetch the messages again
+        // SWIPE REFRESH IS PERFORME, FETCH INITIAL MAILS AGAIN
         getAllMails(15);
     }
 
@@ -280,12 +328,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
     @Override
     public void onIconImportantClicked(int position) {
-        // Star icon is clicked,
-        // mark the message as important
+        // STAR ICON CLICKED
+        // MARK MESSAGE AS IMPORTANT
         Message message = messages.get(position);
         JSONObject body = new JSONObject();
 
-        //message.setImportance within Try block because if fail, keep previous. Can opt to put it outside try block to update it locally anyhow :)
+        // MESSAGE.SETIMPORTANCE WITHIN TRY BLOCK BECAUSE IF FAIL, KEEP PREVIOUS. CAN OPT TO PUT IT OUTSIDE OF TRY BLOCK TO UPDATE IT LOCALLY ANYHOW
         if(message.getImportance().toLowerCase().equals("high")){
             try {
                 body.put("importance", "normal");
@@ -309,35 +357,34 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
     @Override
     public void onMessageRowClicked(int position) {
-        // verify whether action mode is enabled or not
-        // if enabled, change the row state to activated
+        // VERIFY IF ACTION MODE IS ANEBLED OR NOT
+        // IF ENABLED, CHANGE ROW STATE TO ACTIVATED
         if (mAdapter.getSelectedItemCount() > 0) {
             enableActionMode(position);
         } else {
-            // read the message which removes bold from the row
+            // READ THE MESSAGE, REMOVE BOLD FONT
             Message message = messages.get(position);
-
             if (!message.getIsRead().toLowerCase().equals("true")){
                 JSONObject body = new JSONObject();
                 try {
                     body.put("isRead", true);
                     new GraphAPI().patchRequest(OutlookObjectCall.UPDATEMAIL,this, body, "/" + message.getId());
                     message.setIsRead("true");
+                    readClicked++;
+                    createMenu(toolbar, currentUserName, currentUserEmail);
+
                 } catch (JSONException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
             messages.set(position, message);
             mAdapter.notifyDataSetChanged();
-
-            // change toast --> intent to READ MAIL SCREEN
-            Toast.makeText(getApplicationContext(), "Read: " + message.getIsRead(), Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onRowLongClicked(int position) {
-        // long press is performed, enable action mode
+        // LONGPRESS ON ROW ENABLES ACTIONMODE
         enableActionMode(position);
     }
 
@@ -366,7 +413,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.menu_action_mode, menu);
 
-            // disable swipe refresh if action mode is enabled
+            // DISABLE REFRESH WHEN ACTIONMODE ENABLED
             swipeRefreshLayout.setEnabled(false);
             return true;
         }
@@ -378,6 +425,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            // CHECK WHICH ITEM CLICKED WHEN IN ACTIONMODE
             switch (item.getItemId()) {
                 case R.id.action_delete:
                     // delete all the selected messages
@@ -406,7 +454,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     }
 
 
-    // deleting the messages from recycler view
+    // DELETING MESSAGES FROM RECYCLERVIEW AND FOLDER
     private void deleteMessages() {
         mAdapter.resetAnimationIndex();
         List<Integer> selectedItemPositions =
@@ -424,23 +472,27 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         mAdapter.notifyDataSetChanged();
     }
 
+    // SET ACTIONBAR
     private void setActionBarMail(String title, String subtitle, Toolbar toolbar) {
         toolbar.setTitle(title);
         toolbar.setSubtitle(subtitle);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
         toolbar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
+        // THIS LINE REMOVES ANNOYING LEFT MARGIN
         toolbar.setTitleMarginStart(30);
     }
 
+    // GET {AANTALMAIL} MAILS
     private void getAllMails(int aantalMails) {
         swipeRefreshLayout.setRefreshing(true);
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "/inbox/messages?$top=" + aantalMails);
+            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "/" + currentFolderId + "/messages?$top=" + aantalMails);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
+    // PICK A RANDOM COLOR TO COLOR THE ICON
     private int getRandomMaterialColor(String typeColor) {
         int returnColor = Color.GRAY;
         int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getPackageName());
@@ -454,17 +506,18 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         return returnColor;
     }
 
-    //FOR LOADMORE
+    // FOR LOADMORE
     private void loadMoreEmails(int currentMailSize, int loadMoreSize){
         getAllMails(currentMailSize + loadMoreSize);
         loadmore=true;
     }
 
+    // CHECK IF EMAIL IS A VALID EMAIL ADDRESS
     private boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    //VOICE INPUT
+    // VOICE INPUT
     private void startVoiceInput() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -493,4 +546,86 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
     }
 
+    /*
+    * CREATE HAMBURGER MENU USING MATERIALDRAWER LIBRARY
+    *
+    * FIXED BUGS:
+    * - CONCEPT FOLDER HAD A DIFFERENT RESPONSE LAYOUT (DOESN'T HAVE FROM FIELD) SO HAD TO FIX SOME CODE
+    * - THE BADGE WASN'T UPDATING REAL TIME ONLY WHEN MENU WAS CREATED
+    * --> SO CREATED CLASS VARIABLE TO CHECK IF AN NON_READ ITEM IS CLICED
+    * --> INCREASE COUNTER
+    * --> THEN CALL CREATE MENU WHEN ITEM IS READ
+    * --> BADGE = UNREADCOUNT - # OF CLICK ON UNREAD ITEMS
+    *
+    * KNOWN BUGS:
+    * - SELECTED ITEM COLOR IS NOT WORKING CORRECTLY (EG: CURRENT SELECTION = DARK GREY)
+    * - CAN'T ORDER THE LIST OF FODLER PROPERLY (INBOX ON TOP)
+     */
+    public void createMenu(Toolbar toolbar, String name, String email){
+
+        ArrayList<IDrawerItem> drawerItems = new ArrayList<>();
+        Bundle args = getIntent().getBundleExtra("BUNDLE");
+        ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
+
+        // SET DRAWERITEMS WITH DYNAMIC FOLDER, ONLY FOLDERS WITH TOTALMAILCOUNT > 0 ARE RECEIVED WITH INTENT
+        for(MailFolder folder : folders) {
+            PrimaryDrawerItem item = new PrimaryDrawerItem();
+            if(folder.getUnreadItemCount() == 0){
+                item.withName(folder.getDisplayName())
+                        .withIcon(R.drawable.ic_folder_bluevector_24dp);
+            } else {
+                item.withName(folder.getDisplayName())
+                        .withIcon(R.drawable.ic_folder_bluevector_24dp)
+                        .withBadge(String.valueOf(folder.getUnreadItemCount() - readClicked)).withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.primary));
+            }
+            item.withTag(folder);
+            drawerItems.add(item);
+        }
+
+
+        // CREATE THE ACCOUNT HEADER = NAME/EMAIL/ICON
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.color.colorPrimary)
+                .addProfiles(
+                        new ProfileDrawerItem().withName(name).withEmail(email).withIcon(R.drawable.ic_close_whitevector_24dp)
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .build();
+
+        // BUILD THE DRAWER
+        drawer = new DrawerBuilder()
+                .withAccountHeader(headerResult)
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withDrawerItems(drawerItems)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        if (drawerItem instanceof PrimaryDrawerItem){
+                            // GOT TO A NEW MAILACTIVTY, GIVE THE CLICKED FOLDER INFO AS INTENT
+                            Intent intent = new Intent(MailActivity.this, MailActivity.class);
+                            Bundle args = new Bundle();
+                            args.putSerializable("FOLDERS",(Serializable)drawerItem.getTag());
+                            MailFolder clickedFolder = (MailFolder) drawerItem.getTag();
+                            intent.putExtra("FOLDER_INFO", clickedFolder)
+                                    .putExtra("BUNDLE",getIntent().getBundleExtra("BUNDLE"))
+                                    .putExtra("USER_EMAIL", currentUserEmail)
+                                    .putExtra("USER_NAME", currentUserName);
+
+                            startActivity(intent);
+                            MailActivity.this.finish();
+
+                        }
+                        return false;
+                    }
+                })
+                .build();
+                drawer.setSelection(0, false);
+    }
 }

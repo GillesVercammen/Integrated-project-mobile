@@ -89,10 +89,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
+
         Message message = messages.get(position);
 
-        // displaying text view data
-        holder.from.setText(message.getFrom().getEmailAddress().getName());
+        try {
+            holder.from.setText(message.getFrom().getEmailAddress().getName());
+        } catch (NullPointerException e){
+            holder.from.setText(R.string.concept);
+        }
+
         setSubject(message, holder);
         setMessage(message, holder);
         holder.imgBijlage.setImageResource(R.drawable.ic_attach_file_blackvector_24dp);
@@ -104,7 +109,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
         }
 
         // displaying the first letter of From in icon text
-        holder.iconText.setText(message.getFrom().getEmailAddress().getName().substring(0, 1).toUpperCase());
+        holder.iconText.setText(String.valueOf(holder.from.getText()).substring(0, 1).toUpperCase());
 
         // change the row state to activated
         holder.itemView.setActivated(selectedItems.get(position, false));
