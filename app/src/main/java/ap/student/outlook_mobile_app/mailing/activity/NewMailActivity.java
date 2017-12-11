@@ -3,9 +3,12 @@ package ap.student.outlook_mobile_app.mailing.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.EditText;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
@@ -19,14 +22,20 @@ import ap.student.outlook_mobile_app.R;
 
 public class NewMailActivity extends AppCompatActivityRest {
 
-    final EditText recipientTextField = (EditText) findViewById(R.id.recipientTextField);
-    final EditText subjectTextField = (EditText) findViewById(R.id.subjectTextField);
-    final EditText messageTextField = (EditText) findViewById(R.id.messageTextField);
+    EditText recipientTextField;
+    EditText subjectTextField;
+    EditText messageTextField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_mail);
+
+        recipientTextField = (EditText) findViewById(R.id.recipientTextField);
+        subjectTextField = (EditText) findViewById(R.id.subjectTextField);
+        messageTextField = (EditText) findViewById(R.id.messageTextField);
+
+        this.sendMail();
     }
 
     @Override
@@ -43,23 +52,59 @@ public class NewMailActivity extends AppCompatActivityRest {
 
     public void sendMail(){
         //get input fields, parse them to JSON, do call, show toaster for correct mesage
+        //https://msdn.microsoft.com/en-us/office/office365/api/mail-rest-operations#create-and-send-messages
 
         String recipient = recipientTextField.toString();
         String subject = subjectTextField.toString();
         String message = messageTextField.toString();
 
         JSONObject JSON = new JSONObject();
+        JSONObject messageJson = new JSONObject();
+        JSONArray recipientsArray = new JSONArray();
+        JSONObject recipientsObject = new JSONObject();
+        JSONObject addressObject = new JSONObject();
 
-        //TextView subtitleTextView =
-        //        (TextView) rowView.findViewById(R.id.mail_list_subtitle);
-        //if (!jsonObject.getString("subject").isEmpty()) {
-        //    subtitleTextView.setText(jsonObject.getString("subject"));
-        //} else {
-        //    subtitleTextView.setText(R.string.no_subject);
-        //}
-        //if(jsonObject.getString("isRead").toLowerCase().equals("false")){
-        //    subtitleTextView.setTypeface(subtitleTextView.getTypeface(), Typeface.BOLD);
-        //}
+        try {
+            addressObject.put("Address", "est");
+            recipientsObject.put("EmailAddress", addressObject);
+            recipientsArray.put(recipientsObject);
+            System.out.println(recipientsArray);
+            Log.d("test", recipientsArray.toString());
+            //messageJson.put("key", recipient);
+            //messageJson.put("key", subject);
+            //messageJson.put("key", message);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //String message;
+        //JSONObject json = new JSONObject();
+        //json.put("name", "student");
+//
+        //JSONArray array = new JSONArray();
+        //JSONObject item = new JSONObject();
+        //item.put("information", "test");
+        //item.put("id", 3);
+        //item.put("name", "course1");
+        //array.put(item);
+//
+        //json.put("course", array);
+//
+        //message = json.toString();
+
+//
+  //          {
+  //              "course":[
+  //              {
+  //                  "id":3,
+  //                      "information":"test",
+  //                      "name":"course1"
+  //              }
+  //     ],
+  //              "name":"student"
+  //          }
+
+
 
         //try {
         //    new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, "/inbox/messages?$top=");
