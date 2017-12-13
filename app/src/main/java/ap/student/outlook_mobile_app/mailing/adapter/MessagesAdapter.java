@@ -333,10 +333,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
         resetCurrentIndex();
     }
 
-
-
-
-
     private void resetCurrentIndex() {
         currentSelectedIndex = -1;
     }

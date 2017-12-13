@@ -74,11 +74,7 @@
                     app:srcCompat="@drawable/ic_mic_whitevector_24dp" />
             </android.support.constraint.ConstraintLayout>
 
-
         </android.support.v7.widget.Toolbar>
-
-
-
 
     </android.support.design.widget.AppBarLayout>
 

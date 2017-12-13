@@ -27,7 +27,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -169,7 +168,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //INFLATE THE MENU, ADDS ITEMS TO THE BAR IF PRESENT
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_mail, menu);
         return true;
     }
 
@@ -379,6 +378,22 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             }
             messages.set(position, message);
             mAdapter.notifyDataSetChanged();
+
+            Intent intent = new Intent(this, ReadMailActivity.class);
+            Bundle args = new Bundle();
+            Bundle args2 = new Bundle();
+            args.putSerializable("CC_ARRAY", (Serializable)message.getCcRecipients());
+            args2.putSerializable("TO_ARRAY", (Serializable) message.getToRecipients());
+            intent.putExtra("FROM_NAME", message.getFrom().getEmailAddress().getName())
+                    .putExtra("FROM_EMAIL", message.getFrom().getEmailAddress().getAddress())
+                    .putExtra("SUBJECT", message.getSubject())
+                    .putExtra("BODY", message.getBody().getContent())
+                    .putExtra("HAS_ATTACHMENT", message.getHasAttachments())
+                    .putExtra("ID", message.getId())
+                    .putExtra("DATE", message.getReceivedDateTime())
+                    .putExtra("CC", args)
+                    .putExtra("TO", args2);
+            startActivity(intent);
         }
     }
 

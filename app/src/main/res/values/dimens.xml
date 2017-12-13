@@ -11,4 +11,5 @@
     <dimen name="msg_text_tertiary">12sp</dimen>
     <dimen name="icon_bijlage_width_height">22dp</dimen>
     <dimen name="padding_attachement">6dp</dimen>
+    <dimen name="margin_read">10dp</dimen>
 </resources>

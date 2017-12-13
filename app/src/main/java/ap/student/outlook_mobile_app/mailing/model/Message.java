@@ -1,13 +1,17 @@
 package ap.student.outlook_mobile_app.mailing.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
-public class Message {
+public class Message implements Serializable{
 
     private int autoId;
     private String id;
     private String receivedDateTime;
     private Recipient from;
+    private ArrayList<Recipient> toRecipients;
+    private ArrayList<Recipient> ccRecipients;
     private String subject;
     private String bodyPreview;
     private String hasAttachments;
@@ -106,5 +110,21 @@ public class Message {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public ArrayList<Recipient> getToRecipients() {
+        return toRecipients;
+    }
+
+    public void setToRecipients(ArrayList<Recipient> toRecipients) {
+        this.toRecipients = toRecipients;
+    }
+
+    public ArrayList<Recipient> getCcRecipients() {
+        return ccRecipients;
+    }
+
+    public void setCcRecipients(ArrayList<Recipient> ccRecipients) {
+        this.ccRecipients = ccRecipients;
     }
 }

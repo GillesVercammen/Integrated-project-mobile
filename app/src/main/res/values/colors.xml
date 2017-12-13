@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#ff4081</color>
     <color name="from">#000000</color>
     <color name="subject">#111111</color>
@@ -10,10 +10,10 @@
     <color name="icon_tint_normal">#7a7a7a</color>
     <color name="icon_tint_selected">#fed776</color>
     <color name="row_activated">#e0e0e0</color>
-    <color name="bg_action_mode">#757575</color>
-    <color name="bg_circle_default">#666666</color>
+    <color name="bg_action_mode">#5e7da0</color>
+    <color name="bg_circle_default">#319a6e</color>
     <color name="white">#ffffff</color>
-    <color name="drawer_selected">#E8E8E8</color>
-    <color name="drawer">#F9F9F9</color>
+    <color name="drawer_selected">#e8e8e8</color>
+    <color name="drawer">#f9f9f9</color>
 
 </resources>

@@ -39,6 +39,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".CalendarActivity" />
+        <activity android:name=".mailing.activity.ReadMailActivity"></activity>
     </application>
 
 </manifest>
