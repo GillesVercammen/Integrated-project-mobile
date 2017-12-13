@@ -3,17 +3,30 @@ package ap.student.outlook_mobile_app.mailing.activity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
@@ -38,40 +51,60 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private String hasAttachment;
     private String id;
     private String date;
-
+    private ArrayList<MailFolder> folderObjectList;
+    private ArrayList<MailFolder> foldersWithMail;
+    private ArrayList<String> foldernames;
+    private ArrayList<Integer> folderunread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_mail);
-        setContentView(R.layout.activity_read_mail);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_read);
         from = (TextView) findViewById(R.id.from_content);
         recipients = (TextView) findViewById(R.id.recepient_content);
         receivedDate = (TextView) findViewById(R.id.date_content);
         subject = (TextView) findViewById(R.id.subject_content);
         body = (WebView) findViewById(R.id.body_content);
         from_email = (TextView) findViewById(R.id.from_email_content);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Bundle args = getIntent().getBundleExtra("CC");
-        Bundle args2 = getIntent().getBundleExtra("TO");
+        try {
+            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
-        ArrayList<Recipient> toRecipients = (ArrayList<Recipient>) args.getSerializable("TO_ARRAY");
-        ArrayList<Recipient> ccRecipients = (ArrayList<Recipient>) args.getSerializable("CC_ARRAY");
         ArrayList<Recipient> allRecipients = new ArrayList<>();
         ArrayList<String> allRecepientsEmails = new ArrayList<>();
+        ArrayList<Recipient> ccRecipients = new ArrayList<>();
+        ArrayList<Recipient> toRecipients = new ArrayList<>();
+
+        if (!getIntent().getBundleExtra("CC").isEmpty()) {
+            Bundle args = getIntent().getBundleExtra("CC");
+             ccRecipients = (ArrayList<Recipient>) args.getSerializable("CC_ARRAY");
+        }
+        if (!getIntent().getBundleExtra("TO").isEmpty()){
+            Bundle args = getIntent().getBundleExtra("TO");
+            toRecipients = (ArrayList<Recipient>) args.getSerializable("TO_ARRAY");
+        }
 
         if (toRecipients != null) {
             toRecipients.addAll(ccRecipients);
-            allRecipients = new ArrayList<>(toRecipients);
+            for (Recipient recipient : toRecipients){
+                allRecepientsEmails.add(recipient.getEmailAddress().getAddress());
+            }
         } else {
             if (ccRecipients != null) {
-                allRecipients = new ArrayList<>(ccRecipients);
+                for (Recipient recipient : ccRecipients){
+                    allRecepientsEmails.add(recipient.getEmailAddress().getAddress());
+                }
             }
-        }
-        for (Recipient recipient : allRecipients){
-            allRecepientsEmails.add(recipient.getEmailAddress().getAddress());
         }
 
         if (!getIntent().getStringExtra("FROM_NAME").isEmpty()) {
@@ -100,7 +133,6 @@ public class ReadMailActivity extends AppCompatActivityRest {
             body_content = getString(R.string.not_found);
         }
 
-
         from.setText(from_name_content);
         from_email.setText(from_email_content);
         from_email.setSelected(true);
@@ -121,7 +153,63 @@ public class ReadMailActivity extends AppCompatActivityRest {
 
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
+        switch (outlookObjectCall) {
+            case READMAIL: {
+                foldernames = new ArrayList<>();
+                folderunread = new ArrayList<>();
+                foldersWithMail = new ArrayList<>();
+                try {
+                    JSONArray folders = response.getJSONArray("value");
+                    Type listType = new TypeToken<List<MailFolder>>() {
+                    }.getType();
+                    folderObjectList = new Gson().fromJson(String.valueOf(folders), listType);
+                    foldersWithMail.addAll(folderObjectList);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            break;
+        }
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //INFLATE THE MENU, ADDS ITEMS TO THE BAR IF PRESENT
+        getMenuInflater().inflate(R.menu.menu_read, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.action_delete:
+                try {
+                    new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this,"/" + getIntent().getStringExtra("ID"));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.reply:
+                // go to new email screen
+                break;
+            case R.id.action_map:
+                JSONObject jsonObject = new JSONObject();
+               /* try {
+                    jsonObject.put("destinationId", getIntent().getStringExtra("FOLDER_ID"));
+                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL,this, jsonObject, "/" + getIntent().getStringExtra("ID" + "/move"));
+                } catch (IllegalAccessException | JSONException e) {
+                    e.printStackTrace();
+                }*/
+
+
+        }
+        if (item.getItemId() == android.R.id.home) {
+
+        }
+            return super.onOptionsItemSelected(item);
     }
 
     private String transformDate(String stringDate) throws ParseException {
@@ -142,7 +230,4 @@ public class ReadMailActivity extends AppCompatActivityRest {
             return outputFormat.format(date);
         }
     }
-
-
-
 }

@@ -2,29 +2,43 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:mContext="ap.student.outlook_mobile_app.mailing.activity.ReadMailActivity">
-    <item
-        android:id="@+id/action_back"
-        android:icon="@drawable/ic_chevron_left_whitevector_24dp"
-        android:orderInCategory="100"
-        android:title="@string/action_back"
-        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/action_delete"
         android:icon="@drawable/ic_delete_whitevector_24dp"
         android:orderInCategory="100"
         android:title="@string/action_delete"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/action_map"
         android:icon="@drawable/ic_change_folder_whitevector_24dp"
         android:orderInCategory="100"
         android:title="@string/action_changefolder"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/reply"
         android:icon="@drawable/ic_reply_whitevector_24dp"
         android:orderInCategory="100"
         android:title="@string/action_reply"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/reply_all"
+        android:icon="@drawable/ic_reply_whitevector_24dp"
+        android:orderInCategory="100"
+        android:title="@string/action_reply_all"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/forward"
+        android:icon="@drawable/ic_reply_whitevector_24dp"
+        android:orderInCategory="100"
+        android:title="@string/action_forward"
+        app:showAsAction="never" />
+
+
+
 
 </menu>

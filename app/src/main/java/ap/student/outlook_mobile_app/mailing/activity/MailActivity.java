@@ -392,7 +392,9 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     .putExtra("ID", message.getId())
                     .putExtra("DATE", message.getReceivedDateTime())
                     .putExtra("CC", args)
-                    .putExtra("TO", args2);
+                    .putExtra("TO", args2)
+                    .putExtra("FOLDER_NAME", currentFolderName)
+                    .putExtra("FOLDER_ID", currentFolderId);
             startActivity(intent);
         }
     }
@@ -478,7 +480,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             Message message = messages.get(i);
             try {
                 new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this, "/" + message.getId());
-                System.out.println("DELETED: " + message.getSubject() );
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
