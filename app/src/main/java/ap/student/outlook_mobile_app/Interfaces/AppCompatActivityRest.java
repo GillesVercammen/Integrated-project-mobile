@@ -25,6 +25,7 @@ import ap.student.outlook_mobile_app.R;
 public abstract class AppCompatActivityRest extends AppCompatActivity implements IActivity {
     protected Toolbar actionBar = null;
 
+
     public abstract void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response);
 
     @Override
