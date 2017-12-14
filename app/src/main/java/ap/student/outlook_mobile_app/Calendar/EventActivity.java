@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -168,7 +169,9 @@ public class EventActivity extends AppCompatActivityRest {
         event.setBody(new Body(descriptionText.getText().toString(), "HTML"));
         event.setLocation(new Location(locationTextInput.getText().toString()));
 
-        event.setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()));
+        if (!recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()).equals(Recurrence.NEVER)) {
+            event.setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), LocalDate.of(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth()));
+        }
 
         if (isAllDayCheckBox.isChecked()) {
             event.setAllDay(isAllDayCheckBox.isChecked());
@@ -187,26 +190,12 @@ public class EventActivity extends AppCompatActivityRest {
                 new Attendee("Required", new EmailAddress())
         });*/
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject = new JSONObject()
-                    .put("subject", "My Event")
-                    .put("start", new JSONObject()
-                            .put("dateTime", startTime.toString())
-                            .put("timeZone", TimeZone.getDefault().getDisplayName()))
-                    .put("end", new JSONObject()
-                            .put("dateTime", endTime.toString())
-                            .put("timezone", TimeZone.getDefault().getDisplayName()));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
         List<String[]> list = new ArrayList<>();
         //list.add(new String[] { "Prefer:", " Outlook.Timezone=".concat(TimeZone.getDefault().getDisplayName()) });
         list.add(new String[] {"Content-Type", "application/json"});
         try {
-            new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, new JSONObject(new Gson().toJson(event)));
-            //new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT, this, jsonObject);
+            JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
+            new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, jsonObject);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (JSONException e) {
