@@ -1,5 +1,6 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -31,6 +32,11 @@ public class NewMailActivity extends AppCompatActivityRest {
     private EditText recipientTextField;
     private EditText subjectTextField;
     private EditText messageTextField;
+
+    @Override
+    public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,12 +80,6 @@ public class NewMailActivity extends AppCompatActivityRest {
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
-
-    }
-
     public void sendMail() throws JSONException {
 
         //take input from user and parse to String
@@ -112,8 +112,11 @@ public class NewMailActivity extends AppCompatActivityRest {
             new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, jsonMessage);
             Toast.makeText(getApplicationContext(), "Mail sent!", Toast.LENGTH_SHORT).show();
         } catch (IllegalAccessException e) {
+            Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+
+        startActivity(new Intent(this, MailActivity.class));
 
     }
 
