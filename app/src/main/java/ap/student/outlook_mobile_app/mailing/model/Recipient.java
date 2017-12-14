@@ -1,7 +1,9 @@
 package ap.student.outlook_mobile_app.mailing.model;
 
 
-public class Recipient {
+import java.io.Serializable;
+
+public class Recipient implements Serializable{
     //Microsoft is fucking retarded
     private EmailAddress emailAddress;
 

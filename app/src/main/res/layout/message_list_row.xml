@@ -25,6 +25,7 @@
             android:id="@+id/from"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
             android:ellipsize="end"
             android:lines="1"
             android:textColor="@color/from"
@@ -74,7 +75,7 @@
                 android:layout_width="25dp"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:src="@drawable/ic_done_white_24dp" />
+                android:src="@drawable/ic_done_whitevector_24dp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -106,7 +107,7 @@
         android:layout_height="@dimen/icon_bijlage_width_height"
         android:layout_marginLeft="@dimen/padding_attachement"
         android:layout_toEndOf="@+id/icon_container"
-        tools:src="@drawable/ic_bijlage" />
+        tools:src="@drawable/ic_attach_file_blackvector_24dp" />
 
     <TextView
         android:id="@+id/timestamp"

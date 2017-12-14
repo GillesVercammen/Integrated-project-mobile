@@ -1,6 +1,8 @@
 package ap.student.outlook_mobile_app.mailing.model;
 
-public class EmailAddress {
+import java.io.Serializable;
+
+public class EmailAddress implements Serializable{
     private String address;
     private String name;
 
