@@ -28,4 +28,6 @@
     <string name="action_reply">Reply</string>
     <string name="action_reply_all">Reply all</string>
     <string name="action_forward">Forward</string>
+    <string name="delete_succes">Email succesfully deleted</string>
+    <string name="delete_nosucces">Failed to delete email</string>
 </resources>

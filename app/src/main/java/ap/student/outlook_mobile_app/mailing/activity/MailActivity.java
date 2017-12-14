@@ -105,8 +105,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         // SET # OF CLICK ON NON_READ ITEMS
         readClicked = 0;
 
-        Bundle args = getIntent().getBundleExtra("BUNDLE");
-        ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
+     //   Bundle args = getIntent().getBundleExtra("BUNDLE");
+     //   ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
 
         // SET TOOLBAR
         currentUserEmail = getIntent().getStringExtra("USER_EMAIL");

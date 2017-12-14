@@ -33,7 +33,7 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         actionBar = (Toolbar) findViewById(R.id.action_bar);
-        if (!actionBar.equals(null)) {
+        if (actionBar != null) {
             setSupportActionBar(actionBar);
         }
     }

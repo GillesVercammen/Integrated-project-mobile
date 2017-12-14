@@ -1,5 +1,6 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -188,8 +190,11 @@ public class ReadMailActivity extends AppCompatActivityRest {
             case R.id.action_delete:
                 try {
                     new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this,"/" + getIntent().getStringExtra("ID"));
+                    Toast.makeText(this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
+                    this.finish();
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    Toast.makeText(this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
+                    e.getStackTrace();
                 }
                 break;
             case R.id.reply:

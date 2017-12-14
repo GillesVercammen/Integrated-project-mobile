@@ -104,9 +104,6 @@ public class NewMailActivity extends AppCompatActivityRest {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("message", JSON);
 
-        //print out final JSONobject that will be posted to the API
-        System.out.println(jsonMessage);
-
         //do our call
         try {
             new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, jsonMessage);
@@ -116,8 +113,7 @@ public class NewMailActivity extends AppCompatActivityRest {
             e.printStackTrace();
         }
 
-        startActivity(new Intent(this, MailActivity.class));
-
+        this.finish();
     }
 
 }
