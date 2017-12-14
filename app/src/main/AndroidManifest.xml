@@ -36,10 +36,15 @@
         <activity
             android:name=".mailing.activity.MailActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".CalendarActivity" />
-        <activity android:name=".mailing.activity.ReadMailActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity android:name=".mailing.activity.NewMailActivity"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".CalendarActivity"></activity>
+              <activity android:name=".mailing.activity.ReadMailActivity"></activity>
     </application>
 
 </manifest>

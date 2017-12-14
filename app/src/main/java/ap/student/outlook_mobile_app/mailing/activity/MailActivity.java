@@ -122,6 +122,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                onNewMailButtonClicked();
+
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                        .setAction("Action", null).show();
 
@@ -520,6 +522,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             colors.recycle();
         }
         return returnColor;
+    }
+
+    private void onNewMailButtonClicked() {
+        startActivity(new Intent(this, NewMailActivity.class));
+
+
     }
 
     // FOR LOADMORE

@@ -8,6 +8,13 @@ public class EmailAddress {
     private String address;
     private String name;
 
+    public EmailAddress() {
+    }
+
+    public EmailAddress(String address) {
+        this.address = address;
+    }
+
     public String getAddress() {
         return address;
     }
