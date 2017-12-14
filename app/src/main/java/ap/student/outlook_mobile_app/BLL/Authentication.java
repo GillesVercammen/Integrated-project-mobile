@@ -9,6 +9,9 @@ import com.microsoft.identity.client.MsalException;
 import com.microsoft.identity.client.MsalServiceException;
 import com.microsoft.identity.client.MsalUiRequiredException;
 
+import org.json.JSONObject;
+
+import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.MainActivity;
 
@@ -70,6 +73,8 @@ public class Authentication {
                 /* Exception when communicating with the STS, likely config issue */
                 } else if (exception instanceof MsalUiRequiredException) {
                 /* Tokens expired or no session, retry with interactive */
+                    Log.e("STUCK","Check if the app has the permissions on M$ website.");
+                    activity.processResponse(OutlookObjectCall.LOGINERROR, new JSONObject());
                 }
             }
 

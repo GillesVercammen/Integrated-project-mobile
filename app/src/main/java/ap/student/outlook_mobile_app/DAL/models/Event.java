@@ -10,7 +10,7 @@ import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 public class Event {
     private Event[] value;
     private Attendee[] attendees;
-    private ItemBody body;
+    private Body body;
     private String bodyPreview;
     private String[] categories;
     private String changeKey;
@@ -83,11 +83,11 @@ public class Event {
         this.attendees = attendees;
     }
 
-    public ItemBody getBody() {
+    public Body getBody() {
         return body;
     }
 
-    public void setBody(ItemBody body) {
+    public void setBody(Body body) {
         this.body = body;
     }
 

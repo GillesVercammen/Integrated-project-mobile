@@ -37,7 +37,7 @@ import ap.student.outlook_mobile_app.Calendar.CalendarElements.ShowAs;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.models.DateTimeTimeZone;
 import ap.student.outlook_mobile_app.DAL.models.Event;
-import ap.student.outlook_mobile_app.DAL.models.ItemBody;
+import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Location;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
@@ -165,7 +165,7 @@ public class EventActivity extends AppCompatActivityRest {
     private void onConfirmButtonClicked() {
         Event event = new Event();
         event.setSubject(titleTextInput.getText().toString());
-        event.setBody(new ItemBody(descriptionText.getText().toString(), "HTML"));
+        event.setBody(new Body(descriptionText.getText().toString(), "HTML"));
         event.setLocation(new Location(locationTextInput.getText().toString()));
 
         event.setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()));

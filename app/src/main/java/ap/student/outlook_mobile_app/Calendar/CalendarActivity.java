@@ -122,7 +122,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
 
         switch (outlookObjectCall) {
-            case READCALENDARS: {
+            case READCALENDAR: {
                 calendar = gson.fromJson(response.toString(), Calendar.class);
                 System.out.println(calendar.getCalendars()[0].getOwner().getName());
             }

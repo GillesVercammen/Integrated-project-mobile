@@ -12,7 +12,8 @@ public enum OutlookObjectCall {
     READEVENTS("/events"),
     SENDMAIL("/sendMail"),
     UPDATEMAIL("/messages"),
-    POSTEVENT("/events");
+    POSTEVENT("/events"),
+    LOGINERROR("/loginError");
     private String action;
 
     OutlookObjectCall(String action) {

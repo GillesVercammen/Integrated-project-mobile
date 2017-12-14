@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -55,7 +56,10 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject graphResponse) {
-        //bad practice
+        if (outlookObjectCall.equals(OutlookObjectCall.LOGINERROR)) {
+            Toast.makeText(this, "CANNOT LOG IN", Toast.LENGTH_LONG).show();
+            actionLogin();
+        }
     }
 
     /* Set the UI for successful token acquisition data */
