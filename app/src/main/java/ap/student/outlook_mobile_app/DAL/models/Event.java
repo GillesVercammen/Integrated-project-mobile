@@ -2,13 +2,15 @@ package ap.student.outlook_mobile_app.DAL.models;
 
 import java.time.ZonedDateTime;
 
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
+
 /**
  * Created by alek on 11/30/17.
  */
 public class Event {
     private Event[] value;
     private Attendee[] attendees;
-    private Body itemBody;
+    private ItemBody body;
     private String bodyPreview;
     private String[] categories;
     private String changeKey;
@@ -39,6 +41,27 @@ public class Event {
     private String subject;
     private String type;
     private String webLink;
+    private Location location;
+
+    public void setCreatedDateTime(String createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public void setLastModifiedDateTime(String lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public void setDateTimeOffset(String dateTimeOffset) {
+        this.dateTimeOffset = dateTimeOffset;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 
     public Event[] getEvents() {
         return value;
@@ -60,12 +83,12 @@ public class Event {
         this.attendees = attendees;
     }
 
-    public Body getItemBody() {
-        return itemBody;
+    public ItemBody getBody() {
+        return body;
     }
 
-    public void setItemBody(Body itemBody) {
-        this.itemBody = itemBody;
+    public void setBody(ItemBody body) {
+        this.body = body;
     }
 
     public String getBodyPreview() {
@@ -224,8 +247,12 @@ public class Event {
         return recurrence;
     }
 
-    public void setRecurrence(PatternedRecurrence recurrence) {
-        this.recurrence = recurrence;
+    public void setRecurrence(Recurrence recurrence) {
+        switch (recurrence) {
+            case DAILY : {
+
+            }
+        }
     }
 
     public int getReminderMinutesBeforeStart() {

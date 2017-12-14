@@ -11,7 +11,7 @@ public enum OutlookObjectCall {
     READCALENDARS("/calendars"),
     READEVENTS("/events"),
     SENDMAIL("/sendMail"),
-    POSTEVENT("/");
+    POSTEVENT("/events");
     private String action;
 
     OutlookObjectCall(String action) {

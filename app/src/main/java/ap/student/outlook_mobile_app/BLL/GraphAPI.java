@@ -15,7 +15,9 @@ import com.microsoft.identity.client.AuthenticationResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
@@ -41,7 +43,7 @@ public class GraphAPI {
         return body;
     }
 
-    private void sendRequest(int method, final OutlookObjectCall objectCall, JSONObject body, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
+    private void sendRequest(int method, final OutlookObjectCall objectCall, JSONObject body, final AppCompatActivityRest context, String parameters, final List<String[]> additionalHeaders) throws IllegalAccessException {
         Log.d(TAG, "Starting volley request to graph");
 
     /* Make sure we have a token to send to graph */
@@ -72,6 +74,9 @@ public class GraphAPI {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Authorization", "Bearer " + authResult.getAccessToken());
+                for (String[] s : additionalHeaders) {
+                    headers.put(s[0], s[1]);
+                }
                 return headers;
             }
         };
@@ -100,7 +105,7 @@ public class GraphAPI {
     }
 
     public void getRequest(final OutlookObjectCall objectCall, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
-        sendRequest(Request.Method.GET, objectCall, createEmptyBody(), context, parameters);
+        sendRequest(Request.Method.GET, objectCall, createEmptyBody(), context, parameters, new ArrayList<String[]>());
     }
 
     /**
@@ -110,14 +115,18 @@ public class GraphAPI {
      * @throws IllegalAccessException
      */
     public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context) throws IllegalAccessException {
-        sendRequest(Request.Method.POST, objectCall, createEmptyBody(), context, "");
+        sendRequest(Request.Method.POST, objectCall, createEmptyBody(), context, "", new ArrayList<String[]>());
     }
 
     public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body) throws IllegalAccessException {
-        sendRequest(Request.Method.POST, objectCall, body, context, "");
+        sendRequest(Request.Method.POST, objectCall, body, context, "", new ArrayList<String[]>());
     }
 
     public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body, String parameters) throws IllegalAccessException {
-        sendRequest(Request.Method.POST, objectCall, body, context, parameters);
+        sendRequest(Request.Method.POST, objectCall, body, context, parameters, new ArrayList<String[]>());
+    }
+
+    public void postRequest(OutlookObjectCall objectCall, List<String[]> header,final AppCompatActivityRest context, JSONObject body) throws IllegalAccessException {
+        sendRequest(Request.Method.POST, objectCall, body, context, "", header);
     }
 }
