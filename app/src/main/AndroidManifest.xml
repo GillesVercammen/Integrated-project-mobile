@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ap.student.outlook_mobile_app">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,13 +30,21 @@
                 <!-- By default, the scheme should be similar to 'msal[appId]' -->
                 <data
                     android:host="auth"
-                    android:scheme="msalaef5a5da-9aed-4176-a978-765aa2907719" /> <!-- "msal0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5" -->
+                    android:scheme="msal0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5" />
             </intent-filter>
         </activity>
-        <activity android:name=".MailActivity" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".Calendar.CalendarActivity" />
-        <activity android:name=".Calendar.EventActivity"></activity>
+        <activity
+            android:name=".mailing.activity.MailActivity"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity android:name=".mailing.activity.NewMailActivity"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".CalendarActivity"></activity>
+	<activity android:name=".Calendar.EventActivity"></activity>
     </application>
 
 </manifest>

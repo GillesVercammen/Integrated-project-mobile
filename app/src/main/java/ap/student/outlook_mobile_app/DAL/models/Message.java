@@ -1,6 +1,7 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Gilles on 27-11-2017.
@@ -14,6 +15,17 @@ public class Message {
     private Boolean isRead;
     private String subject;
     private String bodyPreview;
+    private Body body;
+    private List<ToRecipients> toRecipients;
+
+    public Message() {
+    }
+
+    public Message(String subject, Body body, List<ToRecipients> toRecipients) {
+        this.subject = subject;
+        this.body = body;
+        this.toRecipients = toRecipients;
+    }
 
     public String getId() {
         return id;
@@ -63,5 +75,33 @@ public class Message {
         this.bodyPreview = bodyPreview;
     }
 
+    public Body getBody() {
+        return body;
+    }
 
+    public void setBody(Body body) {
+        this.body = body;
+    }
+
+    public List<ToRecipients> getToRecipients() {
+        return toRecipients;
+    }
+
+    public void setToRecipients(List<ToRecipients> toRecipients) {
+        this.toRecipients = toRecipients;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id='" + id + '\'' +
+                ", receivedDateTime=" + receivedDateTime +
+                ", from=" + from +
+                ", isRead=" + isRead +
+                ", subject='" + subject + '\'' +
+                ", bodyPreview='" + bodyPreview + '\'' +
+                ", body=" + body +
+                ", toRecipients=" + toRecipients +
+                '}';
+    }
 }

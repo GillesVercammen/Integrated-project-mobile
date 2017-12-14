@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "ap.student.outlook_mobile_app"
-        minSdkVersion 26
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -22,6 +22,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation("com.mikepenz:materialdrawer:6.0.2@aar") {
+        transitive = true
+    }
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -29,5 +32,21 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
     compile 'com.android.volley:volley:1.0.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support:design:26.0.1'
+    compile 'com.android.support:recyclerview-v7:26.0.1'
+    implementation "com.android.support:support-annotations:26.0.1"
     compile 'com.google.code.gson:gson:2.8.0'
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '26.0.0'
+            }
+        }
+    }
 }

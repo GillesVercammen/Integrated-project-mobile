@@ -25,6 +25,7 @@ import ap.student.outlook_mobile_app.R;
 public abstract class AppCompatActivityRest extends AppCompatActivity implements IActivity {
     protected Toolbar actionBar = null;
 
+
     public abstract void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response);
 
     @Override
@@ -32,7 +33,7 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         actionBar = (Toolbar) findViewById(R.id.action_bar);
-        if (!actionBar.equals(null)) {
+        if (actionBar != null) {
             setSupportActionBar(actionBar);
         }
     }

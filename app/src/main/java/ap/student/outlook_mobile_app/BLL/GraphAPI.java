@@ -9,7 +9,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
 import com.microsoft.identity.client.AuthenticationResult;
 
 import org.json.JSONException;
@@ -90,6 +92,7 @@ public class GraphAPI {
         queue.add(request);
     }
 
+
     public GraphAPI() {
         this.authResult = Authentication.getAuthentication().getAuthResult();
     }
@@ -128,5 +131,34 @@ public class GraphAPI {
 
     public void postRequest(OutlookObjectCall objectCall, List<String[]> header,final AppCompatActivityRest context, JSONObject body) throws IllegalAccessException {
         sendRequest(Request.Method.POST, objectCall, body, context, "", header);
+    }
+
+
+    /**
+     * Methods for performing PATCH operations
+     * @param objectCall
+     * @param context
+     * @throws IllegalAccessException
+     */
+    public void patchRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context) throws IllegalAccessException {
+        sendRequest(Request.Method.PATCH, objectCall, createEmptyBody(), context, "");
+    }
+
+    public void patchRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body) throws IllegalAccessException {
+        sendRequest(Request.Method.PATCH, objectCall, body, context, "");
+    }
+
+    public void patchRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body, String parameters) throws IllegalAccessException {
+        sendRequest(Request.Method.PATCH, objectCall, body, context, parameters);
+    }
+
+    /**
+     * Method for performing delete Requests
+     * @param objectCall
+     * @param context
+     * @throws IllegalAccessException
+     */
+    public void deleteRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
+        sendRequest(Request.Method.DELETE, objectCall, createEmptyBody(), context, parameters);
     }
 }

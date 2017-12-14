@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     public void loginSuccessfull() {
-        startActivity(new Intent(this, HomeActivity.class));
+        startActivity(new Intent(this, HomeActivity.class)
+            .putExtra("USER_NAME", Authentication.getAuthentication().getAuthResult().getUser().getName())
+            .putExtra("USER_EMAIL", Authentication.getAuthentication().getAuthResult().getUser().getDisplayableId()));
         this.finish();
         //callGraphAPI();
         updateSuccessUI();
@@ -58,9 +60,10 @@ public class MainActivity extends AppCompatActivityRest {
 
     /* Set the UI for successful token acquisition data */
     public void updateSuccessUI() {
+        String paramString = Authentication.getAuthentication().getAuthResult().getUser().getName();
+        String formattedString = getString(R.string.welcome, paramString);
         callGraphButton.setVisibility(View.INVISIBLE);
-        ((TextView) findViewById(R.id.welcome)).setText("Welcome, " +
-                Authentication.getAuthentication().getAuthResult().getUser().getName());
+        ((TextView) findViewById(R.id.welcome)).setText(formattedString);
     }
 
     private void onCallGraphClicked() {

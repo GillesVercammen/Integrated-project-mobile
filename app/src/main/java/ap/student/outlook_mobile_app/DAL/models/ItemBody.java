@@ -4,14 +4,14 @@ package ap.student.outlook_mobile_app.DAL.models;
  * Created by alek on 12/1/17.
  */
 
-public class ItemBody {
+public class Body {
     private String content;
     private String contentType;
 
-    public ItemBody() {
+    public Body() {
     }
 
-    public ItemBody(String content, String contentType) {
+    public Body(String content, String contentType) {
         this.content = content;
         this.contentType = contentType;
     }
@@ -30,5 +30,13 @@ public class ItemBody {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    @Override
+    public String toString() {
+        return "Body{" +
+                "content='" + content + '\'' +
+                ", contentType='" + contentType + '\'' +
+                '}';
     }
 }
