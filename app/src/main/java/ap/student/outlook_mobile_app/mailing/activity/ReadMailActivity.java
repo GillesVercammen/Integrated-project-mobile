@@ -77,12 +77,6 @@ public class ReadMailActivity extends AppCompatActivityRest {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        try {
-            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
         ArrayList<Recipient> allRecipients = new ArrayList<>();
         ArrayList<String> allRecepientsEmails = new ArrayList<>();
         ArrayList<Recipient> ccRecipients = new ArrayList<>();
@@ -166,23 +160,6 @@ public class ReadMailActivity extends AppCompatActivityRest {
 
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
-        switch (outlookObjectCall) {
-            case READMAIL: {
-                foldernames = new ArrayList<>();
-                folderunread = new ArrayList<>();
-                foldersWithMail = new ArrayList<>();
-                try {
-                    JSONArray folders = response.getJSONArray("value");
-                    Type listType = new TypeToken<List<MailFolder>>() {
-                    }.getType();
-                    folderObjectList = new Gson().fromJson(String.valueOf(folders), listType);
-                    foldersWithMail.addAll(folderObjectList);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            break;
-        }
     }
 
     @Override
@@ -196,13 +173,18 @@ public class ReadMailActivity extends AppCompatActivityRest {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                Intent intent2 = new Intent();
+                setResult(RESULT_OK,intent2);
                 finish();
                 break;
             case R.id.action_delete:
                 try {
                     new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this,"/" + getIntent().getStringExtra("ID"));
                     Toast.makeText(this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
-                    this.finish();
+                    Intent intent = new Intent();
+                    intent.putExtra("POSITION", getIntent().getIntExtra("POSITION", -1));
+                    setResult(500,intent);
+                    finish();//finishing activity
                 } catch (IllegalAccessException e) {
                     Toast.makeText(this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
                     e.getStackTrace();
@@ -212,19 +194,9 @@ public class ReadMailActivity extends AppCompatActivityRest {
                 // go to new email screen
                 break;
             case R.id.action_map:
-                JSONObject jsonObject = new JSONObject();
-               /* try {
-                    jsonObject.put("destinationId", getIntent().getStringExtra("FOLDER_ID"));
-                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL,this, jsonObject, "/" + getIntent().getStringExtra("ID" + "/move"));
-                } catch (IllegalAccessException | JSONException e) {
-                    e.printStackTrace();
-                }*/
-
-
+                break;
         }
-        if (item.getItemId() == android.R.id.home) {
 
-        }
             return super.onOptionsItemSelected(item);
     }
 

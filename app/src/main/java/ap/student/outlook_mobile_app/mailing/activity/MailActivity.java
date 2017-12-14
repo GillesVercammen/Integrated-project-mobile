@@ -397,8 +397,9 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     .putExtra("CC", args)
                     .putExtra("TO", args2)
                     .putExtra("FOLDER_NAME", currentFolderName)
-                    .putExtra("FOLDER_ID", currentFolderId);
-            startActivity(intent);
+                    .putExtra("FOLDER_ID", currentFolderId)
+                    .putExtra("POSITION", position);
+            startActivityForResult(intent, 2);
         }
     }
 
@@ -567,8 +568,21 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 }
                 break;
             }
+            case 2:{
+                if (resultCode == 500 && null != data) {
+                    deleteMessage(data.getIntExtra("POSITION", -1));
+                } else if (resultCode == RESULT_OK ) {
+                    System.out.println("Back btn clicked");
+                }
+            }
+            break;
 
         }
+    }
+
+    private void deleteMessage(int position){
+        mAdapter.removeData(position);
+        mAdapter.notifyDataSetChanged();
     }
 
     /*
