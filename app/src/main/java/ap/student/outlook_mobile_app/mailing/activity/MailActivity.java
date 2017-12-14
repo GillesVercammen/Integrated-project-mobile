@@ -390,6 +390,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     .putExtra("FROM_EMAIL", message.getFrom().getEmailAddress().getAddress())
                     .putExtra("SUBJECT", message.getSubject())
                     .putExtra("BODY", message.getBody().getContent())
+                    .putExtra("CONTENT", message.getBody().getContentType())
                     .putExtra("HAS_ATTACHMENT", message.getHasAttachments())
                     .putExtra("ID", message.getId())
                     .putExtra("DATE", message.getReceivedDateTime())

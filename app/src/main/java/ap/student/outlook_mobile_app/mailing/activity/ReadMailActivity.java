@@ -53,6 +53,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private String hasAttachment;
     private String id;
     private String date;
+    private String contentType;
     private ArrayList<MailFolder> folderObjectList;
     private ArrayList<MailFolder> foldersWithMail;
     private ArrayList<String> foldernames;
@@ -134,6 +135,11 @@ public class ReadMailActivity extends AppCompatActivityRest {
         } else {
             body_content = getString(R.string.not_found);
         }
+        if (!getIntent().getStringExtra("CONTENT").isEmpty()) {
+            contentType = getIntent().getStringExtra("CONTENT");
+        } else {
+            body_content = "text/html";
+        }
 
         from.setText(from_name_content);
         from_email.setText(from_email_content);
@@ -148,7 +154,12 @@ public class ReadMailActivity extends AppCompatActivityRest {
         }
         subject.setText(subject_content);
         body.setPadding(0,0,0,0);
-        body.loadData(body_content, "text/html", "utf-8");
+        if (contentType.equals("html")) {
+            body.loadDataWithBaseURL("", body_content, "text/html", "utf-8","");
+        } else {
+            body.loadDataWithBaseURL("", body_content, "text", "utf-8","");
+
+        }
 
 
     }
