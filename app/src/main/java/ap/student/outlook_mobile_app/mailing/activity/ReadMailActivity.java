@@ -9,7 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,8 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private WebView body;
     private TextView subject;
     private Toolbar toolbar;
+    private ImageView minimize;
+    private ImageView maximize;
     private String from_name_content;
     private String from_email_content;
     private String subject_content;
@@ -72,6 +76,48 @@ public class ReadMailActivity extends AppCompatActivityRest {
         subject = (TextView) findViewById(R.id.subject_content);
         body = (WebView) findViewById(R.id.body_content);
         from_email = (TextView) findViewById(R.id.from_email_content);
+        minimize = (ImageView) findViewById(R.id.minimize);
+        minimize.setImageResource(R.drawable.ic_minimize_blackvector_24dp);
+        minimize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                from.setVisibility(View.GONE);
+                recipients.setVisibility(View.GONE);
+                receivedDate.setVisibility(View.GONE);
+                subject.setVisibility(View.GONE);
+                from_email.setVisibility(View.GONE);
+                findViewById(R.id.from).setVisibility(View.GONE);
+                findViewById(R.id.from_email).setVisibility(View.GONE);
+                findViewById(R.id.recepient).setVisibility(View.GONE);
+                findViewById(R.id.subject).setVisibility(View.GONE);
+                findViewById(R.id.date).setVisibility(View.GONE);
+                minimize.setVisibility(View.GONE);
+                maximize = (ImageView) findViewById(R.id.maximize);
+                maximize.setImageResource(R.drawable.ic_maximize_blackvector_24dp);
+                maximize.setVisibility(View.VISIBLE);
+
+                maximize.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        from.setVisibility(View.VISIBLE);
+                        recipients.setVisibility(View.VISIBLE);
+                        receivedDate.setVisibility(View.VISIBLE);
+                        subject.setVisibility(View.VISIBLE);
+                        from_email.setVisibility(View.VISIBLE);
+                        findViewById(R.id.from).setVisibility(View.VISIBLE);
+                        findViewById(R.id.from_email).setVisibility(View.VISIBLE);
+                        findViewById(R.id.recepient).setVisibility(View.VISIBLE);
+                        findViewById(R.id.subject).setVisibility(View.VISIBLE);
+                        findViewById(R.id.date).setVisibility(View.VISIBLE);
+                        maximize.setVisibility(View.GONE);
+                        minimize.setVisibility(View.VISIBLE);
+                    }
+                });
+
+            }
+        });
+
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -135,6 +181,8 @@ public class ReadMailActivity extends AppCompatActivityRest {
             body_content = "text/html";
         }
 
+
+
         from.setText(from_name_content);
         from_email.setText(from_email_content);
         from_email.setSelected(true);
@@ -150,11 +198,13 @@ public class ReadMailActivity extends AppCompatActivityRest {
         body.setPadding(0,0,0,0);
         if (contentType.equals("html")) {
             body.loadDataWithBaseURL("", body_content, "text/html", "utf-8","");
+            body.setInitialScale(1);
+            body.getSettings().setLoadWithOverviewMode(true);
+            body.getSettings().setUseWideViewPort(true);
+            body.getSettings().setJavaScriptEnabled(true);
         } else {
             body.loadDataWithBaseURL("", body_content, "text", "utf-8","");
-
         }
-
 
     }
 
