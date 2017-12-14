@@ -248,11 +248,18 @@ public class Event {
     }
 
     public void setRecurrence(Recurrence recurrence) {
+        PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
+        RecurrencePattern recurrencePattern = new RecurrencePattern();
+        RecurrenceRange recurrenceRange = new RecurrenceRange();
         switch (recurrence) {
             case DAILY : {
 
             }
+            break;
         }
+        patternedRecurrence.setPattern(recurrencePattern);
+        patternedRecurrence.setRange(recurrenceRange);
+        this.recurrence = patternedRecurrence;
     }
 
     public int getReminderMinutesBeforeStart() {
