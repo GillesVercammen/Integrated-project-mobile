@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Outlook</string>
+    <string name="app_name">Outlook Mobile App</string>
     <string name="action_logout">Log Out</string>
     <string name="action_settings">Settings</string>
     <string name="action_login">Log In</string>
@@ -30,4 +30,19 @@
     <string name="action_forward">Forward</string>
     <string name="delete_succes">Email succesfully deleted</string>
     <string name="delete_nosucces">Failed to delete email</string>
+
+	<!--
+        Main calendar view strings
+    	-->
+
+    <string name="current_month_string">This month</string>
+    <string name="current_year_string">This Year</string>
+    <string name="month_tableheader_monday">M</string>
+    <string name="month_tableheader_tuesday">T</string>
+    <string name="month_tableheader_wednesday">W</string>
+    <string name="month_tableheader_thursday">T</string>
+    <string name="month_tableheader_friday">F</string>
+    <string name="month_tableheader_saturday">S</string>
+    <string name="month_tableheader_sunday">S</string>
+    <string name="month_create_event_button">Create new event</string>
 </resources>

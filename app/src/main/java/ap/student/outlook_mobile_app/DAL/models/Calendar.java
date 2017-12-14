@@ -3,8 +3,8 @@ package ap.student.outlook_mobile_app.DAL.models;
 /**
  * Created by alek on 11/30/17.
  */
-
 public class Calendar {
+    private Calendar[] value;
     private boolean canEdit;
     private boolean canShare;
     private boolean canViewPrivateItems;
@@ -13,6 +13,14 @@ public class Calendar {
     private String id;
     private String name;
     private EmailAddress owner;
+
+    public Calendar[] getCalendars() {
+        return value;
+    }
+
+    public void setCalendars(Calendar[] calendars) {
+        this.value = calendars;
+    }
 
     public boolean isCanEdit() {
         return canEdit;

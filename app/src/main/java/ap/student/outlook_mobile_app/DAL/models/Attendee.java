@@ -5,6 +5,22 @@ package ap.student.outlook_mobile_app.DAL.models;
  */
 
 public class Attendee {
+    public Attendee() {
+    }
+
+    public Attendee(String type, EmailAddress emailAddress) {
+
+        this.type = type;
+        this.emailAddress = emailAddress;
+    }
+
+    public Attendee(ResponseStatus status, String type, EmailAddress emailAddress) {
+
+        this.status = status;
+        this.type = type;
+        this.emailAddress = emailAddress;
+    }
+
     private ResponseStatus status;
     private String type;
     private EmailAddress emailAddress;

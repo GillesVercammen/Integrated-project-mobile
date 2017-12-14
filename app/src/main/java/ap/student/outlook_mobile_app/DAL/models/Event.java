@@ -1,18 +1,20 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 
 /**
  * Created by alek on 11/30/17.
  */
-
 public class Event {
+    private Event[] value;
     private Attendee[] attendees;
-    private Body itemBody;
+    private ItemBody body;
     private String bodyPreview;
     private String[] categories;
     private String changeKey;
-    private LocalDateTime createdDateTime;
+    private String createdDateTime;
     private DateTimeTimeZone end;
     private boolean hasAttachments;
     private String iCalUId;
@@ -22,11 +24,11 @@ public class Event {
     private boolean isCancelled;
     private boolean isOrganizer;
     private boolean isReminderOn;
-    private LocalDateTime lastModifiedDateTime;
+    private String lastModifiedDateTime;
     private String onlineMeetingUrl;
     private Recipient organizer;
     private String originalEndTimeZone;
-    private LocalDateTime dateTimeOffset;
+    private String dateTimeOffset;
     private String originalStartTimeZone;
     private PatternedRecurrence recurrence;
     private int reminderMinutesBeforeStart;
@@ -39,6 +41,39 @@ public class Event {
     private String subject;
     private String type;
     private String webLink;
+    private Location location;
+
+    public void setCreatedDateTime(String createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public void setLastModifiedDateTime(String lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public void setDateTimeOffset(String dateTimeOffset) {
+        this.dateTimeOffset = dateTimeOffset;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Event[] getEvents() {
+        return value;
+    }
+
+    public void setValue(Event[] events) {
+        this.value = events;
+    }
+
+    public void setEvents(Event[] events) {
+        this.value = events;
+    }
 
     public Attendee[] getAttendees() {
         return attendees;
@@ -48,12 +83,12 @@ public class Event {
         this.attendees = attendees;
     }
 
-    public Body getItemBody() {
-        return itemBody;
+    public ItemBody getBody() {
+        return body;
     }
 
-    public void setItemBody(Body itemBody) {
-        this.itemBody = itemBody;
+    public void setBody(ItemBody body) {
+        this.body = body;
     }
 
     public String getBodyPreview() {
@@ -80,12 +115,12 @@ public class Event {
         this.changeKey = changeKey;
     }
 
-    public LocalDateTime getCreatedDateTime() {
-        return createdDateTime;
+    public ZonedDateTime getCreatedDateTime() {
+        return ZonedDateTime.parse(createdDateTime);
     }
 
-    public void setCreatedDateTime(LocalDateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
+    public void setCreatedDateTime(ZonedDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime.toString();
     }
 
     public DateTimeTimeZone getEnd() {
@@ -160,12 +195,12 @@ public class Event {
         isReminderOn = reminderOn;
     }
 
-    public LocalDateTime getLastModifiedDateTime() {
-        return lastModifiedDateTime;
+    public ZonedDateTime getLastModifiedDateTime() {
+        return ZonedDateTime.parse(lastModifiedDateTime);
     }
 
-    public void setLastModifiedDateTime(LocalDateTime lastModifiedDateTime) {
-        this.lastModifiedDateTime = lastModifiedDateTime;
+    public void setLastModifiedDateTime(ZonedDateTime lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime.toString();
     }
 
     public String getOnlineMeetingUrl() {
@@ -192,12 +227,12 @@ public class Event {
         this.originalEndTimeZone = originalEndTimeZone;
     }
 
-    public LocalDateTime getDateTimeOffset() {
-        return dateTimeOffset;
+    public ZonedDateTime getDateTimeOffset() {
+        return ZonedDateTime.parse(dateTimeOffset);
     }
 
-    public void setDateTimeOffset(LocalDateTime dateTimeOffset) {
-        this.dateTimeOffset = dateTimeOffset;
+    public void setDateTimeOffset(ZonedDateTime dateTimeOffset) {
+        this.dateTimeOffset = dateTimeOffset.toString();
     }
 
     public String getOriginalStartTimeZone() {
@@ -212,8 +247,19 @@ public class Event {
         return recurrence;
     }
 
-    public void setRecurrence(PatternedRecurrence recurrence) {
-        this.recurrence = recurrence;
+    public void setRecurrence(Recurrence recurrence) {
+        PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
+        RecurrencePattern recurrencePattern = new RecurrencePattern();
+        RecurrenceRange recurrenceRange = new RecurrenceRange();
+        switch (recurrence) {
+            case DAILY : {
+
+            }
+            break;
+        }
+        patternedRecurrence.setPattern(recurrencePattern);
+        patternedRecurrence.setRange(recurrenceRange);
+        this.recurrence = patternedRecurrence;
     }
 
     public int getReminderMinutesBeforeStart() {

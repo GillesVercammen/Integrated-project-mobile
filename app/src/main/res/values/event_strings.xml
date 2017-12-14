@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="event_details_header">Details</string>
+    <string name="event_title_textview">Add a title for the event.</string>
+    <string name="event_location_textview">Add a location or space.</string>
+    <string name="event_begin_header">Begin</string>
+    <string name="event_end_header">End</string>
+    <string name="event_set_start_time_button">Set start time</string>
+    <string name="event_set_end_time_button">Set end time</string>
+    <string name="event_start_text_display">Event start: </string>
+    <string name="event_end_text_display">Event end: </string>
+    <string name="event_private_checkbox">Private</string>
+    <string name="event_all_day_checkbox">All day</string>
+    <string name="event_timezone_text">Set timezone</string>
+    <string name="event_repeat_event_text">Repeat</string>
+    <string name="event_agenda_text">Agenda</string>
+    <string name="event_remind_text">Remind</string>
+    <string name="event_displayas_text">Display as</string>
+    <string name="event_send_reminder_button">Send reminder per email</string>
+    <string name="event_confirm_button">Confirm Event</string>
+    <string name="event_timezone_autocomplete">Timezone</string>
+
+    <!--
+        These need to be arranged as shown, fuck you android
+     -->
+    <string-array name="eventShowAsArray">
+        <item id="Free">Available</item>
+        <item id="Tentative">Tentative</item>
+        <item id="Busy">Busy</item>
+        <item id="Oof">Out Of Facility</item>
+        <item id="WorkingElseWhere">Working Else Where</item>
+        <item id="Unknown">Unknown</item>
+    </string-array>
+
+    <string-array name="recurrenceArray">
+        <item>Never</item>
+        <item>Daily</item>
+        <item>Every Friday</item>
+        <item>Every Workday</item>
+        <item>This day of each month</item>
+        <item>Every second friday</item>
+        <item>Every current day yearly</item>
+        <item>More&#8230;</item>
+    </string-array>
+
+    <string-array name="reminderArray">
+        <item>None</item>
+        <item>1 Minute</item>
+        <item>5 Minutes</item>
+        <item>10 Minutes</item>
+        <item>15 Minutes</item>
+        <item>30 Minutes</item>
+        <item>1 Hour</item>
+        <item>2 Hours</item>
+        <item>3 Hours</item>
+        <item>4 Hours</item>
+        <item>8 Hours</item>
+        <item>12 Hours</item>
+        <item>1 Day</item>
+        <item>2 Days</item>
+        <item>3 Days</item>
+        <item>1 Week</item>
+        <item>2 Weeks</item>
+    </string-array>
+</resources>

@@ -15,5 +15,7 @@
     <color name="white">#ffffff</color>
     <color name="drawer_selected">#e8e8e8</color>
     <color name="drawer">#f9f9f9</color>
-
+    <color name="colorBackgroundLight">#FFFFFF</color>
+    <color name="select">#666666</color>
+    <color name="black">#111111</color>
 </resources>

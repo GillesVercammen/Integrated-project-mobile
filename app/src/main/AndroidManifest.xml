@@ -44,7 +44,7 @@
             />
         <activity android:name=".HomeActivity"></activity>
         <activity android:name=".CalendarActivity"></activity>
-              <activity android:name=".mailing.activity.ReadMailActivity"></activity>
+	<activity android:name=".Calendar.EventActivity"></activity>
     </application>
 
 </manifest>

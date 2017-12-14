@@ -20,7 +20,7 @@ public class UserAuth {
     private static final String TAG = UserAuth.class.getSimpleName();
 
     private final static String CLIENT_ID = "0cebe3b4-4e2d-4c24-8b4b-0ef2510470a5";
-    private final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read", "https://graph.microsoft.com/Mail.Send", "https://graph.microsoft.com/Mail.ReadWrite"};
+    private final static String SCOPES [] = {"https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Mail.Read", "https://graph.microsoft.com/Mail.Send", "https://graph.microsoft.com/Mail.ReadWrite", "https://graph.microsoft.com/Calendars.ReadWrite"};
     private AppCompatActivityRest activity;
     /* Azure AD Variables */
     private PublicClientApplication sampleApp;

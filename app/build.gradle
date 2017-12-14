@@ -37,6 +37,7 @@ dependencies {
     compile 'com.android.support:design:26.0.1'
     compile 'com.android.support:recyclerview-v7:26.0.1'
     implementation "com.android.support:support-annotations:26.0.1"
+    compile 'com.google.code.gson:gson:2.8.0'
 }
 
 configurations.all {
@@ -49,7 +50,3 @@ configurations.all {
         }
     }
 }
-
-
-
-

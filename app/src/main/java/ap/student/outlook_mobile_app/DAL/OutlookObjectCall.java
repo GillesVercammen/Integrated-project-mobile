@@ -9,8 +9,10 @@ public enum OutlookObjectCall {
     READUSER(""),
     READMAIL("/mailfolders"),
     READCALENDAR("/calendars"),
+    READEVENTS("/events"),
     SENDMAIL("/sendMail"),
-    UPDATEMAIL("/messages");
+    UPDATEMAIL("/messages"),
+    POSTEVENT("/events");
     private String action;
 
     OutlookObjectCall(String action) {
