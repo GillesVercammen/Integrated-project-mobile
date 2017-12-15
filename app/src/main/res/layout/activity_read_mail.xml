@@ -7,18 +7,6 @@
     tools:context="ap.student.outlook_mobile_app.mailing.activity.ReadMailActivity"
     tools:layout_editor_absoluteY="25dp">
 
-    <ListView
-        android:id="@+id/folderlist"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="30dp"
-        android:background="@color/white"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <android.support.design.widget.AppBarLayout
         android:id="@+id/barlayout_read"
         android:layout_width="match_parent"
@@ -227,6 +215,32 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/subject_content" />
+
+        <ListView
+            android:id="@+id/folderlist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="40dp"
+            android:background="@color/white"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </ListView>
+
+        <ImageView
+            android:id="@+id/close_folder_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/folderlist"
+            app:layout_constraintTop_toTopOf="@+id/folderlist"
+            app:srcCompat="@drawable/ic_close_black_24dp" />
 
     </android.support.constraint.ConstraintLayout>
 

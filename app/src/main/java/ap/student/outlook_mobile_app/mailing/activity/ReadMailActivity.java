@@ -51,6 +51,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private Toolbar toolbar;
     private ImageView minimize;
     private ImageView maximize;
+    private ImageView closeFolderList;
     private String from_name_content;
     private String from_email_content;
     private String subject_content;
@@ -80,6 +81,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
         from_email = (TextView) findViewById(R.id.from_email_content);
         minimize = (ImageView) findViewById(R.id.minimize);
         mListView = (ListView) findViewById(R.id.folderlist);
+        closeFolderList = (ImageView) findViewById(R.id.close_folder_list);
         minimize.setImageResource(R.drawable.ic_minimize_blackvector_24dp);
 
         minimize.setOnClickListener(new View.OnClickListener() {
@@ -185,8 +187,6 @@ public class ReadMailActivity extends AppCompatActivityRest {
             body_content = "text/html";
         }
 
-
-
         from.setText(from_name_content);
         from_email.setText(from_email_content.toLowerCase());
         from_email.setSelected(true);
@@ -206,7 +206,6 @@ public class ReadMailActivity extends AppCompatActivityRest {
         } else {
             body.loadDataWithBaseURL("", body_content, "text", "utf-8","");
         }
-
     }
 
     @Override
@@ -246,6 +245,14 @@ public class ReadMailActivity extends AppCompatActivityRest {
                 break;
             case R.id.action_map:
                 mListView.setVisibility(View.VISIBLE);
+                closeFolderList.setVisibility(View.VISIBLE);
+                closeFolderList.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mListView.setVisibility(View.GONE);
+                        closeFolderList.setVisibility(View.GONE);
+                    }
+                });
                 break;
         }
 
