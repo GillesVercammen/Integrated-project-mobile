@@ -39,7 +39,58 @@
                 android:textSize="18sp" />
 
             <AutoCompleteTextView
+                android:labelFor="@+id/recipientTextField"
                 android:id="@+id/recipientTextField"
+                android:layout_width="252dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/transparent" />
+        </LinearLayout>
+
+        <View
+            style="@style/Divider"
+            android:layout_width="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="62dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=" Cc"
+                android:textSize="18sp" />
+
+            <AutoCompleteTextView
+                android:labelFor="@+id/ccTextField"
+                android:id="@+id/ccTextField"
+                android:layout_width="252dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/transparent" />
+        </LinearLayout>
+
+        <View
+            style="@style/Divider"
+            android:layout_width="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="62dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=" Bcc"
+                android:textSize="18sp" />
+
+            <AutoCompleteTextView
+                android:labelFor="@+id/bccTextField"
+                android:id="@+id/bccTextField"
                 android:layout_width="252dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

@@ -1,6 +1,5 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -19,7 +18,6 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
@@ -27,7 +25,7 @@ import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Contact;
 import ap.student.outlook_mobile_app.DAL.models.EmailAddress;
 import ap.student.outlook_mobile_app.DAL.models.Message;
-import ap.student.outlook_mobile_app.DAL.models.ToRecipients;
+import ap.student.outlook_mobile_app.DAL.models.Recipient;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 
@@ -39,6 +37,8 @@ public class NewMailActivity extends AppCompatActivityRest {
 
     private static final String TAG = "NewMailActivity";
     private AutoCompleteTextView recipientTextField;
+    private AutoCompleteTextView ccTextField;
+    private AutoCompleteTextView bccTextField;
     private EditText subjectTextField;
     private EditText messageTextField;
     private List<Contact> contacts = new ArrayList<>();
@@ -55,14 +55,7 @@ public class NewMailActivity extends AppCompatActivityRest {
         setSupportActionBar(toolbar);
 
         //https://developer.android.com/reference/android/widget/AutoCompleteTextView.html
-        //getContacts through API, map to objects, getEmails (String), put Strings in list and connect them to AutoCompleteTextView
         getContacts();
-
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-        //        android.R.layout.simple_dropdown_item_1line, contactList);
-        //AutoCompleteTextView textView = (AutoCompleteTextView)
-        //        findViewById(R.id.recipientTextField);
-        //textView.setAdapter(adapter);
 
     }
 
@@ -106,7 +99,6 @@ public class NewMailActivity extends AppCompatActivityRest {
                 for (int i=0; i<contacts.size(); i++)
                 {
                     if (contacts.get(i).getEmailAddresses().size() > 0) {
-                        //System.out.println(contacts.get(i).getEmailAddresses().get(0).getAddress());
                         contactList[j] = contacts.get(i).getEmailAddresses().get(0).getAddress();
                         j++;
                     }
@@ -119,10 +111,18 @@ public class NewMailActivity extends AppCompatActivityRest {
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                         android.R.layout.simple_dropdown_item_1line, contactList);
+
                 AutoCompleteTextView textView = (AutoCompleteTextView)
                         findViewById(R.id.recipientTextField);
-                textView.setAdapter(adapter);
+                //AutoCompleteTextView textView2 = (AutoCompleteTextView)
+                //        findViewById(R.id.ccTextField);
+                //AutoCompleteTextView textView3 = (AutoCompleteTextView)
+                //        findViewById(R.id.bccTextField);
 
+                textView.setAdapter(adapter);
+                //textView2.setAdapter(adapter);
+                //textView3.setAdapter(adapter);
+                
             }
             break;
 
@@ -166,13 +166,24 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         //make object from our input fields
         Body body = new Body(messageString, "Text");
-        List<ToRecipients> toRecipientsList = new ArrayList<>();
-        EmailAddress emailAddress = new EmailAddress(recipientsString);
-        ToRecipients toRecipients = new ToRecipients(emailAddress);
-        toRecipientsList.add(toRecipients);
+
+        List<Recipient> toRecipients = new ArrayList<>();
+        //List<Recipient> ccRecipients = new ArrayList<>();
+        //List<Recipient> bccRecipients = new ArrayList<>();
+
+        EmailAddress toEmailAddress = new EmailAddress(recipientsString);
+        Recipient toRecipient = new Recipient(toEmailAddress);
+        //EmailAddress ccEmailAddress = new EmailAddress(recipientsString);
+        //Recipient ccRecipient = new Recipient(ccEmailAddress);
+        //EmailAddress bccEmailAddress = new EmailAddress(recipientsString);
+        //Recipient bccRecipient = new Recipient(bccEmailAddress);
+
+        toRecipients.add(toRecipient);
+        //ccRecipients.add(ccRecipient);
+        //bccRecipients.add(bccRecipient);
 
         //this is our full Message object to send
-        Message message = new Message(subject, body, toRecipientsList);
+        Message message = new Message(subject, body, toRecipients);
 
         //convert Message object to JSON
         JSONObject JSON = new JSONObject(new Gson().toJson(message));
