@@ -2,6 +2,7 @@ package ap.student.outlook_mobile_app.Calendar;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -21,6 +22,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,10 +38,15 @@ import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ReminderMinutesBeforeStart;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ShowAs;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
+import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
+import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.DateTimeTimeZone;
 import ap.student.outlook_mobile_app.DAL.models.Event;
-import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Location;
+import ap.student.outlook_mobile_app.DAL.models.PatternedRecurrence;
+import ap.student.outlook_mobile_app.DAL.models.RecurrencePattern;
+import ap.student.outlook_mobile_app.DAL.models.RecurrenceRange;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 
@@ -69,6 +76,7 @@ public class EventActivity extends AppCompatActivityRest {
     private DatePickerDialog datePicker;
     private TimePickerDialog timePicker;
     private boolean isStartTime;
+    private PatternedRecurrence customRecurrence;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +153,7 @@ public class EventActivity extends AppCompatActivityRest {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (recurrenceMap.get(position).action().equals(Recurrence.MORE.action())) {
-                    // meer
+                    onMoreSelected();
                 }
             }
 
@@ -163,6 +171,70 @@ public class EventActivity extends AppCompatActivityRest {
         });
     }
 
+    private void onMoreSelected() {
+        startActivityForResult(new Intent(this, CustomRecurrenceActivity.class), 200);
+    }
+
+    private PatternedRecurrence setRecurrence(Recurrence recurrence, LocalDate startDate) {
+        PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
+        RecurrencePattern recurrencePattern = new RecurrencePattern();
+        RecurrenceRange recurrenceRange = new RecurrenceRange();
+
+
+        recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
+        recurrenceRange.setStartDate(startDate);
+        recurrencePattern.setFirstDayOfWeek(DayOfWeek.SUNDAY.name());
+
+        switch (recurrence) {
+            case DAILY: {
+                recurrencePattern.setInterval(1);
+                recurrencePattern.setType(recurrence.action());
+            }
+            break;
+            case EVERY_FRIDAY: {
+                recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
+                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setInterval(1);
+            }
+            break;
+            case EVERY_WORKDAY: {
+                recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
+                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.MONDAY.name(), DayOfWeek.TUESDAY.name(), DayOfWeek.WEDNESDAY.name(), DayOfWeek.THURSDAY.name(), DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setInterval(1);
+            }
+            break;
+            case EACH_MONTH_TODAY: {
+                recurrencePattern.setType(RecurrencePatternType.ABSOLUTEMONTHLY.value());
+                recurrencePattern.setDayOfMonth(startDate.getDayOfMonth());
+                recurrencePattern.setInterval(1);
+            }
+            break;
+            case EVERY_SECOND_FRIDAY: {
+                recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
+                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setInterval(2);
+            }
+            break;
+            case EVERY_YEAR: {
+                recurrencePattern.setType(RecurrencePatternType.ABSOLUTEYEARLY.value());
+                recurrencePattern.setMonth(startDate.getMonthValue());
+                recurrencePattern.setDayOfMonth(startDate.getDayOfMonth());
+                recurrencePattern.setInterval(1);
+            }
+            break;
+            case MORE: {
+                // TODO : more...
+            }
+            default:
+            case NEVER: {
+                return null;
+            }
+        }
+        patternedRecurrence.setPattern(recurrencePattern);
+        patternedRecurrence.setRange(recurrenceRange);
+        return patternedRecurrence;
+    }
+
     private void onConfirmButtonClicked() {
         Event event = new Event();
         event.setSubject(titleTextInput.getText().toString());
@@ -170,7 +242,7 @@ public class EventActivity extends AppCompatActivityRest {
         event.setLocation(new Location(locationTextInput.getText().toString()));
 
         if (!recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()).equals(Recurrence.NEVER)) {
-            event.setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), LocalDate.of(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth()));
+            event.setRecurrence(setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), LocalDate.of(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth())));
         }
 
         if (isAllDayCheckBox.isChecked()) {

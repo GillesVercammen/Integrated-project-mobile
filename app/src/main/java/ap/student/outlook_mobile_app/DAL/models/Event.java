@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
+import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
 
 /**
@@ -250,28 +251,7 @@ public class Event {
         return recurrence;
     }
 
-    public void setRecurrence(Recurrence recurrence, LocalDate startDate) {
-        PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
-        RecurrencePattern recurrencePattern = new RecurrencePattern();
-        RecurrenceRange recurrenceRange = new RecurrenceRange();
-        switch (recurrence) {
-            case DAILY: {
-                recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
-                recurrenceRange.setStartDate(startDate);
-
-                recurrencePattern.setInterval(1);
-                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.SUNDAY.name() });
-                recurrencePattern.setType(recurrence.action());
-            }
-            break;
-            case EVERY_FRIDAY: {
-                recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
-                recurrenceRange.setStartDate(startDate);
-                recurrencePattern.setType("weekly");
-            }
-        }
-        patternedRecurrence.setPattern(recurrencePattern);
-        patternedRecurrence.setRange(recurrenceRange);
+    public void setRecurrence(PatternedRecurrence patternedRecurrence) {
         this.recurrence = patternedRecurrence;
     }
 
