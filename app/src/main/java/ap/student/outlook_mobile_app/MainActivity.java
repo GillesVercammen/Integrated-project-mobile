@@ -5,18 +5,25 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.microsoft.identity.client.User;
 
 import org.json.JSONObject;
 
 import ap.student.outlook_mobile_app.BLL.Authentication;
-import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 
 public class MainActivity extends AppCompatActivityRest {
-    Button callGraphButton;
+    private Button offlineButton;
+    private Button loginButton;
+    private RelativeLayout loginView;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,15 +34,29 @@ public class MainActivity extends AppCompatActivityRest {
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
 
-        callGraphButton = (Button) findViewById(R.id.callGraph);
+        offlineButton = (Button) findViewById(R.id.offlineButton);
+        loginButton = (Button) findViewById(R.id.loginButton);
+        loginView = (RelativeLayout) findViewById(R.id.loadingPanel);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        callGraphButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                onCallGraphClicked();
+                actionLogin(true);
             }
         });
 
-        actionLogin();
+        offlineButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                onOfflineButtonClicked();
+            }
+        });
+
+        if (connectivityManager.isConnected()) {
+            actionLogin();
+        } else {
+            setLoginButton();
+        }
     }
 
     @Override
@@ -46,50 +67,37 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     public void loginSuccessfull() {
-        startActivity(new Intent(this, HomeActivity.class)
-            .putExtra("USER_NAME", Authentication.getAuthentication().getAuthResult().getUser().getName())
-            .putExtra("USER_EMAIL", Authentication.getAuthentication().getAuthResult().getUser().getDisplayableId()));
+        startActivity(new Intent(this, HomeActivity.class));
         this.finish();
-        //callGraphAPI();
-        updateSuccessUI();
+        editor.putString("User", new Gson().toJson(Authentication.getAuthentication().getAuthResult().getUser()));
+        editor.commit();
     }
 
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject graphResponse) {
-        if (outlookObjectCall.equals(OutlookObjectCall.LOGINERROR)) {
-            Toast.makeText(this, "CANNOT LOG IN", Toast.LENGTH_LONG).show();
-            actionLogin();
+        switch (outlookObjectCall) {
+            case LOGINERROR: {
+                setLoginButton();
+                Toast.makeText(this, "Can't connect to the internet, you can try again, or continue offline.", Toast.LENGTH_LONG).show();
+            }
+            break;
+            case PERMISSIONSERROR: {
+                Toast.makeText(this, "CANNOT LOG IN", Toast.LENGTH_LONG).show();
+            }
+            break;
         }
     }
 
-    /* Set the UI for successful token acquisition data */
-    public void updateSuccessUI() {
-        String paramString = Authentication.getAuthentication().getAuthResult().getUser().getName();
-        String formattedString = getString(R.string.welcome, paramString);
-        callGraphButton.setVisibility(View.INVISIBLE);
-        ((TextView) findViewById(R.id.welcome)).setText(formattedString);
-    }
-
-    private void onCallGraphClicked() {
-        actionLogin(true);
+    private void onOfflineButtonClicked() {
+        Toast.makeText(this, "USING APP OFFLINE", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(this, HomeActivity.class));
     }
 
     /* Handles the redirect from the System Browser */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         handleInteractiveRequestRedirect(requestCode, resultCode, data);
-        callGraphButton.setVisibility(View.VISIBLE);
-        findViewById(R.id.welcome).setVisibility(View.VISIBLE);
-        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-    }
-
-    /* Use Volley to make an HTTP request to the /me endpoint from MS Graph using an access token */
-    public void callGraphAPI() {
-        try {
-            new GraphAPI().getRequest(OutlookObjectCall.READUSER, this);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        setLoginButton();
     }
 
     @Override
@@ -97,5 +105,10 @@ public class MainActivity extends AppCompatActivityRest {
         super.actionLogout();
         this.finish();
         return false;
+    }
+
+    private void setLoginButton() {
+        progressBar.setVisibility(View.GONE);
+        loginButton.setVisibility(View.VISIBLE);
     }
 }
