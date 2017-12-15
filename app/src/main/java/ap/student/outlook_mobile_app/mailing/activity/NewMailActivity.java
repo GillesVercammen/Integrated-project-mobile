@@ -50,6 +50,9 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         subjectTextField = (EditText) findViewById(R.id.subjectTextField);
         messageTextField = (EditText) findViewById(R.id.messageTextField);
+        recipientTextField = (AutoCompleteTextView) findViewById(R.id.recipientTextField);
+        ccTextField = (AutoCompleteTextView) findViewById(R.id.ccTextField);
+        bccTextField = (AutoCompleteTextView) findViewById(R.id.bccTextField);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,6 +67,7 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         switch (outlookObjectCall) {
             case READCONTACTS: {
+                System.out.println(response.toString());
                 System.out.println("Reading contacts");
 
                 JSONObject list = response;
@@ -105,7 +109,7 @@ public class NewMailActivity extends AppCompatActivityRest {
                 }
 
                 for (String c : contactList
-                     ) {
+                        ) {
                     System.out.println(c);
                 }
 
@@ -114,17 +118,22 @@ public class NewMailActivity extends AppCompatActivityRest {
 
                 AutoCompleteTextView textView = (AutoCompleteTextView)
                         findViewById(R.id.recipientTextField);
-                //AutoCompleteTextView textView2 = (AutoCompleteTextView)
-                //        findViewById(R.id.ccTextField);
-                //AutoCompleteTextView textView3 = (AutoCompleteTextView)
-                //        findViewById(R.id.bccTextField);
+                AutoCompleteTextView textView2 = (AutoCompleteTextView)
+                        findViewById(R.id.ccTextField);
+                AutoCompleteTextView textView3 = (AutoCompleteTextView)
+                        findViewById(R.id.bccTextField);
 
                 textView.setAdapter(adapter);
-                //textView2.setAdapter(adapter);
-                //textView3.setAdapter(adapter);
-                
+                textView2.setAdapter(adapter);
+                textView3.setAdapter(adapter);
+
             }
             break;
+
+            case SENDMAIL: {
+                System.out.println(response.toString());
+            }
+
 
         }
     }
@@ -159,29 +168,38 @@ public class NewMailActivity extends AppCompatActivityRest {
 
     public void sendMail() throws JSONException {
 
+        List<Recipient> toRecipients = new ArrayList<>();
+        List<Recipient> ccRecipients = new ArrayList<>();
+        List<Recipient> bccRecipients = new ArrayList<>();
+
         //take input from user and parse to String
         String recipientsString = recipientTextField.getText().toString();
+        String[] recipientsSplit = recipientsString.split(";");
+        for (String s : recipientsSplit) {
+            System.out.println(s);
+            EmailAddress toEmailAddress = new EmailAddress(s);
+            Recipient toRecipient = new Recipient(toEmailAddress);
+            toRecipients.add(toRecipient);
+        }
+
+        String ccString = ccTextField.getText().toString();
+        String bccString = bccTextField.getText().toString();
         String subject = subjectTextField.getText().toString();
         String messageString = messageTextField.getText().toString();
 
         //make object from our input fields
         Body body = new Body(messageString, "Text");
 
-        List<Recipient> toRecipients = new ArrayList<>();
-        //List<Recipient> ccRecipients = new ArrayList<>();
-        //List<Recipient> bccRecipients = new ArrayList<>();
-
-        EmailAddress toEmailAddress = new EmailAddress(recipientsString);
-        Recipient toRecipient = new Recipient(toEmailAddress);
-        //EmailAddress ccEmailAddress = new EmailAddress(recipientsString);
+        //EmailAddress ccEmailAddress = new EmailAddress(ccString);
         //Recipient ccRecipient = new Recipient(ccEmailAddress);
-        //EmailAddress bccEmailAddress = new EmailAddress(recipientsString);
+        //EmailAddress bccEmailAddress = new EmailAddress(bccString);
         //Recipient bccRecipient = new Recipient(bccEmailAddress);
 
-        toRecipients.add(toRecipient);
+        //toRecipients.add(toRecipient);
         //ccRecipients.add(ccRecipient);
         //bccRecipients.add(bccRecipient);
 
+        //optional: subject, toRecipients, ccRecipients, bccRecipients
         //this is our full Message object to send
         Message message = new Message(subject, body, toRecipients);
 
@@ -191,6 +209,8 @@ public class NewMailActivity extends AppCompatActivityRest {
         //wrap JSONobject in another JSONobject to make sure format is correct {"message": message}
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("message", JSON);
+
+        System.out.println(jsonMessage);
 
         //do our call
         try {
