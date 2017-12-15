@@ -69,12 +69,13 @@ public class Authentication {
 
                 if (exception instanceof MsalClientException) {
                 /* Exception inside MSAL, more info inside MsalError.java */
+                    activity.processResponse(OutlookObjectCall.LOGINERROR, new JSONObject());
                 } else if (exception instanceof MsalServiceException) {
                 /* Exception when communicating with the STS, likely config issue */
                 } else if (exception instanceof MsalUiRequiredException) {
                 /* Tokens expired or no session, retry with interactive */
                     Log.e("STUCK","Check if the app has the permissions on M$ website.");
-                    activity.processResponse(OutlookObjectCall.LOGINERROR, new JSONObject());
+                    activity.processResponse(OutlookObjectCall.PERMISSIONSERROR, new JSONObject());
                 }
             }
 
