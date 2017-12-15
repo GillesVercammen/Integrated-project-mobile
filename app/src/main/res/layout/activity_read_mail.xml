@@ -7,6 +7,18 @@
     tools:context="ap.student.outlook_mobile_app.mailing.activity.ReadMailActivity"
     tools:layout_editor_absoluteY="25dp">
 
+    <ListView
+        android:id="@+id/folderlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="30dp"
+        android:background="@color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/barlayout_read"
         android:layout_width="match_parent"

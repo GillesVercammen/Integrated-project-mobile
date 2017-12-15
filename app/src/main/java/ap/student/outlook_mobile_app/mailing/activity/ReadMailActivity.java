@@ -12,6 +12,7 @@ import android.view.Window;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +59,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private String id;
     private String date;
     private String contentType;
+    private ListView mListView;
     private ArrayList<MailFolder> folderObjectList;
     private ArrayList<MailFolder> foldersWithMail;
     private ArrayList<String> foldernames;
@@ -77,7 +79,9 @@ public class ReadMailActivity extends AppCompatActivityRest {
         body = (WebView) findViewById(R.id.body_content);
         from_email = (TextView) findViewById(R.id.from_email_content);
         minimize = (ImageView) findViewById(R.id.minimize);
+        mListView = (ListView) findViewById(R.id.folderlist);
         minimize.setImageResource(R.drawable.ic_minimize_blackvector_24dp);
+
         minimize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -184,10 +188,10 @@ public class ReadMailActivity extends AppCompatActivityRest {
 
 
         from.setText(from_name_content);
-        from_email.setText(from_email_content);
+        from_email.setText(from_email_content.toLowerCase());
         from_email.setSelected(true);
         String to = String.valueOf(allRecepientsEmails);
-        recipients.setText(to.substring(1, to.length() - 1));
+        recipients.setText(to.toLowerCase().substring(1, to.length() - 1));
         recipients.setSelected(true);
         try {
             receivedDate.setText(transformDate(date));
@@ -198,10 +202,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
         body.setPadding(0,0,0,0);
         if (contentType.equals("html")) {
             body.loadDataWithBaseURL("", body_content, "text/html", "utf-8","");
-            body.setInitialScale(1);
             body.getSettings().setLoadWithOverviewMode(true);
-            body.getSettings().setUseWideViewPort(true);
-            body.getSettings().setJavaScriptEnabled(true);
         } else {
             body.loadDataWithBaseURL("", body_content, "text", "utf-8","");
         }
@@ -244,6 +245,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
                 // go to new email screen
                 break;
             case R.id.action_map:
+                mListView.setVisibility(View.VISIBLE);
                 break;
         }
 
