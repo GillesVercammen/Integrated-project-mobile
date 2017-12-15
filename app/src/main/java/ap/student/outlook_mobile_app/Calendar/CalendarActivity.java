@@ -104,6 +104,9 @@ public class CalendarActivity extends AppCompatActivityRest {
 
         gson = new Gson();
 
+        calendar = gson.fromJson(sharedPreferences.getString("Calendars", "{}"), Calendar.class);
+        event = gson.fromJson(sharedPreferences.getString("Events", "{}"), Event.class);
+
         try {
             //new GraphAPI().getRequest(OutlookObjectCall.READCALENDARS, this);
             new GraphAPI().getRequest(OutlookObjectCall.READEVENTS, this);
@@ -124,15 +127,17 @@ public class CalendarActivity extends AppCompatActivityRest {
         switch (outlookObjectCall) {
             case READCALENDAR: {
                 calendar = gson.fromJson(response.toString(), Calendar.class);
-                System.out.println(calendar.getCalendars()[0].getOwner().getName());
+                editor.putString("Calendars", response.toString());
             }
             break;
             case READEVENTS: {
                 event = gson.fromJson(response.toString(), Event.class);
                 buildMonthCalendar();
+                editor.putString("Events", response.toString());
             }
             break;
         }
+        editor.commit();
     }
 
     private void editDayButtonClicked() {
@@ -249,7 +254,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private boolean checkIfEvent(LocalDateTime index) {
-        if (event == null) {
+        if (event == null || event.getEvents() == null) {
             return false;
         }
         for (Event event : event.getEvents()) {
