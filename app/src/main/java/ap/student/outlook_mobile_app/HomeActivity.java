@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import ap.student.outlook_mobile_app.BLL.Authentication;
 import ap.student.outlook_mobile_app.Calendar.CalendarActivity;
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
@@ -34,6 +35,7 @@ public class HomeActivity extends AppCompatActivityRest {
     private ArrayList<MailFolder> foldersWithMail;
     private ArrayList<String> foldernames;
     private ArrayList<Integer> folderunread;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +58,18 @@ public class HomeActivity extends AppCompatActivityRest {
             }
         });
 
-        try {
-            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        if (connectivityManager.isConnected()) {
+            try {
+                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            user = Authentication.getAuthentication().getAuthResult().getUser();
+        } else {
+            user = new Gson().fromJson(sharedPreferences.getString("User",  "{}"), User.class);
+            foldersWithMail = new Gson().fromJson(sharedPreferences.getString("MailFolders", "[]"), new TypeToken<ArrayList<MailFolder>>(){}.getType());
         }
 
-        User user = new Gson().fromJson(sharedPreferences.getString("User", "{}"), User.class);
         if (user.getName() != null) {
             getSupportActionBar().setTitle("welcome ".concat(user.getName()));
         }
@@ -92,21 +99,22 @@ public class HomeActivity extends AppCompatActivityRest {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                editor.putString("MailFolders", new Gson().toJson(foldersWithMail));
             }
             break;
         }
+        editor.commit();
     }
 
     private void onMailButtonClicked() {
         String user_name = "user_name";
         String user_email = "user_email";
-            User user = new Gson().fromJson(sharedPreferences.getString("User",  "{}"), User.class);
             if (user.getName() != null) {
                 user_name = user.getName();
                 user_email = user.getDisplayableId();
             }
         Bundle args = new Bundle();
-        args.putSerializable("FOLDERS",(Serializable)foldersWithMail);
+        args.putSerializable("FOLDERS", (Serializable) foldersWithMail);
         startActivity(new Intent(this, MailActivity.class)
             .putExtra("USER_NAME", user_name)
             .putExtra("USER_EMAIL", user_email)
