@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.microsoft.identity.client.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,8 +34,6 @@ public class HomeActivity extends AppCompatActivityRest {
     private ArrayList<MailFolder> foldersWithMail;
     private ArrayList<String> foldernames;
     private ArrayList<Integer> folderunread;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +62,10 @@ public class HomeActivity extends AppCompatActivityRest {
             e.printStackTrace();
         }
 
+        User user = new Gson().fromJson(sharedPreferences.getString("User", "{}"), User.class);
+        if (user.getName() != null) {
+            getSupportActionBar().setTitle("welcome ".concat(user.getName()));
+        }
     }
 
     @Override
@@ -95,8 +98,13 @@ public class HomeActivity extends AppCompatActivityRest {
     }
 
     private void onMailButtonClicked() {
-        String user_email = getIntent().getStringExtra("USER_EMAIL");
-        String user_name = getIntent().getStringExtra("USER_NAME");
+        String user_name = "user_name";
+        String user_email = "user_email";
+            User user = new Gson().fromJson(sharedPreferences.getString("User",  "{}"), User.class);
+            if (user.getName() != null) {
+                user_name = user.getName();
+                user_email = user.getDisplayableId();
+            }
         Bundle args = new Bundle();
         args.putSerializable("FOLDERS",(Serializable)foldersWithMail);
         startActivity(new Intent(this, MailActivity.class)

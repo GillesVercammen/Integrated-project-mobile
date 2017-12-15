@@ -13,7 +13,8 @@ public enum OutlookObjectCall {
     SENDMAIL("/sendMail"),
     UPDATEMAIL("/messages"),
     POSTEVENT("/events"),
-    LOGINERROR("/loginError");
+    LOGINERROR("/loginError"),
+    PERMISSIONSERROR("/permissionsError");
     private String action;
 
     OutlookObjectCall(String action) {
