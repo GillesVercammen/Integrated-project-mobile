@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -42,6 +45,11 @@ public class NewMailActivity extends AppCompatActivityRest {
     private EditText subjectTextField;
     private EditText messageTextField;
     private List<Contact> contacts = new ArrayList<>();
+    private LinearLayout ccBar;
+    private LinearLayout bccBar;
+    private View ccView;
+    private View bccView;
+    private boolean hasOpenedMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +64,44 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        ImageView moreRecipients = (ImageView)findViewById(R.id.moreRecipients);
+
+        ccBar = (LinearLayout) findViewById(R.id.ccBar);
+        bccBar = (LinearLayout) findViewById(R.id.bccBar);
+        ccView = (View) findViewById(R.id.ccView);
+        bccView = (View) findViewById(R.id.bccView);
+
+        ccBar.setVisibility(View.GONE);
+        bccBar.setVisibility(View.GONE);
+        ccView.setVisibility(View.GONE);
+        bccView.setVisibility(View.GONE);
+        hasOpenedMenu = false;
+
+        moreRecipients.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                hasOpenedMenu = !hasOpenedMenu;
+
+                if (hasOpenedMenu) {
+                    ccBar.setVisibility(View.VISIBLE);
+                    bccBar.setVisibility(View.VISIBLE);
+                    ccView.setVisibility(View.VISIBLE);
+                    bccView.setVisibility(View.VISIBLE);
+                } else if (!hasOpenedMenu) {
+                    ccBar.setVisibility(View.GONE);
+                    bccBar.setVisibility(View.GONE);
+                    ccView.setVisibility(View.GONE);
+                    bccView.setVisibility(View.GONE);
+                }
+
+            }
+        });
 
         //https://developer.android.com/reference/android/widget/AutoCompleteTextView.html
         getContacts();
@@ -163,45 +209,48 @@ public class NewMailActivity extends AppCompatActivityRest {
             return true;
         }
 
+        else if (id == android.R.id.home) {
+            this.finish();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     public void sendMail() throws JSONException {
 
-        List<Recipient> toRecipients = new ArrayList<>();
-        List<Recipient> ccRecipients = new ArrayList<>();
-        List<Recipient> bccRecipients = new ArrayList<>();
-
-        //take input from user and parse to String
-        String recipientsString = recipientTextField.getText().toString();
-        String[] recipientsSplit = recipientsString.split(";");
-        for (String s : recipientsSplit) {
-            System.out.println(s);
-            EmailAddress toEmailAddress = new EmailAddress(s);
-            Recipient toRecipient = new Recipient(toEmailAddress);
-            toRecipients.add(toRecipient);
-        }
-
-        String ccString = ccTextField.getText().toString();
-        String bccString = bccTextField.getText().toString();
         String subject = subjectTextField.getText().toString();
         String messageString = messageTextField.getText().toString();
-
-        //make object from our input fields
         Body body = new Body(messageString, "Text");
 
-        //EmailAddress ccEmailAddress = new EmailAddress(ccString);
-        //Recipient ccRecipient = new Recipient(ccEmailAddress);
-        //EmailAddress bccEmailAddress = new EmailAddress(bccString);
-        //Recipient bccRecipient = new Recipient(bccEmailAddress);
+        String recipientsString = recipientTextField.getText().toString();
+        List<Recipient> toRecipients = splitEmailadresses(recipientsString);
+        String ccString = ccTextField.getText().toString();
+        String bccString = bccTextField.getText().toString();
 
-        //toRecipients.add(toRecipient);
-        //ccRecipients.add(ccRecipient);
-        //bccRecipients.add(bccRecipient);
+        Message message;
 
-        //optional: subject, toRecipients, ccRecipients, bccRecipients
-        //this is our full Message object to send
-        Message message = new Message(subject, body, toRecipients);
+        if (!bccString.equals("") && !ccString.equals(""))
+        {
+            System.out.println("There's CC and BCC!");
+            List<Recipient> ccRecipients = splitEmailadresses(ccString);
+            List<Recipient> bccRecipients = splitEmailadresses(bccString);
+            message = new Message(subject, body, toRecipients, ccRecipients, bccRecipients);
+        }
+        else if (!ccString.equals("")) {
+            System.out.println("There's CC!");
+            List<Recipient> ccRecipients = splitEmailadresses(ccString);
+            message = new Message(subject, body, toRecipients, ccRecipients);
+        }
+
+        else if (!bccString.equals("")) {
+            System.out.println("There's BCC!");
+            List<Recipient> bccRecipients = splitEmailadresses(bccString);
+            message = new Message(body, toRecipients, bccRecipients, subject);
+        }
+        else {
+            System.out.println("Else!");
+            message = new Message(subject, body, toRecipients);
+        }
 
         //convert Message object to JSON
         JSONObject JSON = new JSONObject(new Gson().toJson(message));
@@ -231,6 +280,22 @@ public class NewMailActivity extends AppCompatActivityRest {
             e.printStackTrace();
         }
         System.out.println();
+    }
+
+    public List<Recipient> splitEmailadresses(String emailString){
+
+        String[] recipientsSplit = emailString.split(";");
+        List<Recipient> recipients = new ArrayList<>();
+
+        for (String s : recipientsSplit) {
+            System.out.println(s);
+            EmailAddress toEmailAddress = new EmailAddress(s);
+            Recipient toRecipient = new Recipient(toEmailAddress);
+            recipients.add(toRecipient);
+        }
+
+        return recipients;
+
     }
 
 }

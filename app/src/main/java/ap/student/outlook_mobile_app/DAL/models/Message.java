@@ -29,6 +29,20 @@ public class Message {
         this.toRecipients = toRecipients;
     }
 
+    public Message(String subject, Body body, List<Recipient> toRecipients, List<Recipient> ccRecipients) {
+        this.subject = subject;
+        this.body = body;
+        this.toRecipients = toRecipients;
+        this.ccRecipients = ccRecipients;
+    }
+
+    public Message(Body body, List<Recipient> toRecipients, List<Recipient> bccRecipients, String subject) {
+        this.body = body;
+        this.toRecipients = toRecipients;
+        this.bccRecipients = bccRecipients;
+        this.subject = subject;
+
+    }
 
     public Message(String subject, Body body, List<Recipient> toRecipients, List<Recipient> ccRecipients, List<Recipient> bccRecipients) {
         this.subject = subject;
