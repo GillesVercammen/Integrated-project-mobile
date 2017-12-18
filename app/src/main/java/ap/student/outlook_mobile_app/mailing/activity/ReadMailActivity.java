@@ -1,7 +1,9 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.Menu;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,6 +38,7 @@ import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
+import ap.student.outlook_mobile_app.mailing.adapter.FolderAdapter;
 import ap.student.outlook_mobile_app.mailing.model.EmailAddress;
 import ap.student.outlook_mobile_app.mailing.model.MailFolder;
 import ap.student.outlook_mobile_app.mailing.model.Recipient;
@@ -52,6 +56,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private ImageView minimize;
     private ImageView maximize;
     private ImageView closeFolderList;
+    private ImageView bgTemp;
     private String from_name_content;
     private String from_email_content;
     private String subject_content;
@@ -62,7 +67,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private String contentType;
     private ListView mListView;
     private ArrayList<MailFolder> folderObjectList;
-    private ArrayList<MailFolder> foldersWithMail;
+    private ArrayList<MailFolder> folders;
     private ArrayList<String> foldernames;
     private ArrayList<Integer> folderunread;
 
@@ -82,6 +87,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
         minimize = (ImageView) findViewById(R.id.minimize);
         mListView = (ListView) findViewById(R.id.folderlist);
         closeFolderList = (ImageView) findViewById(R.id.close_folder_list);
+        bgTemp = (ImageView) findViewById(R.id.bg_temp);
         minimize.setImageResource(R.drawable.ic_minimize_blackvector_24dp);
 
         minimize.setOnClickListener(new View.OnClickListener() {
@@ -228,31 +234,93 @@ public class ReadMailActivity extends AppCompatActivityRest {
                 finish();
                 break;
             case R.id.action_delete:
-                try {
-                    new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this,"/" + getIntent().getStringExtra("ID"));
-                    Toast.makeText(this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent();
-                    intent.putExtra("POSITION", getIntent().getIntExtra("POSITION", -1));
-                    setResult(500,intent);
-                    finish();//finishing activity
-                } catch (IllegalAccessException e) {
-                    Toast.makeText(this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
-                    e.getStackTrace();
-                }
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReadMailActivity.this);
+                alertDialogBuilder.setTitle(R.string.alert_delete_title)
+                        .setIcon(R.drawable.ic_delete_black_24dp)
+                        .setMessage(R.string.alert_delete_message)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                try {
+                                    new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL, ReadMailActivity.this,"/" + getIntent().getStringExtra("ID"));
+                                    Toast.makeText(ReadMailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent();
+                                    intent.putExtra("POSITION", getIntent().getIntExtra("POSITION", -1));
+                                    setResult(500,intent);
+                                    finish();//finishing activity
+                                } catch (IllegalAccessException e) {
+                                    Toast.makeText(ReadMailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
+                                    e.getStackTrace();
+                                }
+                                Intent intent = new Intent();
+                                setResult(500,intent);
+                                finish();//finishing activity
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .create()
+                        .show();
                 break;
             case R.id.reply:
                 // go to new email screen
                 break;
             case R.id.action_map:
+                folders = new Gson().fromJson(sharedPreferences.getString("AllMailFolders", "[]"), new TypeToken<ArrayList<MailFolder>>(){}.getType());
                 mListView.setVisibility(View.VISIBLE);
                 closeFolderList.setVisibility(View.VISIBLE);
+                bgTemp.setVisibility(View.VISIBLE);
+                FolderAdapter adapter = new FolderAdapter(this, folders);
+                mListView.setAdapter(adapter);
+                mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                        final MailFolder selectedFolder = folders.get(position);
+                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReadMailActivity.this);
+                        alertDialogBuilder.setTitle(R.string.alert_folder_title)
+                                .setIcon(R.drawable.ic_folder_bluevector_24dp)
+                                .setMessage(R.string.alert_folder_message)
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                JSONObject jsonObject = new JSONObject();
+                                try {
+                                    jsonObject.put("DestinationId", selectedFolder.getId());
+                                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, ReadMailActivity.this, jsonObject, "/" + getIntent().getStringExtra("ID") + "/move");
+                                    Toast.makeText(ReadMailActivity.this, R.string.move_succeed, Toast.LENGTH_SHORT).show();
+
+                                } catch (JSONException | IllegalAccessException e) {
+                                    Toast.makeText(ReadMailActivity.this, R.string.move_failed, Toast.LENGTH_SHORT).show();
+                                    e.printStackTrace();
+                                }
+                                Intent intent = new Intent();
+                                setResult(500,intent);
+                                finish();//finishing activity
+                            }
+                        })
+                                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                                .create()
+                                .show();
+                    }
+                });
                 closeFolderList.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         mListView.setVisibility(View.GONE);
                         closeFolderList.setVisibility(View.GONE);
+                        bgTemp.setVisibility(View.GONE);
                     }
                 });
+
                 break;
         }
 

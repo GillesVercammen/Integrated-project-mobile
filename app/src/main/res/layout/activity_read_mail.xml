@@ -214,7 +214,20 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subject_content" />
+            app:layout_constraintTop_toBottomOf="@+id/subject_content">
+        </WebView>
+
+        <ImageView
+            android:id="@+id/bg_temp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@color/black2" />
 
         <ListView
             android:id="@+id/folderlist"
@@ -223,20 +236,19 @@
             android:layout_marginBottom="30dp"
             android:layout_marginEnd="30dp"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="40dp"
-            android:background="@color/white"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/corners"
+            android:padding="4dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-        </ListView>
+            app:layout_constraintTop_toTopOf="parent"></ListView>
 
         <ImageView
             android:id="@+id/close_folder_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/folderlist"
             app:layout_constraintTop_toTopOf="@+id/folderlist"
