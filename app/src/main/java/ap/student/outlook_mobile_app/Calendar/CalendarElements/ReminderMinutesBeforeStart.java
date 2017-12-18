@@ -7,7 +7,6 @@ package ap.student.outlook_mobile_app.Calendar.CalendarElements;
 public enum ReminderMinutesBeforeStart {
     NONE(-1),
     ZERO_MINUTES(0),
-    ONE_MINUTE(1),
     FIVE_MINUTES(5),
     FIFTEEN_MINUTES(15),
     THIRTY(30),

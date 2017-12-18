@@ -179,28 +179,22 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
     }
 
     private void initializeLayout() {
-        int i = 0;
         for (CounterEnum value : CounterEnum.values()) {
-            counterEnumMap.put(i, value);
-            i++;
+            counterEnumMap.put(counterEnumMap.size(), value);
         }
         ArrayAdapter<String> counterAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Arrays.asList(getResources().getStringArray(R.array.specifiedRecurrenceIndexArray)));
         counterSpinner.setAdapter(counterAdapter);
         yearlyWeekCounterSpinner.setAdapter(counterAdapter);
 
-        i = 0;
         for (DayOfWeek day : DayOfWeek.values()) {
-            dayOfWeekMap.put(i, day);
-            i++;
+            dayOfWeekMap.put(dayOfWeekMap.size(), day);
         }
         ArrayAdapter<String> weekDayAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Arrays.asList(getResources().getStringArray(R.array.DaysOfTheWeekArray)));
         daysOfTheWeekSpinner.setAdapter(weekDayAdapter);
         yearlyWeekDaysOfTheWeekSpinner.setAdapter(weekDayAdapter);
 
-        i = 0;
         for (Month month : Month.values()) {
-            monthMap.put(i, month);
-            i++;
+            monthMap.put(monthMap.size(), month);
         }
         ArrayAdapter<String> monthAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Arrays.asList(getResources().getStringArray(R.array.MonthsInTheYearArray)));
         monthsSpinner.setAdapter(monthAdapter);

@@ -61,12 +61,12 @@
         <item>This day of each month</item>
         <item>Every second friday</item>
         <item>Every current day yearly</item>
-        <item>More&#8230;</item>
+        <item>Custom recurrence pattern</item>
     </string-array>
 
     <string-array name="reminderArray">
         <item>None</item>
-        <item>1 Minute</item>
+        <item>0 Minutes</item>
         <item>5 Minutes</item>
         <item>10 Minutes</item>
         <item>15 Minutes</item>

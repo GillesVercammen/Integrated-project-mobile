@@ -119,6 +119,7 @@ public class EventActivity extends AppCompatActivityRest {
         timeZonePicker.setText(TimeZone.getDefault().getDisplayName());
 
         calendar = new Gson().fromJson(getIntent().getStringExtra("calendars"), Calendar.class);
+        agendaSpinner = (Spinner) findViewById(R.id.eventAgendaSpinner);
 
         populateShowAsSpinner();
         populateRecurrenceSpinner();
@@ -160,8 +161,9 @@ public class EventActivity extends AppCompatActivityRest {
         recurrenceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (recurrenceMap.get(position).action().equals(Recurrence.MORE.action())) {
+                if (position > recurrenceMap.size() || recurrenceMap.get(position).action().equals(Recurrence.MORE.action())) {
                     onMoreSelected();
+                    // FIXME : doesn't do shit on reselect
                 }
             }
 
@@ -231,7 +233,6 @@ public class EventActivity extends AppCompatActivityRest {
             }
             break;
             case MORE: {
-                // TODO : more...
                 return customRecurrence;
             }
             default:
@@ -267,16 +268,23 @@ public class EventActivity extends AppCompatActivityRest {
         if (isPrivateCheckBox.isChecked()) { event.setSensitivity("private"); }
         else { event.setSensitivity("normal"); }
 
+        event.setReminderMinutesBeforeStart(reminderMap.get(reminderSpinner.getSelectedItemPosition()).getValue());
+        if (event.getReminderMinutesBeforeStart() != -1) {
+            event.setReminderOn(true);
+        }
+
+        event.setShowAs(showAsMap.get(showAsSpinner.getSelectedItemPosition()).action());
+
         /*event.setAttendees(new Attendee[] {
                 new Attendee("Required", new EmailAddress())
         });*/
 
-        List<String[]> list = new ArrayList<>();
-        //list.add(new String[] { "Prefer:", " Outlook.Timezone=".concat(TimeZone.getDefault().getDisplayName()) });
-        list.add(new String[] {"Content-Type", "application/json"});
+        String calendar = calendarMap.get(agendaSpinner.getSelectedItemPosition()).getId();
+
         try {
             JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
-            new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, jsonObject);
+            //new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, jsonObject);
+            new GraphAPI().postRequest(OutlookObjectCall.POSTCALENDAR, this, jsonObject, "/".concat(calendar).concat(OutlookObjectCall.POSTEVENT.action()));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -307,39 +315,33 @@ public class EventActivity extends AppCompatActivityRest {
     }
 
     private void populateReminderSpinner() {
-        int i = 0;
         for (ReminderMinutesBeforeStart value : ReminderMinutesBeforeStart.values()) {
-            reminderMap.put(i, value);
-            i++;
+            reminderMap.put(reminderMap.size(), value);
         }
         populateSpinner(R.array.reminderArray, reminderSpinner);
     }
 
     private void populateRecurrenceSpinner() {
-        int i = 0;
         for (Recurrence value : Recurrence.values()) {
-            recurrenceMap.put(i, value);
-            i++;
+            recurrenceMap.put(recurrenceMap.size(), value);
         }
         populateSpinner(R.array.recurrenceArray, recurrenceSpinner);
     }
 
     private void populateShowAsSpinner() {
-        int i = 0;
         for (ShowAs value : ShowAs.values()) {
-            showAsMap.put(i, value);
-            i++;
+            showAsMap.put(showAsMap.size(), value);
         }
         populateSpinner(R.array.eventShowAsArray, showAsSpinner);
     }
 
     private void populateAgendaSpinner() {
-        int i = 0;
+        String[] calendars = new String[calendar.getCalendars().length];
         for (Calendar calendar : calendar.getCalendars()) {
-            calendarMap.put(i, calendar);
-            i++;
+            calendars[calendarMap.size()] = calendar.getName();
+            calendarMap.put(calendarMap.size(), calendar);
         }
-        // TODO : agenda populateSpinner(R.array.arra);
+        agendaSpinner.setAdapter(new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, calendars));
     }
 
     private void populateSpinner(int arrayResource, Spinner spinner) {
@@ -356,11 +358,7 @@ public class EventActivity extends AppCompatActivityRest {
         if (requestCode == 200) {
             switch (resultCode) {
                 case Activity.RESULT_OK: {
-                    String recc = data.getStringExtra("PatternedRecurrence");
-                    customRecurrence = new Gson().fromJson(recc, PatternedRecurrence.class);
-                    RecurrenceRange recurrenceRange = customRecurrence.getRange();
-                    recurrenceRange.setStartDate(startTime.toLocalDate());
-                    customRecurrence.setRange(recurrenceRange);
+                    customRecurrence = new Gson().fromJson(data.getStringExtra("PatternedRecurrence"), PatternedRecurrence.class);
                 }
                 break;
                 case Activity.RESULT_CANCELED: {
