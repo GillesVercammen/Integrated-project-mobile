@@ -46,10 +46,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/specifiedRecurrencePatternSpinner" >
 
-        <ViewStub
-            android:id="@+id/recurrenceStub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <include layout="@layout/specified_daily"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_weekly"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_monthly_day"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_monthly_week"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_yearly_day"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_yearly_week"
+            android:visibility="gone" />
     </LinearLayout>
 
     <Button

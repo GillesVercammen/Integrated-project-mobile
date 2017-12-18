@@ -1,5 +1,6 @@
 package ap.student.outlook_mobile_app.Calendar;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -41,6 +42,7 @@ import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
 import ap.student.outlook_mobile_app.DAL.models.Body;
+import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.DateTimeTimeZone;
 import ap.student.outlook_mobile_app.DAL.models.Event;
 import ap.student.outlook_mobile_app.DAL.models.Location;
@@ -77,6 +79,8 @@ public class EventActivity extends AppCompatActivityRest {
     private TimePickerDialog timePicker;
     private boolean isStartTime;
     private PatternedRecurrence customRecurrence;
+    private Calendar calendar;
+    private Map<Integer, Calendar> calendarMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +90,7 @@ public class EventActivity extends AppCompatActivityRest {
         showAsMap = new HashMap<>();
         recurrenceMap = new HashMap<>();
         reminderMap = new HashMap<>();
+        calendarMap = new HashMap<>();
 
         setStartTimeButton = (Button) findViewById(R.id.eventSetStartTimeButton);
         setEndTimeButton = (Button) findViewById(R.id.evenSetEndTimeButton);
@@ -113,9 +118,12 @@ public class EventActivity extends AppCompatActivityRest {
 
         timeZonePicker.setText(TimeZone.getDefault().getDisplayName());
 
+        calendar = new Gson().fromJson(getIntent().getStringExtra("calendars"), Calendar.class);
+
         populateShowAsSpinner();
         populateRecurrenceSpinner();
         populateReminderSpinner();
+        populateAgendaSpinner();
 
         isStartTime = true;
 
@@ -224,6 +232,7 @@ public class EventActivity extends AppCompatActivityRest {
             break;
             case MORE: {
                 // TODO : more...
+                return customRecurrence;
             }
             default:
             case NEVER: {
@@ -324,6 +333,15 @@ public class EventActivity extends AppCompatActivityRest {
         populateSpinner(R.array.eventShowAsArray, showAsSpinner);
     }
 
+    private void populateAgendaSpinner() {
+        int i = 0;
+        for (Calendar calendar : calendar.getCalendars()) {
+            calendarMap.put(i, calendar);
+            i++;
+        }
+        // TODO : agenda populateSpinner(R.array.arra);
+    }
+
     private void populateSpinner(int arrayResource, Spinner spinner) {
         spinner.setAdapter(new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Arrays.asList(getResources().getStringArray(arrayResource))));
     }
@@ -331,6 +349,25 @@ public class EventActivity extends AppCompatActivityRest {
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
         this.finish();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 200) {
+            switch (resultCode) {
+                case Activity.RESULT_OK: {
+                    String recc = data.getStringExtra("PatternedRecurrence");
+                    customRecurrence = new Gson().fromJson(recc, PatternedRecurrence.class);
+                    RecurrenceRange recurrenceRange = customRecurrence.getRange();
+                    recurrenceRange.setStartDate(startTime.toLocalDate());
+                    customRecurrence.setRange(recurrenceRange);
+                }
+                break;
+                case Activity.RESULT_CANCELED: {
+
+                }
+            }
+        }
     }
 
     private void hideSoftKeyboard() {

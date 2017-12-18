@@ -4,82 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/specified_monthly_day">
+    android:id="@+id/specified_yearly_week">
 
     <TextView
-        android:id="@+id/specifiedMonthlyBeforeTextview"
-        android:layout_width="0dp"
+        android:id="@+id/specifiedYearlyWeekBeforeTextview"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/specified_recurrense_monthly_before"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintBottom_toTopOf="@+id/specifiedMonthlyDayDayInput"
+        android:text="@string/specified_recurrence_yearly_week_before"
+        app:layout_constraintBottom_toTopOf="@+id/specifiedYearlyWeekintervalSpinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/specifiedMonthlyDayDayInput"
+    <Spinner
+        android:id="@+id/specifiedYearlyWeekintervalSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:ems="10"
-        android:hint="1"
-        android:inputType="number"
-        app:layout_constraintBottom_toTopOf="@+id/specifiedMonthlyMiddleTextview"
+        app:layout_constraintBottom_toTopOf="@+id/specifiedYearlyWeekDaySpinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/specifiedMonthlyBeforeTextview" />
+        app:layout_constraintTop_toBottomOf="@+id/specifiedYearlyWeekBeforeTextview" />
+
+    <Spinner
+        android:id="@+id/specifiedYearlyWeekDaySpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/specifiedYearlyWeekMiddleTextview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/specifiedYearlyWeekintervalSpinner" />
 
     <TextView
-        android:id="@+id/specifiedMonthlyMiddleTextview"
-        android:layout_width="0dp"
+        android:id="@+id/specifiedYearlyWeekMiddleTextview"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/specified_recurrence_monthly_middle"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintBottom_toTopOf="@+id/specifiedMonthlyIntervalTextinput"
+        android:text="@string/specified_recurrence_yearly_week_middle"
+        app:layout_constraintBottom_toTopOf="@+id/specifiedYearlyWeekMonthSpinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/specifiedMonthlyDayDayInput" />
+        app:layout_constraintTop_toBottomOf="@+id/specifiedYearlyWeekDaySpinner" />
 
-    <EditText
-        android:id="@+id/specifiedMonthlyIntervalTextinput"
+    <Spinner
+        android:id="@+id/specifiedYearlyWeekMonthSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:ems="10"
-        android:hint="1"
-        android:inputType="number"
-        app:layout_constraintBottom_toTopOf="@+id/specifiedMonthlyAfterTextview"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/specifiedMonthlyMiddleTextview" />
-
-    <TextView
-        android:id="@+id/specifiedMonthlyAfterTextview"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/specified_recurrence_monthly_end"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/specifiedMonthlyIntervalTextinput" />
+        app:layout_constraintTop_toBottomOf="@+id/specifiedYearlyWeekMiddleTextview" />
 </android.support.constraint.ConstraintLayout>

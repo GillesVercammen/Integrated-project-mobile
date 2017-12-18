@@ -7,12 +7,12 @@ import ap.student.outlook_mobile_app.R;
  */
 
 public enum SpecifiedRecurrence {
-    DAILY(R.layout.specified_daily),
-    WEEKLY(R.layout.specified_weekly),
-    MONTHLY_DAY(R.layout.specified_monthly_day),
-    MONTHLY_WEEK(R.layout.specified_daily),
-    YEARLY_DAY(R.layout.specified_daily),
-    YEARLY_WEEK(R.layout.specified_daily);
+    DAILY(R.id.specified_daily),
+    WEEKLY(R.id.specified_weekly),
+    MONTHLY_DAY(R.id.specified_monthly_day),
+    MONTHLY_WEEK(R.id.specified_monthly_week),
+    YEARLY_DAY(R.id.specified_yearly_day),
+    YEARLY_WEEK(R.id.specified_yearly_week);
 
     int value;
     SpecifiedRecurrence(int value) {

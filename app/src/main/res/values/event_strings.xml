@@ -37,6 +37,9 @@
     <string name="specified_recurrence_monthly_end">Months</string>
     <string name="specified_recurrence_monthly_weekly_before">Every</string>
     <string name="specified_recurrence_monthly_weekly_after">Months on the</string>
+    <string name="specified_recurrence_yearly_day">At</string>
+    <string name="specified_recurrence_yearly_week_before">At the</string>
+    <string name="specified_recurrence_yearly_week_middle">Of</string>
 
     <!--
         These need to be arranged as shown, fuck you android
@@ -106,5 +109,20 @@
         <item>Friday</item>
         <item>Saturday</item>
         <item>Sunday</item>
+    </string-array>
+
+    <string-array name="MonthsInTheYearArray">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
     </string-array>
 </resources>
