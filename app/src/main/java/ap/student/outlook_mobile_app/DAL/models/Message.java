@@ -16,15 +16,40 @@ public class Message {
     private String subject;
     private String bodyPreview;
     private Body body;
-    private List<ToRecipients> toRecipients;
+    private List<Recipient> toRecipients;
+    private List<Recipient> ccRecipients;
+    private List<Recipient> bccRecipients;
 
     public Message() {
     }
 
-    public Message(String subject, Body body, List<ToRecipients> toRecipients) {
+    public Message(String subject, Body body, List<Recipient> toRecipients) {
         this.subject = subject;
         this.body = body;
         this.toRecipients = toRecipients;
+    }
+
+    public Message(String subject, Body body, List<Recipient> toRecipients, List<Recipient> ccRecipients) {
+        this.subject = subject;
+        this.body = body;
+        this.toRecipients = toRecipients;
+        this.ccRecipients = ccRecipients;
+    }
+
+    public Message(Body body, List<Recipient> toRecipients, List<Recipient> bccRecipients, String subject) {
+        this.body = body;
+        this.toRecipients = toRecipients;
+        this.bccRecipients = bccRecipients;
+        this.subject = subject;
+
+    }
+
+    public Message(String subject, Body body, List<Recipient> toRecipients, List<Recipient> ccRecipients, List<Recipient> bccRecipients) {
+        this.subject = subject;
+        this.body = body;
+        this.toRecipients = toRecipients;
+        this.ccRecipients = ccRecipients;
+        this.bccRecipients = bccRecipients;
     }
 
     public String getId() {
@@ -83,12 +108,28 @@ public class Message {
         this.body = body;
     }
 
-    public List<ToRecipients> getToRecipients() {
+    public List<Recipient> getToRecipients() {
         return toRecipients;
     }
 
-    public void setToRecipients(List<ToRecipients> toRecipients) {
+    public void setToRecipients(List<Recipient> toRecipients) {
         this.toRecipients = toRecipients;
+    }
+
+    public List<Recipient> getCcRecipients() {
+        return ccRecipients;
+    }
+
+    public void setCcRecipients(List<Recipient> ccRecipients) {
+        this.ccRecipients = ccRecipients;
+    }
+
+    public List<Recipient> getBccRecipients() {
+        return bccRecipients;
+    }
+
+    public void setBccRecipients(List<Recipient> bccRecipients) {
+        this.bccRecipients = bccRecipients;
     }
 
     @Override
@@ -102,6 +143,8 @@ public class Message {
                 ", bodyPreview='" + bodyPreview + '\'' +
                 ", body=" + body +
                 ", toRecipients=" + toRecipients +
+                ", ccRecipients=" + ccRecipients +
+                ", bccRecipients=" + bccRecipients +
                 '}';
     }
 }
