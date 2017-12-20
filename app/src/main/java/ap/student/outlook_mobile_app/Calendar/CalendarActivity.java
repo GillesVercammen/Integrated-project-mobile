@@ -108,8 +108,8 @@ public class CalendarActivity extends AppCompatActivityRest {
         event = gson.fromJson(sharedPreferences.getString("Events", "{}"), Event.class);
 
         try {
-            //new GraphAPI().getRequest(OutlookObjectCall.READCALENDARS, this);
             new GraphAPI().getRequest(OutlookObjectCall.READEVENTS, this);
+            new GraphAPI().getRequest(OutlookObjectCall.READCALENDAR, this);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -141,7 +141,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void editDayButtonClicked() {
-        startActivity(new Intent(this, EventActivity.class).putExtra("dateTime", monthCalendarCellMap.get(lastId).getDateTime().toString()));
+        startActivity(new Intent(this, EventActivity.class).putExtra("dateTime", monthCalendarCellMap.get(lastId).getDateTime().toString()).putExtra("calendars", gson.toJson(calendar)));
     }
 
     private void calendarSetMonthButtonClicked(boolean next) {

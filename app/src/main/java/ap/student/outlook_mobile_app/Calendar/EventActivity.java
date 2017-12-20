@@ -1,7 +1,9 @@
 package ap.student.outlook_mobile_app.Calendar;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -21,6 +23,8 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,10 +39,16 @@ import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ReminderMinutesBeforeStart;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ShowAs;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
+import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
+import ap.student.outlook_mobile_app.DAL.models.Body;
+import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.DateTimeTimeZone;
 import ap.student.outlook_mobile_app.DAL.models.Event;
-import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Location;
+import ap.student.outlook_mobile_app.DAL.models.PatternedRecurrence;
+import ap.student.outlook_mobile_app.DAL.models.RecurrencePattern;
+import ap.student.outlook_mobile_app.DAL.models.RecurrenceRange;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 
@@ -68,6 +78,9 @@ public class EventActivity extends AppCompatActivityRest {
     private DatePickerDialog datePicker;
     private TimePickerDialog timePicker;
     private boolean isStartTime;
+    private PatternedRecurrence customRecurrence;
+    private Calendar calendar;
+    private Map<Integer, Calendar> calendarMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +90,7 @@ public class EventActivity extends AppCompatActivityRest {
         showAsMap = new HashMap<>();
         recurrenceMap = new HashMap<>();
         reminderMap = new HashMap<>();
+        calendarMap = new HashMap<>();
 
         setStartTimeButton = (Button) findViewById(R.id.eventSetStartTimeButton);
         setEndTimeButton = (Button) findViewById(R.id.evenSetEndTimeButton);
@@ -104,9 +118,13 @@ public class EventActivity extends AppCompatActivityRest {
 
         timeZonePicker.setText(TimeZone.getDefault().getDisplayName());
 
+        calendar = new Gson().fromJson(getIntent().getStringExtra("calendars"), Calendar.class);
+        agendaSpinner = (Spinner) findViewById(R.id.eventAgendaSpinner);
+
         populateShowAsSpinner();
         populateRecurrenceSpinner();
         populateReminderSpinner();
+        populateAgendaSpinner();
 
         isStartTime = true;
 
@@ -143,8 +161,9 @@ public class EventActivity extends AppCompatActivityRest {
         recurrenceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (recurrenceMap.get(position).action().equals(Recurrence.MORE.action())) {
-                    // meer
+                if (position > recurrenceMap.size() || recurrenceMap.get(position).action().equals(Recurrence.MORE.action())) {
+                    onMoreSelected();
+                    // FIXME : doesn't do shit on reselect
                 }
             }
 
@@ -162,13 +181,79 @@ public class EventActivity extends AppCompatActivityRest {
         });
     }
 
+    private void onMoreSelected() {
+        startActivityForResult(new Intent(this, CustomRecurrenceActivity.class), 200);
+    }
+
+    private PatternedRecurrence setRecurrence(Recurrence recurrence, LocalDate startDate) {
+        PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
+        RecurrencePattern recurrencePattern = new RecurrencePattern();
+        RecurrenceRange recurrenceRange = new RecurrenceRange();
+
+
+        recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
+        recurrenceRange.setStartDate(startDate);
+        recurrencePattern.setFirstDayOfWeek(DayOfWeek.SUNDAY.name());
+
+        switch (recurrence) {
+            case DAILY: {
+                recurrencePattern.setInterval(1);
+                recurrencePattern.setType(recurrence.action());
+            }
+            break;
+            case EVERY_FRIDAY: {
+                recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
+                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setInterval(1);
+            }
+            break;
+            case EVERY_WORKDAY: {
+                recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
+                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.MONDAY.name(), DayOfWeek.TUESDAY.name(), DayOfWeek.WEDNESDAY.name(), DayOfWeek.THURSDAY.name(), DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setInterval(1);
+            }
+            break;
+            case EACH_MONTH_TODAY: {
+                recurrencePattern.setType(RecurrencePatternType.ABSOLUTEMONTHLY.value());
+                recurrencePattern.setDayOfMonth(startDate.getDayOfMonth());
+                recurrencePattern.setInterval(1);
+            }
+            break;
+            case EVERY_SECOND_FRIDAY: {
+                recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
+                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setInterval(2);
+            }
+            break;
+            case EVERY_YEAR: {
+                recurrencePattern.setType(RecurrencePatternType.ABSOLUTEYEARLY.value());
+                recurrencePattern.setMonth(startDate.getMonthValue());
+                recurrencePattern.setDayOfMonth(startDate.getDayOfMonth());
+                recurrencePattern.setInterval(1);
+            }
+            break;
+            case MORE: {
+                return customRecurrence;
+            }
+            default:
+            case NEVER: {
+                return null;
+            }
+        }
+        patternedRecurrence.setPattern(recurrencePattern);
+        patternedRecurrence.setRange(recurrenceRange);
+        return patternedRecurrence;
+    }
+
     private void onConfirmButtonClicked() {
         Event event = new Event();
         event.setSubject(titleTextInput.getText().toString());
         event.setBody(new Body(descriptionText.getText().toString(), "HTML"));
         event.setLocation(new Location(locationTextInput.getText().toString()));
 
-        event.setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()));
+        if (!recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()).equals(Recurrence.NEVER)) {
+            event.setRecurrence(setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), LocalDate.of(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth())));
+        }
 
         if (isAllDayCheckBox.isChecked()) {
             event.setAllDay(isAllDayCheckBox.isChecked());
@@ -183,30 +268,23 @@ public class EventActivity extends AppCompatActivityRest {
         if (isPrivateCheckBox.isChecked()) { event.setSensitivity("private"); }
         else { event.setSensitivity("normal"); }
 
+        event.setReminderMinutesBeforeStart(reminderMap.get(reminderSpinner.getSelectedItemPosition()).getValue());
+        if (event.getReminderMinutesBeforeStart() != -1) {
+            event.setReminderOn(true);
+        }
+
+        event.setShowAs(showAsMap.get(showAsSpinner.getSelectedItemPosition()).action());
+
         /*event.setAttendees(new Attendee[] {
                 new Attendee("Required", new EmailAddress())
         });*/
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject = new JSONObject()
-                    .put("subject", "My Event")
-                    .put("start", new JSONObject()
-                            .put("dateTime", startTime.toString())
-                            .put("timeZone", TimeZone.getDefault().getDisplayName()))
-                    .put("end", new JSONObject()
-                            .put("dateTime", endTime.toString())
-                            .put("timezone", TimeZone.getDefault().getDisplayName()));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        String calendar = calendarMap.get(agendaSpinner.getSelectedItemPosition()).getId();
 
-        List<String[]> list = new ArrayList<>();
-        //list.add(new String[] { "Prefer:", " Outlook.Timezone=".concat(TimeZone.getDefault().getDisplayName()) });
-        list.add(new String[] {"Content-Type", "application/json"});
         try {
-            new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, new JSONObject(new Gson().toJson(event)));
-            //new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT, this, jsonObject);
+            JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
+            //new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, jsonObject);
+            new GraphAPI().postRequest(OutlookObjectCall.POSTCALENDAR, this, jsonObject, "/".concat(calendar).concat(OutlookObjectCall.POSTEVENT.action()));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -237,30 +315,33 @@ public class EventActivity extends AppCompatActivityRest {
     }
 
     private void populateReminderSpinner() {
-        int i = 0;
         for (ReminderMinutesBeforeStart value : ReminderMinutesBeforeStart.values()) {
-            reminderMap.put(i, value);
-            i++;
+            reminderMap.put(reminderMap.size(), value);
         }
         populateSpinner(R.array.reminderArray, reminderSpinner);
     }
 
     private void populateRecurrenceSpinner() {
-        int i = 0;
         for (Recurrence value : Recurrence.values()) {
-            recurrenceMap.put(i, value);
-            i++;
+            recurrenceMap.put(recurrenceMap.size(), value);
         }
         populateSpinner(R.array.recurrenceArray, recurrenceSpinner);
     }
 
     private void populateShowAsSpinner() {
-        int i = 0;
         for (ShowAs value : ShowAs.values()) {
-            showAsMap.put(i, value);
-            i++;
+            showAsMap.put(showAsMap.size(), value);
         }
         populateSpinner(R.array.eventShowAsArray, showAsSpinner);
+    }
+
+    private void populateAgendaSpinner() {
+        String[] calendars = new String[calendar.getCalendars().length];
+        for (Calendar calendar : calendar.getCalendars()) {
+            calendars[calendarMap.size()] = calendar.getName();
+            calendarMap.put(calendarMap.size(), calendar);
+        }
+        agendaSpinner.setAdapter(new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, calendars));
     }
 
     private void populateSpinner(int arrayResource, Spinner spinner) {
@@ -270,6 +351,21 @@ public class EventActivity extends AppCompatActivityRest {
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
         this.finish();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 200) {
+            switch (resultCode) {
+                case Activity.RESULT_OK: {
+                    customRecurrence = new Gson().fromJson(data.getStringExtra("PatternedRecurrence"), PatternedRecurrence.class);
+                }
+                break;
+                case Activity.RESULT_CANCELED: {
+
+                }
+            }
+        }
     }
 
     private void hideSoftKeyboard() {

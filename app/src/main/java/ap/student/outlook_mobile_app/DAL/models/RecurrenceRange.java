@@ -7,18 +7,18 @@ import java.time.LocalDate;
  */
 
 public class RecurrenceRange {
-    private LocalDate endDate;
+    private String endDate;
     private int numberOfOccurrences;
     private String recurrenceTimeZone;
-    private LocalDate startDate;
+    private String startDate;
     private String type;
 
     public LocalDate getEndDate() {
-        return endDate;
+        return LocalDate.parse(endDate);
     }
 
     public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
+        this.endDate = endDate.toString();
     }
 
     public int getNumberOfOccurrences() {
@@ -38,11 +38,11 @@ public class RecurrenceRange {
     }
 
     public LocalDate getStartDate() {
-        return startDate;
+        return LocalDate.parse(startDate);
     }
 
     public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
+        this.startDate = startDate.toString();
     }
 
     public String getType() {

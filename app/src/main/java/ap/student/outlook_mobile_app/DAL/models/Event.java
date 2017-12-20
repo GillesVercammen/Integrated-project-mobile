@@ -1,8 +1,12 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
+import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
+import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
 
 /**
  * Created by alek on 11/30/17.
@@ -247,18 +251,7 @@ public class Event {
         return recurrence;
     }
 
-    public void setRecurrence(Recurrence recurrence) {
-        PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
-        RecurrencePattern recurrencePattern = new RecurrencePattern();
-        RecurrenceRange recurrenceRange = new RecurrenceRange();
-        switch (recurrence) {
-            case DAILY : {
-
-            }
-            break;
-        }
-        patternedRecurrence.setPattern(recurrencePattern);
-        patternedRecurrence.setRange(recurrenceRange);
+    public void setRecurrence(PatternedRecurrence patternedRecurrence) {
         this.recurrence = patternedRecurrence;
     }
 

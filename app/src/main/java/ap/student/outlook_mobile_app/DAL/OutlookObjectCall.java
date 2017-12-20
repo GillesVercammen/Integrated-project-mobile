@@ -14,6 +14,7 @@ public enum OutlookObjectCall {
     SENDMAIL("/sendMail"),
     UPDATEMAIL("/messages"),
     POSTEVENT("/events"),
+    POSTCALENDAR("/calendars"),
     LOGINERROR("/loginError"),
     PERMISSIONSERROR("/permissionsError");
     private String action;

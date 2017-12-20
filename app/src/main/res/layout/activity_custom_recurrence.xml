@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ap.student.outlook_mobile_app.Calendar.CustomRecurrenceActivity">
+
+    <TextView
+        android:id="@+id/specifiedRecurrenceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/event_set_recurrence"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintBottom_toTopOf="@+id/specifiedRecurrencePatternSpinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/specifiedRecurrencePatternSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/specifiedRecurrenceLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/specifiedRecurrenceTextView" />
+
+    <LinearLayout android:id="@+id/specifiedRecurrenceLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@id/specifiedRecurrenceOkButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/specifiedRecurrencePatternSpinner" >
+
+        <include layout="@layout/specified_daily"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_weekly"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_monthly_day"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_monthly_week"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_yearly_day"
+            android:visibility="gone" />
+
+        <include layout="@layout/specified_yearly_week"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/specifiedRecurrenceOkButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@android:string/ok"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/specifiedRecurrenceCancelButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/specifiedRecurrenceLayout" />
+
+    <Button
+        android:id="@+id/specifiedRecurrenceCancelButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@android:string/cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/specifiedRecurrenceOkButton"
+        app:layout_constraintTop_toBottomOf="@+id/specifiedRecurrenceLayout" />
+
+</android.support.constraint.ConstraintLayout>

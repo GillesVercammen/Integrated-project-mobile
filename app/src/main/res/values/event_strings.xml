@@ -20,6 +20,26 @@
     <string name="event_send_reminder_button">Send reminder per email</string>
     <string name="event_confirm_button">Confirm Event</string>
     <string name="event_timezone_autocomplete">Timezone</string>
+    <string name="event_set_recurrence">Set a recurrence pattern</string>
+    <string name="specified_recurrence_daily_before">Every</string>
+    <string name="specified_recurrence_daily_after">Days</string>
+    <string name="specified_recurrence_weekly_before">Every</string>
+    <string name="specified_recurrence_weekly_after">Weeks</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="specified_recurrense_monthly_before">Day</string>
+    <string name="specified_recurrence_monthly_middle">Every</string>
+    <string name="specified_recurrence_monthly_end">Months</string>
+    <string name="specified_recurrence_monthly_weekly_before">Every</string>
+    <string name="specified_recurrence_monthly_weekly_after">Months on the</string>
+    <string name="specified_recurrence_yearly_day">At</string>
+    <string name="specified_recurrence_yearly_week_before">At the</string>
+    <string name="specified_recurrence_yearly_week_middle">Of</string>
 
     <!--
         These need to be arranged as shown, fuck you android
@@ -41,12 +61,12 @@
         <item>This day of each month</item>
         <item>Every second friday</item>
         <item>Every current day yearly</item>
-        <item>More&#8230;</item>
+        <item>Custom recurrence pattern</item>
     </string-array>
 
     <string-array name="reminderArray">
         <item>None</item>
-        <item>1 Minute</item>
+        <item>0 Minutes</item>
         <item>5 Minutes</item>
         <item>10 Minutes</item>
         <item>15 Minutes</item>
@@ -62,5 +82,47 @@
         <item>3 Days</item>
         <item>1 Week</item>
         <item>2 Weeks</item>
+    </string-array>
+
+    <string-array name="specifiedRecurrenceArray">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly on the same day</item>
+        <item>Montly in the same week</item>
+        <item>Yearly on the same day</item>
+        <item>Yearly in the same week</item>
+    </string-array>
+    
+    <string-array name="specifiedRecurrenceIndexArray">
+        <item>First</item>
+        <item>Second</item>
+        <item>Third</item>
+        <item>Fourth</item>
+        <item>Last</item>
+    </string-array>
+
+    <string-array name="DaysOfTheWeekArray">
+        <item >Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+
+    <string-array name="MonthsInTheYearArray">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
     </string-array>
 </resources>

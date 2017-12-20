@@ -36,18 +36,19 @@
         <activity
             android:name=".mailing.activity.MailActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
-        <activity android:name=".mailing.activity.NewMailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".mailing.activity.NewMailActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
-        <activity android:name=".mailing.activity.ReadMailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".mailing.activity.ReadMailActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".HomeActivity"></activity>
-        <activity android:name=".Calendar.CalendarActivity"></activity>
-	<activity android:name=".Calendar.EventActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".Calendar.CalendarActivity" />
+        <activity android:name=".Calendar.EventActivity" />
+        <activity android:name=".Calendar.CustomRecurrenceActivity"></activity>
     </application>
 
 </manifest>
