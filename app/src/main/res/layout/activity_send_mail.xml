@@ -9,7 +9,7 @@
         android:id="@+id/appBarLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -32,21 +32,88 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="62dp"
+                android:layout_width="86dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text=" To"
                 android:textSize="18sp" />
 
             <AutoCompleteTextView
+                android:labelFor="@+id/recipientTextField"
                 android:id="@+id/recipientTextField"
+                android:layout_width="252dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/transparent"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/moreRecipients"
+                android:src="@drawable/ic_keyboard_arrow_down_blue_24dp" />
+
+        </LinearLayout>
+
+
+        <View
+            style="@style/Divider"
+            android:layout_width="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/ccBar"
+            >
+
+            <TextView
+                android:layout_width="62dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=" Cc"
+                android:textSize="18sp" />
+
+            <AutoCompleteTextView
+                android:labelFor="@+id/ccTextField"
+                android:id="@+id/ccTextField"
                 android:layout_width="252dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="@android:color/transparent" />
         </LinearLayout>
 
-        <View style="@style/Divider" />
+        <View
+            style="@style/Divider"
+            android:layout_width="match_parent"
+            android:id="@+id/ccView"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/bccBar"
+            >
+
+            <TextView
+                android:layout_width="62dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=" Bcc"
+                android:textSize="18sp" />
+
+            <AutoCompleteTextView
+                android:labelFor="@+id/bccTextField"
+                android:id="@+id/bccTextField"
+                android:layout_width="252dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/transparent" />
+        </LinearLayout>
+
+        <View style="@style/Divider"
+            android:id="@+id/bccView"/>
 
         <LinearLayout
             android:layout_width="match_parent"
