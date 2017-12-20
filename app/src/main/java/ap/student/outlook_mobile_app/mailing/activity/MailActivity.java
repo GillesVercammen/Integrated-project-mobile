@@ -2,6 +2,7 @@ package ap.student.outlook_mobile_app.mailing.activity;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +29,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -397,8 +400,9 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     .putExtra("CC", args)
                     .putExtra("TO", args2)
                     .putExtra("FOLDER_NAME", currentFolderName)
-                    .putExtra("FOLDER_ID", currentFolderId);
-            startActivity(intent);
+                    .putExtra("FOLDER_ID", currentFolderId)
+                    .putExtra("POSITION", position);
+            startActivityForResult(intent, 2);
         }
     }
 
@@ -444,13 +448,40 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
             // CHECK WHICH ITEM CLICKED WHEN IN ACTIONMODE
             switch (item.getItemId()) {
                 case R.id.action_delete:
                     // delete all the selected messages
-                    deleteMessages();
-                    mode.finish();
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MailActivity.this);
+                    alertDialogBuilder.setTitle(R.string.alert_delete_title)
+                            .setIcon(R.drawable.ic_delete_black_24dp)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface arg0, int arg1) {
+                                    try {
+                                        deleteMessages();
+                                        Toast.makeText(MailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                        Toast.makeText(MailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
+                                    }
+                                    mode.finish();
+                                }
+                            })
+                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                            if (mAdapter.getSelectedItemCount() > 1) {
+                                alertDialogBuilder.setMessage(R.string.alert_delete_message_multiple);
+                            } else {
+                                alertDialogBuilder.setMessage(R.string.alert_delete_message);
+                            }
+                            alertDialogBuilder.create().show();
+
                     return true;
 
                 default:
@@ -475,17 +506,14 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
 
     // DELETING MESSAGES FROM RECYCLERVIEW AND FOLDER
-    private void deleteMessages() {
+    private void deleteMessages() throws IllegalAccessException {
         mAdapter.resetAnimationIndex();
         List<Integer> selectedItemPositions =
                 mAdapter.getSelectedItems();
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
             Message message = messages.get(i);
-            try {
-                new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this, "/" + message.getId());
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this, "/" + message.getId());
+
             mAdapter.removeData(selectedItemPositions.get(i));
         }
         mAdapter.notifyDataSetChanged();
@@ -567,9 +595,18 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 }
                 break;
             }
+            case 2:{
+                if (resultCode == 500 && null != data) {
+                    onRefresh();
+                } else if (resultCode == RESULT_OK ) {
+                    System.out.println("Back btn clicked");
+                }
+            }
+            break;
 
         }
     }
+
 
     /*
     * CREATE HAMBURGER MENU USING MATERIALDRAWER LIBRARY

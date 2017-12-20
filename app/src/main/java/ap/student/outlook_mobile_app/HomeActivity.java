@@ -59,6 +59,7 @@ public class HomeActivity extends AppCompatActivityRest {
         });
 
         if (connectivityManager.isConnected()) {
+            System.out.println("CONNECTED");
             try {
                 new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this);
             } catch (IllegalAccessException e) {
@@ -66,6 +67,7 @@ public class HomeActivity extends AppCompatActivityRest {
             }
             user = Authentication.getAuthentication().getAuthResult().getUser();
         } else {
+            System.out.println("NOT CONNECTED");
             user = new Gson().fromJson(sharedPreferences.getString("User",  "{}"), User.class);
             foldersWithMail = new Gson().fromJson(sharedPreferences.getString("MailFolders", "[]"), new TypeToken<ArrayList<MailFolder>>(){}.getType());
         }
@@ -88,6 +90,8 @@ public class HomeActivity extends AppCompatActivityRest {
                     Type listType = new TypeToken<List<MailFolder>>() {
                     }.getType();
                     folderObjectList = new Gson().fromJson(String.valueOf(folders), listType);
+                    editor.putString("AllMailFolders", new Gson().toJson(folderObjectList));
+                    System.out.println("SIZE: " + foldersWithMail.size());
                     for(int i = 0; i < folderObjectList.size(); i++){
                         // CHECK IF TOTALCOUNT > 0, OTHERWISE IRRELEVANT FOLDER. ALSO EASIER TO ORDER FOLDER
                         // IN BETA GRAPH API ENDPOINT, FIELD wellKnownName exists --> General name to check for (easier)

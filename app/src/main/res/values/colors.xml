@@ -18,4 +18,5 @@
     <color name="colorBackgroundLight">#FFFFFF</color>
     <color name="select">#666666</color>
     <color name="black">#111111</color>
+    <color name="black2">#70111111</color>
 </resources>
