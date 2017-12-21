@@ -1,15 +1,13 @@
 package ap.student.outlook_mobile_app.Calendar;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -18,6 +16,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
@@ -36,6 +35,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     private Event event;
     private Gson gson;
     private TableLayout monthCalendar;
+    private TabHost tabhost;
     private TextView monthCalendarYearTextView;
     private TextView monthCalendarMonthTextView;
     private LocalDateTime selectedTime;
@@ -52,6 +52,29 @@ public class CalendarActivity extends AppCompatActivityRest {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_calendar);
         super.onCreate(savedInstanceState);
+        tabhost = (TabHost) findViewById(R.id.tabHost);
+        tabhost.setup();
+
+        /**
+         * Tabs setup
+         */
+        //Tab 1
+        TabHost.TabSpec spec = tabhost.newTabSpec(getResources().getString(R.string.tab_month));
+        spec.setContent(R.id.calendar_month);
+        spec.setIndicator(getResources().getString(R.string.tab_month));
+        tabhost.addTab(spec);
+
+        //Tab 2
+        spec = tabhost.newTabSpec(getResources().getString(R.string.tab_week));
+        spec.setContent(R.id.calendar_week);
+        spec.setIndicator(getResources().getString(R.string.tab_week));
+        tabhost.addTab(spec);
+
+        //Tab 3
+        spec = tabhost.newTabSpec(getResources().getString(R.string.tab_day));
+        spec.setContent(R.id.calendar_day);
+        spec.setIndicator(getResources().getString(R.string.tab_day));
+        tabhost.addTab(spec);
 
         /**
          * Settings for the month calendar view
@@ -141,7 +164,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void editDayButtonClicked() {
-        startActivity(new Intent(this, EventActivity.class).putExtra("dateTime", monthCalendarCellMap.get(lastId).getDateTime().toString()).putExtra("calendars", gson.toJson(calendar)));
+        startActivity(new Intent(this, EventActivity.class).putExtra("dateTime", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)));
     }
 
     private void calendarSetMonthButtonClicked(boolean next) {
@@ -170,7 +193,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         }
 
         lastId = id;
-        selectedTime = LocalDateTime.of(selectedTime.getYear(), selectedTime.getMonth(), selectedCell.getDateTime().getDayOfMonth(), selectedTime.getHour(), selectedTime.getMinute());
+        selectedTime = LocalDateTime.of(selectedTime.getYear(), selectedTime.getMonth(), selectedCell.getDate().getDayOfMonth(), selectedTime.getHour(), selectedTime.getMinute());
     }
 
     //TODO : clean up this monster
@@ -187,10 +210,8 @@ public class CalendarActivity extends AppCompatActivityRest {
 
         int day = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).getDayOfWeek().getValue();
         if (day == 7) day = 0;
-        LocalDateTime lastDayOfMonth = selectedTime.with(TemporalAdjusters.lastDayOfMonth());
-        LocalDateTime index = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).withHour(8).withMinute(0).withSecond(0).withNano(0);
-
-        System.out.println(index);
+        LocalDate lastDayOfMonth = selectedTime.with(TemporalAdjusters.lastDayOfMonth()).toLocalDate();
+        LocalDate index = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).toLocalDate();
 
         while (index.isBefore(lastDayOfMonth) || index.equals(lastDayOfMonth)) {
             TableRow tableRow = new TableRow(this);
@@ -253,7 +274,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         }
     }
 
-    private boolean checkIfEvent(LocalDateTime index) {
+    private boolean checkIfEvent(LocalDate index) {
         if (event == null || event.getEvents() == null) {
             return false;
         }

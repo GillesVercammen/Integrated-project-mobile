@@ -2,6 +2,7 @@ package ap.student.outlook_mobile_app.Calendar.CalendarElements;
 
 import android.widget.TextView;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -11,27 +12,27 @@ import java.time.LocalDateTime;
 public class MonthCalendarCell {
     private int id;
     private boolean hasEvent = false;
-    private LocalDateTime dateTime;
+    private LocalDate date;
     private boolean isSelected = false;
     private TextView textView;
 
-    public MonthCalendarCell(int id, TextView textView, LocalDateTime dateTime) {
+    public MonthCalendarCell(int id, TextView textView, LocalDate date) {
         this.id = id;
         this.textView = textView;
-        this.dateTime = dateTime;
+        this.date = date;
     }
 
-    public MonthCalendarCell(int id, TextView textView, LocalDateTime dateTime, boolean hasEvent) {
+    public MonthCalendarCell(int id, TextView textView, LocalDate date, boolean hasEvent) {
         this.id = id;
         this.textView = textView;
-        this.dateTime = dateTime;
+        this.date = date;
         this.hasEvent = hasEvent;
     }
 
-    public MonthCalendarCell(int id, TextView textView, LocalDateTime dateTime, boolean hasEvent, boolean isSelected) {
+    public MonthCalendarCell(int id, TextView textView, LocalDate date, boolean hasEvent, boolean isSelected) {
         this.id = id;
         this.textView = textView;
-        this.dateTime = dateTime;
+        this.date = date;
         this.hasEvent = hasEvent;
         this.isSelected = isSelected;
     }
@@ -52,12 +53,12 @@ public class MonthCalendarCell {
         this.hasEvent = hasEvent;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public TextView getTextView() {

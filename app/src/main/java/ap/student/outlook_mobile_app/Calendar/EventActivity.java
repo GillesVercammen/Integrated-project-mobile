@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.gson.Gson;
+import com.microsoft.identity.client.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,9 +45,11 @@ import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
 import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.DateTimeTimeZone;
+import ap.student.outlook_mobile_app.DAL.models.EmailAddress;
 import ap.student.outlook_mobile_app.DAL.models.Event;
 import ap.student.outlook_mobile_app.DAL.models.Location;
 import ap.student.outlook_mobile_app.DAL.models.PatternedRecurrence;
+import ap.student.outlook_mobile_app.DAL.models.Recipient;
 import ap.student.outlook_mobile_app.DAL.models.RecurrencePattern;
 import ap.student.outlook_mobile_app.DAL.models.RecurrenceRange;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
@@ -81,6 +84,7 @@ public class EventActivity extends AppCompatActivityRest {
     private PatternedRecurrence customRecurrence;
     private Calendar calendar;
     private Map<Integer, Calendar> calendarMap;
+    private EmailAddress organiser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

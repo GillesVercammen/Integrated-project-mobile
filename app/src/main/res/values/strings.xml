@@ -47,4 +47,9 @@
     <string name="month_tableheader_saturday">S</string>
     <string name="month_tableheader_sunday">S</string>
     <string name="month_create_event_button">Create new event</string>
+    <string name="tab_month">Month</string>
+    <string name="tab_week">Week</string>
+    <string name="tab_day">Day</string>
+    <string name="current_week_string">This week</string>
+    <string name="current_day_string">Today</string>
 </resources>

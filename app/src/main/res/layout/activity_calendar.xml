@@ -23,7 +23,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TabWidget
@@ -37,25 +37,14 @@
                 android:layout_height="match_parent">
 
                 <include
-                    layout="@layout/calendar_month"
-                    tools:layout_editor_absoluteX="0dp"
-                    tools:layout_editor_absoluteY="342dp" />
+                    layout="@layout/calendar_month" />
 
-                <LinearLayout
-                    android:id="@+id/Week"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                <include
+                    layout="@layout/calendar_week" />
 
-                </LinearLayout>
+                <include
+                    layout="@layout/calendar_day" />
 
-                <LinearLayout
-                    android:id="@+id/Day"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
 

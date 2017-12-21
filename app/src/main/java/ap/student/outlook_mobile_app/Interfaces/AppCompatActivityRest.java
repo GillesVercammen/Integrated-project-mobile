@@ -26,6 +26,9 @@ import ap.student.outlook_mobile_app.R;
  */
 
 public abstract class AppCompatActivityRest extends AppCompatActivity implements IActivity {
+    protected static final String USER = "User";
+    protected static final String MAILFOLDERS = "MAILFOLDERS";
+
     protected Toolbar actionBar = null;
     protected SharedPreferences sharedPreferences;
     protected SharedPreferences.Editor editor;

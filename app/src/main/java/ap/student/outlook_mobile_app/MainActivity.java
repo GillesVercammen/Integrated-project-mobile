@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivityRest {
     public void loginSuccessfull() {
         startActivity(new Intent(this, HomeActivity.class));
         this.finish();
-        editor.putString("User", new Gson().toJson(Authentication.getAuthentication().getAuthResult().getUser()));
+        editor.putString(USER, new Gson().toJson(Authentication.getAuthentication().getAuthResult().getUser()));
         editor.commit();
     }
 
