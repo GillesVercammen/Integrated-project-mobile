@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,7 +111,7 @@ public class EventActivity extends AppCompatActivityRest {
         isPrivateCheckBox = (CheckBox) findViewById(R.id.eventPrivateCheckbox);
 
         dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm");
-        startTime = LocalDateTime.parse(getIntent().getStringExtra("dateTime"));
+        startTime = LocalDateTime.of(LocalDate.parse(getIntent().getStringExtra("date")), LocalTime.of(8, 30));
         endTime = startTime.plusMinutes(30);
 
         startTimeTextview = (TextView) findViewById(R.id.eventStartDateText);

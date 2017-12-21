@@ -2,11 +2,14 @@ package ap.student.outlook_mobile_app.Calendar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -18,12 +21,15 @@ import org.json.JSONObject;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.DaysOfTheWeekEnum;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.MonthCalendarCell;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.MonthsInTheYearEnum;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.Event;
@@ -35,18 +41,25 @@ public class CalendarActivity extends AppCompatActivityRest {
     private Event event;
     private Gson gson;
     private TableLayout monthCalendar;
+    private TableLayout weekCalendarHeader;
+    private TableLayout weekCalendarBody;
     private TabHost tabhost;
     private TextView monthCalendarYearTextView;
     private TextView monthCalendarMonthTextView;
+    private TextView weekCalendarTextview;
+    private TextView weekCalendarCurrentYearTextview;
     private LocalDateTime selectedTime;
     private Button editDayButton;
 
     private ImageButton nextMonthButton;
     private ImageButton previousMonthButton;
+    private ImageButton nextWeekButton;
+    private ImageButton previousWeekButton;
     private static final int monthCalendarChildId = 8;
     private int lastId = 0;
 
     private Map<Integer, MonthCalendarCell> monthCalendarCellMap;
+    private int cellSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +120,33 @@ public class CalendarActivity extends AppCompatActivityRest {
             public void onGlobalLayout() {
                 monthCalendar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 buildMonthCalendar();
+                buildWeekCalendar();
             }
         });
 
+        /**
+         * settings for week calendar view
+         */
+        weekCalendarHeader = (TableLayout) findViewById(R.id.weekCalendarHeaders);
+        weekCalendarBody = (TableLayout) findViewById(R.id.weekCalendarBody);
+        weekCalendarTextview = (TextView) findViewById(R.id.currentWeekTextView);
+        weekCalendarCurrentYearTextview = (TextView) findViewById(R.id.currentYearWeekTextView);
+        nextWeekButton = (ImageButton) findViewById(R.id.nextWeekButton);
+        previousWeekButton = (ImageButton) findViewById(R.id.previousWeekButton);
+
+        nextWeekButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calenderSetWeekButtonClicked(true);
+            }
+        });
+
+        previousWeekButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calenderSetWeekButtonClicked(false);
+            }
+        });
 
         /**
          * global settings
@@ -141,7 +178,8 @@ public class CalendarActivity extends AppCompatActivityRest {
     @Override
     public void onResume() {
         super.onResume();
-        buildMonthCalendar();
+        //buildMonthCalendar();
+        //buildWeekCalendar();
     }
 
     @Override
@@ -164,7 +202,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void editDayButtonClicked() {
-        startActivity(new Intent(this, EventActivity.class).putExtra("dateTime", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)));
+        startActivity(new Intent(this, EventActivity.class).putExtra("date", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)));
     }
 
     private void calendarSetMonthButtonClicked(boolean next) {
@@ -173,6 +211,17 @@ public class CalendarActivity extends AppCompatActivityRest {
         } else {
             selectedTime = selectedTime.minusMonths(1);
         }
+        buildMonthCalendar();
+        buildWeekCalendar();
+    }
+
+    private void calenderSetWeekButtonClicked(boolean next) {
+        if (next) {
+            selectedTime = selectedTime.plusDays(7);
+        } else {
+            selectedTime = selectedTime.minusDays(7);
+        }
+        buildWeekCalendar();
         buildMonthCalendar();
     }
 
@@ -194,19 +243,20 @@ public class CalendarActivity extends AppCompatActivityRest {
 
         lastId = id;
         selectedTime = LocalDateTime.of(selectedTime.getYear(), selectedTime.getMonth(), selectedCell.getDate().getDayOfMonth(), selectedTime.getHour(), selectedTime.getMinute());
+        buildWeekCalendar();
     }
 
     //TODO : clean up this monster
     private void buildMonthCalendar() {
-        int width = monthCalendar.getWidth() / 7;
+        cellSize = monthCalendar.getWidth() / 7;
 
         monthCalendar.removeViews(1, monthCalendar.getChildCount() - 1);
         monthCalendarCellMap.clear();
 
-        monthCalendar.getChildAt(0).setMinimumHeight(width);
+        monthCalendar.getChildAt(0).setMinimumHeight(cellSize);
 
         monthCalendarYearTextView.setText(Integer.toString(selectedTime.getYear()));
-        monthCalendarMonthTextView.setText(selectedTime.getMonth().name());
+        monthCalendarMonthTextView.setText(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.getMonthValue()-1].value()));
 
         int day = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).getDayOfWeek().getValue();
         if (day == 7) day = 0;
@@ -225,8 +275,8 @@ public class CalendarActivity extends AppCompatActivityRest {
                 textView.setGravity(Gravity.CENTER);
                 textView.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button_Borderless_Colored);
                 textView.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                textView.setWidth(width);
-                textView.setHeight(width);
+                textView.setWidth(cellSize);
+                textView.setHeight(cellSize);
                 textView.setId(monthCalendarChildId + index.getDayOfMonth());
                 textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundLight));
 
@@ -271,6 +321,58 @@ public class CalendarActivity extends AppCompatActivityRest {
             }
             monthCalendar.addView(tableRow);
             day = 0;
+        }
+    }
+
+    private void buildWeekCalendar() {
+        weekCalendarCurrentYearTextview.setText(Integer.toString(selectedTime.getYear()));
+        LocalDate startDate = selectedTime.minusDays(selectedTime.getDayOfWeek().getValue()).toLocalDate();
+        LocalDate endDate = startDate.plusDays(6);
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (startDate.getYear() != endDate.getYear()) {
+            weekCalendarCurrentYearTextview.setText(Integer.toString(startDate.getYear()).concat(" - ").concat(Integer.toString(endDate.getYear())));
+        }
+        if (!startDate.getMonth().equals(endDate.getMonth())) {
+            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.getMonthValue()-1].value()).substring(0, 3))
+                    .append(' ').append(startDate.getDayOfMonth()).append(" - ")
+                    .append(getResources().getString(MonthsInTheYearEnum.values()[endDate.getMonthValue()-1].value()).substring(0, 3))
+                    .append(' ').append(endDate.getDayOfMonth());
+        } else {
+            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.getMonthValue()-1].value()))
+                    .append(' ').append(startDate.getDayOfMonth())
+                    .append(" - ").append(endDate.getDayOfMonth());
+        }
+        weekCalendarTextview.setText(stringBuilder.toString());
+
+        DateTimeFormatter hourFormat = DateTimeFormatter.ofPattern("H:mm ");
+
+        for (int i = 0; i < 7; i++) {
+            TableRow row = (TableRow) weekCalendarHeader.getChildAt(i);
+            row.setMinimumHeight(cellSize);
+            TextView header = (TextView)row.getChildAt(0);
+            header.setText(getResources().getString(DaysOfTheWeekEnum.values()[i].value()).concat(" ").concat(String.valueOf(startDate.getDayOfMonth())));
+
+            row = (TableRow) weekCalendarBody.getChildAt(i);
+            row.removeAllViews();
+            row.setMinimumHeight(cellSize);
+
+            if (checkIfEvent(startDate)) {
+                for (Event event : event.getEvents()) {
+                    if (event.getStart().getDateTime().getDayOfYear() == startDate.getDayOfYear()) {
+                        stringBuilder = new StringBuilder();
+                        stringBuilder.append(event.getStart().getDateTime().format(hourFormat)).append(event.getSubject());
+
+                        TextView textView = new TextView(this);
+                        textView.setText(stringBuilder.toString());
+                        textView.setTextAppearance(R.style.TextAppearance_AppCompat_Subhead);
+
+                        row.addView(textView);
+                    }
+                }
+            }
+            startDate = startDate.plusDays(1);
         }
     }
 
