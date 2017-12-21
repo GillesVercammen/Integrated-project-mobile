@@ -2,14 +2,11 @@ package ap.student.outlook_mobile_app.Calendar;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -43,11 +40,15 @@ public class CalendarActivity extends AppCompatActivityRest {
     private TableLayout monthCalendar;
     private TableLayout weekCalendarHeader;
     private TableLayout weekCalendarBody;
+    private TableLayout dayCalendar;
     private TabHost tabhost;
     private TextView monthCalendarYearTextView;
     private TextView monthCalendarMonthTextView;
     private TextView weekCalendarTextview;
     private TextView weekCalendarCurrentYearTextview;
+    private TextView dayCalendarTextview;
+    private TextView dayCalendarCurrentYearTextview;
+    private TextView dayCalendarNoEventsTextview;
     private LocalDateTime selectedTime;
     private Button editDayButton;
 
@@ -55,8 +56,12 @@ public class CalendarActivity extends AppCompatActivityRest {
     private ImageButton previousMonthButton;
     private ImageButton nextWeekButton;
     private ImageButton previousWeekButton;
+    private ImageButton nextDayButton;
+    private ImageButton previousDayButon;
     private static final int monthCalendarChildId = 8;
     private int lastId = 0;
+
+    DateTimeFormatter hourFormat;
 
     private Map<Integer, MonthCalendarCell> monthCalendarCellMap;
     private int cellSize;
@@ -121,6 +126,7 @@ public class CalendarActivity extends AppCompatActivityRest {
                 monthCalendar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 buildMonthCalendar();
                 buildWeekCalendar();
+                buildDayCalendar();
             }
         });
 
@@ -137,14 +143,39 @@ public class CalendarActivity extends AppCompatActivityRest {
         nextWeekButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calenderSetWeekButtonClicked(true);
+                calendarSetWeekButtonClicked(true);
             }
         });
 
         previousWeekButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calenderSetWeekButtonClicked(false);
+                calendarSetWeekButtonClicked(false);
+            }
+        });
+
+        /**
+         * settings for day calendar
+         */
+        dayCalendar = (TableLayout) findViewById(R.id.dayCalendar);
+        dayCalendarTextview = (TextView) findViewById(R.id.currentDayTextView);
+        dayCalendarCurrentYearTextview = (TextView) findViewById(R.id.currentYearDayTextView);
+        dayCalendarNoEventsTextview = (TextView) findViewById(R.id.noEventsMessage);
+
+        nextDayButton = (ImageButton) findViewById(R.id.nextDayButton);
+        previousDayButon = (ImageButton) findViewById(R.id.previousDayButton);
+
+        nextDayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendarSetDayButtonClicked(true);
+            }
+        });
+
+        previousDayButon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendarSetDayButtonClicked(false);
             }
         });
 
@@ -154,6 +185,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         event = null;
         selectedTime = LocalDateTime.now();
         editDayButton = (Button) findViewById(R.id.createNewEventButton);
+        hourFormat = DateTimeFormatter.ofPattern("H:mm ");
 
         editDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,9 +245,10 @@ public class CalendarActivity extends AppCompatActivityRest {
         }
         buildMonthCalendar();
         buildWeekCalendar();
+        buildDayCalendar();
     }
 
-    private void calenderSetWeekButtonClicked(boolean next) {
+    private void calendarSetWeekButtonClicked(boolean next) {
         if (next) {
             selectedTime = selectedTime.plusDays(7);
         } else {
@@ -223,6 +256,18 @@ public class CalendarActivity extends AppCompatActivityRest {
         }
         buildWeekCalendar();
         buildMonthCalendar();
+        buildDayCalendar();
+    }
+
+    private void calendarSetDayButtonClicked(boolean next) {
+        if (next) {
+            selectedTime = selectedTime.plusDays(1);
+        } else {
+            selectedTime = selectedTime.minusDays(1);
+        }
+        buildDayCalendar();
+        buildMonthCalendar();
+        buildWeekCalendar();
     }
 
     private void monthCalendarChildClicked(int id) {
@@ -244,6 +289,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         lastId = id;
         selectedTime = LocalDateTime.of(selectedTime.getYear(), selectedTime.getMonth(), selectedCell.getDate().getDayOfMonth(), selectedTime.getHour(), selectedTime.getMinute());
         buildWeekCalendar();
+        buildDayCalendar();
     }
 
     //TODO : clean up this monster
@@ -346,8 +392,6 @@ public class CalendarActivity extends AppCompatActivityRest {
         }
         weekCalendarTextview.setText(stringBuilder.toString());
 
-        DateTimeFormatter hourFormat = DateTimeFormatter.ofPattern("H:mm ");
-
         for (int i = 0; i < 7; i++) {
             TableRow row = (TableRow) weekCalendarHeader.getChildAt(i);
             row.setMinimumHeight(cellSize);
@@ -367,12 +411,53 @@ public class CalendarActivity extends AppCompatActivityRest {
                         TextView textView = new TextView(this);
                         textView.setText(stringBuilder.toString());
                         textView.setTextAppearance(R.style.TextAppearance_AppCompat_Subhead);
+                        textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
 
                         row.addView(textView);
                     }
                 }
             }
             startDate = startDate.plusDays(1);
+        }
+    }
+
+    private void buildDayCalendar() {
+        dayCalendarCurrentYearTextview.setText(String.valueOf(selectedTime.getYear()));
+
+        dayCalendar.removeAllViews();
+
+        int dayOfWeek = selectedTime.getDayOfWeek().getValue();
+        if (dayOfWeek == 7) dayOfWeek = 0;
+
+        dayCalendarTextview.setText(new StringBuilder()
+                .append(getResources().getString(DaysOfTheWeekEnum.values()[dayOfWeek].value()))
+                .append(' ').append(selectedTime.getDayOfMonth()).append(' ')
+                .append(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.getMonthValue()-1].value())).toString());
+
+        if (checkIfEvent(selectedTime.toLocalDate())) {
+            dayCalendarNoEventsTextview.setVisibility(View.GONE);
+            dayCalendar.setVisibility(View.VISIBLE);
+
+            for (Event event : event.getEvents()) {
+                if (event.getStart().getDateTime().getDayOfYear() == selectedTime.getDayOfYear()) {
+                    TableRow row = new TableRow(this);
+                    TextView header = new TextView(this);
+                    header.setText(event.getStart().getDateTime().format(hourFormat).concat(" - ")
+                            .concat(event.getEnd().getDateTime().format(hourFormat)));
+                    row.addView(header);
+                    dayCalendar.addView(row);
+                }
+            }
+        } else {
+            dayCalendarNoEventsTextview.setVisibility(View.VISIBLE);
+            dayCalendar.setVisibility(View.GONE);
         }
     }
 
@@ -387,5 +472,9 @@ public class CalendarActivity extends AppCompatActivityRest {
             }
         }
         return false;
+    }
+
+    private void eventClicked(int id) {
+        //TODO : show event details
     }
 }

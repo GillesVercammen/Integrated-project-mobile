@@ -41,13 +41,53 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toStartOf="@+id/nextDayButton"
         app:layout_constraintStart_toEndOf="@+id/previousDayButton"
-        app:layout_constraintTop_toTopOf="@id/previousDayButton"
-        app:layout_constraintBottom_toBottomOf="@id/nextDayButton" />
+        app:layout_constraintTop_toBottomOf="@id/nextDayButton"
+        app:layout_constraintBottom_toTopOf="@id/dayScrollview" />
 
-    <TableLayout
-        android:id="@+id/dayCalendar"
+    <TextView
+        android:id="@+id/currentYearDayTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/current_year_string"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toStartOf="@+id/nextDayButton"
+        app:layout_constraintStart_toEndOf="@+id/previousDayButton"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/dayScrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/accent"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/currentDayTextView">
 
-    </TableLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/noEventsMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_events_message"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+            <TableLayout
+                android:id="@+id/dayCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+
 </android.support.constraint.ConstraintLayout>

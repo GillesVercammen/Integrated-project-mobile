@@ -68,7 +68,7 @@
         app:layout_constraintTop_toBottomOf="@+id/currentWeekTextView">
 
         <TableRow
-            android:id="@+id/sundayRow"
+            android:id="@+id/sundayRowHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right|center_vertical">
@@ -77,13 +77,14 @@
                 android:id="@+id/weekTableHeaderSunday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="end"
                 android:text="@string/sunday"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         </TableRow>
 
         <TableRow
-            android:id="@+id/mondayRow"
+            android:id="@+id/mondayRowHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right|center_vertical">
@@ -92,13 +93,14 @@
                 android:id="@+id/weekTableHeaderMonday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="end"
                 android:text="@string/monday"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         </TableRow>
 
         <TableRow
-            android:id="@+id/tuesdayRow"
+            android:id="@+id/tuesdayRowHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right|center_vertical">
@@ -107,13 +109,14 @@
                 android:id="@+id/weekTableHeaderTuesday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="end"
                 android:text="@string/tuesday"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         </TableRow>
 
         <TableRow
-            android:id="@+id/wednesdayRow"
+            android:id="@+id/wednesdayRowHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right|center_vertical">
@@ -122,13 +125,14 @@
                 android:id="@+id/weekTableHeaderWednesday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="end"
                 android:text="@string/wednesday"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         </TableRow>
 
         <TableRow
-            android:id="@+id/thursdayRow"
+            android:id="@+id/thursdayRowHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right|center_vertical">
@@ -137,13 +141,14 @@
                 android:id="@+id/weekTableHeaderThursday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="end"
                 android:text="@string/thursday"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         </TableRow>
 
         <TableRow
-            android:id="@+id/fridayRow"
+            android:id="@+id/fridayRowHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right|center_vertical">
@@ -152,13 +157,14 @@
                 android:id="@+id/weekTableHeaderFriday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="end"
                 android:text="@string/friday"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         </TableRow>
 
         <TableRow
-            android:id="@+id/saturdayRow"
+            android:id="@+id/saturdayRowHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right|center_vertical">
@@ -167,6 +173,7 @@
                 android:id="@+id/weekTableHeaderSaturday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="end"
                 android:text="@string/saturday"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
