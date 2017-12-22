@@ -1,17 +1,29 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -26,25 +38,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.mailing.adapter.FolderAdapter;
-import ap.student.outlook_mobile_app.mailing.model.EmailAddress;
+import ap.student.outlook_mobile_app.mailing.model.Attachment;
 import ap.student.outlook_mobile_app.mailing.model.MailFolder;
 import ap.student.outlook_mobile_app.mailing.model.Recipient;
 
-public class ReadMailActivity extends AppCompatActivityRest {
+public class ReadMailActivity extends AppCompatActivityRest{
 
+    private static final String TAG = "ERROR";
     private TextView from;
     private TextView recipients;
     private TextView receivedDate;
@@ -57,6 +73,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private ImageView maximize;
     private ImageView closeFolderList;
     private ImageView bgTemp;
+    private ImageView attachment_download;
     private String from_name_content;
     private String from_email_content;
     private String subject_content;
@@ -66,10 +83,14 @@ public class ReadMailActivity extends AppCompatActivityRest {
     private String date;
     private String contentType;
     private ListView mListView;
+    private List<Attachment> attachmentsList = new ArrayList<>();
     private ArrayList<MailFolder> folderObjectList;
     private ArrayList<MailFolder> folders;
     private ArrayList<String> foldernames;
     private ArrayList<Integer> folderunread;
+    private static final int REQUEST_WRITE_STORAGE = 112;
+    private static final int REQUEST_READ_STORAGE = 113;
+    StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +98,7 @@ public class ReadMailActivity extends AppCompatActivityRest {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_mail);
 
+        StrictMode.setVmPolicy(builder.build());
         toolbar = (Toolbar) findViewById(R.id.toolbar_read);
         from = (TextView) findViewById(R.id.from_content);
         recipients = (TextView) findViewById(R.id.recepient_content);
@@ -89,7 +111,32 @@ public class ReadMailActivity extends AppCompatActivityRest {
         closeFolderList = (ImageView) findViewById(R.id.close_folder_list);
         bgTemp = (ImageView) findViewById(R.id.bg_temp);
         minimize.setImageResource(R.drawable.ic_minimize_blackvector_24dp);
+        attachment_download = (ImageView) findViewById(R.id.attachment_download);
+        attachment_download.setImageResource(R.drawable.ic_attach_file_blackvector_24dp);
 
+        // don't show attachment icon if no attachment
+        if (getIntent().getStringExtra("HAS_ATTACHMENT").toLowerCase().equals("false")){
+            attachment_download.setVisibility(View.GONE);
+        } else {
+            try {
+                new GraphAPI().getRequest(OutlookObjectCall.UPDATEMAIL, ReadMailActivity.this,"/" + getIntent().getStringExtra("ID") + "/attachments");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                Toast.makeText(ReadMailActivity.this, R.string.attachment_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+        //set toolbar
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        ArrayList<Recipient> allRecipients = new ArrayList<>();
+        ArrayList<String> allRecepientsEmails = new ArrayList<>();
+        ArrayList<Recipient> ccRecipients = new ArrayList<>();
+        ArrayList<Recipient> toRecipients = new ArrayList<>();
+
+        // minimize/maximize the mail info
         minimize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,17 +176,24 @@ public class ReadMailActivity extends AppCompatActivityRest {
             }
         });
 
+        attachment_download.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+                if (Build.VERSION.SDK_INT < 23) {
+                   downloadAttachment(attachmentsList);
+                   openAttachment(attachmentsList.get(0).getName(), attachmentsList.get(0).getContentType());
+                } else {
+                    if (checkAndRequestPermissions()) {
+                        downloadAttachment(attachmentsList);
+                        openAttachment(attachmentsList.get(0).getName(), attachmentsList.get(0).getContentType());
+                    }
+                }
+            }
+        });
 
-        ArrayList<Recipient> allRecipients = new ArrayList<>();
-        ArrayList<String> allRecepientsEmails = new ArrayList<>();
-        ArrayList<Recipient> ccRecipients = new ArrayList<>();
-        ArrayList<Recipient> toRecipients = new ArrayList<>();
 
+        // check intents
         if (!getIntent().getBundleExtra("CC").isEmpty()) {
             Bundle args = getIntent().getBundleExtra("CC");
              ccRecipients = (ArrayList<Recipient>) args.getSerializable("CC_ARRAY");
@@ -214,8 +268,63 @@ public class ReadMailActivity extends AppCompatActivityRest {
         }
     }
 
+    private void downloadAttachment(List<Attachment> attachmentsList) {
+        if (attachmentsList.size() == 0) {
+            Toast.makeText(ReadMailActivity.this, R.string.attachment_error, Toast.LENGTH_SHORT).show();
+        } else if (attachmentsList.size() == 1) {
+            String base64 = attachmentsList.get(0).getContentBytes();
+            try {
+                if (base64 != null) {
+                    byte[] data = Base64.decode(base64, Base64.DEFAULT);
+                    File filePath = new File(Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOWNLOADS), attachmentsList.get(0).getName());
+                    System.out.println(filePath.toString());
+                    FileOutputStream os = new FileOutputStream(filePath, true);
+                    os.write(data);
+                    os.close();
+                    Toast.makeText(ReadMailActivity.this, R.string.attachment_saved, Toast.LENGTH_SHORT).show();
+                }
+            } catch (IOException e) {
+                Toast.makeText(ReadMailActivity.this, R.string.attachment_saved_failed, Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void openAttachment(String filename, String contentType){
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + File.separator +
+                 filename);
+        builder.detectFileUriExposure();
+        Uri path = Uri.fromFile(file);
+        Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
+        pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pdfOpenintent.setDataAndType(path, contentType);
+        pdfOpenintent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            this.startActivity(pdfOpenintent);
+        } catch (ActivityNotFoundException e) {
+
+        }
+    }
+
     @Override
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
+        switch (outlookObjectCall) {
+            case UPDATEMAIL: {
+                attachmentsList.clear();
+                JSONObject list = response;
+                try {
+                    JSONArray attachmentsArray = list.getJSONArray("value");
+                    // MAP ON POJO
+                    Type listType = new TypeToken<List<Attachment>>() {
+                    }.getType();
+                    attachmentsList = new Gson().fromJson(String.valueOf(attachmentsArray), listType);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            break;
+        }
     }
 
     @Override
@@ -345,4 +454,43 @@ public class ReadMailActivity extends AppCompatActivityRest {
             return outputFormat.format(date);
         }
     }
+
+    private boolean checkAndRequestPermissions() {
+        int storageWritePermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+
+        int storageReadPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (storageReadPermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (storageWritePermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this,
+                    listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 2);
+            return false;
+        }
+        System.out.println("HALLO");
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 2:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                   downloadAttachment(attachmentsList);
+                   openAttachment(attachmentsList.get(0).getName(), attachmentsList.get(0).getContentType());
+                } else {
+                    Toast.makeText(ReadMailActivity.this, R.string.attachment_error, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
 }

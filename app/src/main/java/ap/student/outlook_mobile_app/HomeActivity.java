@@ -91,7 +91,6 @@ public class HomeActivity extends AppCompatActivityRest {
                     }.getType();
                     folderObjectList = new Gson().fromJson(String.valueOf(folders), listType);
                     editor.putString("AllMailFolders", new Gson().toJson(folderObjectList));
-                    System.out.println("SIZE: " + foldersWithMail.size());
                     for(int i = 0; i < folderObjectList.size(); i++){
                         // CHECK IF TOTALCOUNT > 0, OTHERWISE IRRELEVANT FOLDER. ALSO EASIER TO ORDER FOLDER
                         // IN BETA GRAPH API ENDPOINT, FIELD wellKnownName exists --> General name to check for (easier)
