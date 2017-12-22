@@ -24,6 +24,7 @@ import java.util.List;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.DAL.enums.SendMailType;
 import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Contact;
 import ap.student.outlook_mobile_app.DAL.models.EmailAddress;
@@ -50,6 +51,7 @@ public class NewMailActivity extends AppCompatActivityRest {
     private View ccView;
     private View bccView;
     private boolean hasOpenedMenu;
+    public SendMailType mailTypeEnum = SendMailType.SEND;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,8 +105,30 @@ public class NewMailActivity extends AppCompatActivityRest {
             }
         });
 
-        //https://developer.android.com/reference/android/widget/AutoCompleteTextView.html
+        //https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/user_post_messages
+
         getContacts();
+
+        System.out.println("mailType should be here:");
+        if (getIntent().getExtras() != null) {
+            mailTypeEnum = SendMailType.valueOf(getIntent().getExtras().get("mailType").toString().toUpperCase());
+            System.out.println(mailTypeEnum);
+        }
+
+        switch (mailTypeEnum) {
+            case REPLY:
+
+                System.out.println("In reply case!");
+                try {
+                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this);
+                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReply");
+                    Toast.makeText(getApplicationContext(), "Creating reply!", Toast.LENGTH_SHORT).show();
+                } catch (IllegalAccessException e) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                break;
+        }
 
     }
 
@@ -179,7 +203,44 @@ public class NewMailActivity extends AppCompatActivityRest {
             case SENDMAIL: {
                 System.out.println(response.toString());
             }
+            break;
 
+            case UPDATEMAIL:{
+                try {
+                    System.out.println(response);
+                    Gson gson = new Gson();
+
+                    JSONArray toRecipientsJSON = response.getJSONArray("toRecipients");
+                    Type listType = new TypeToken<List<Recipient>>() {
+                    }.getType();
+                    List<Recipient> toRecipients = new Gson().fromJson(String.valueOf(toRecipientsJSON), listType);
+                    String recipientsString = convertRecipientsToString(toRecipients);
+
+                    Body body = gson.fromJson(String.valueOf(response.get("body")), Body.class);
+                    System.out.println(body.getContent());
+                    String subject = response.get("subject").toString();
+                    System.out.println(subject);
+
+                    subjectTextField.setText(subject);
+                    messageTextField.setText(body.getContent());
+                    recipientTextField.setText(recipientsString);
+
+                    //recipientTextField.setText();
+
+                    //Body body = gson.fromJson(String.valueOf(response.get("body")), Body.class);
+
+
+                    //wrap JSONobject in another JSONobject to make sure format is correct {"message": message}
+                    //JSONObject jsonMessage = new JSONObject();
+                    //jsonMessage.put("message", JSON);
+//
+                    //System.out.println(jsonMessage);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            break;
 
         }
     }
@@ -200,13 +261,37 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.send_mail) {
-            Toast.makeText(getApplicationContext(), "Sending mail...", Toast.LENGTH_SHORT).show();
-            try {
-                sendMail();
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+            switch (mailTypeEnum) {
+
+                case SEND:
+
+                Toast.makeText(getApplicationContext(), "Sending mail...", Toast.LENGTH_SHORT).show();
+                try {
+                    sendMail();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                break;
+
+                //do this on load
+                case REPLY:
+
+                    System.out.println("In reply case!");
+                    try {
+                        new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this);
+                        new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReply");
+                        Toast.makeText(getApplicationContext(), "Creating reply!", Toast.LENGTH_SHORT).show();
+                    } catch (IllegalAccessException e) {
+                        Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+                    break;
             }
+
             return true;
+
         }
 
         else if (id == android.R.id.home) {
@@ -296,6 +381,16 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         return recipients;
 
+    }
+
+    public String convertRecipientsToString(List<Recipient> recipientList){
+        String recipientsString = "";
+
+        for (Recipient recipient: recipientList
+             ) {
+            recipientsString = recipientsString + recipient.getEmailAddress().getAddress();
+        }
+        return recipientsString;
     }
 
 }
