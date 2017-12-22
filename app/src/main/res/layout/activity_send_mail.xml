@@ -21,248 +21,259 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/ConstraintLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:layout_marginTop="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout3"
-        app:layout_constraintVertical_bias="0.0">
-
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/ConstraintLayoutRecipient"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <AutoCompleteTextView
-                android:id="@+id/recipientTextField"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@android:color/transparent"
-                android:inputType="textMultiLine"
-                android:labelFor="@+id/recipientTextField"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:layout_toLeftOf="@+id/recipientTextField"
-                android:gravity="center_vertical"
-                android:text=" To"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toStartOf="@+id/recipientTextField"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/moreRecipients"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="8dp"
-                android:gravity="center_vertical"
-                android:src="@drawable/ic_keyboard_arrow_down_blue_24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/recipientTextField"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/view"
-                style="@style/Divider"
-                android:layout_width="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recipientTextField" />
-
-        </android.support.constraint.ConstraintLayout>
-
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/ConstraintLayoutCC"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintLayoutRecipient">
-
-            <TextView
-                android:id="@+id/textViewCC"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:gravity="center_vertical"
-                android:text=" Cc"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <AutoCompleteTextView
-                android:id="@+id/ccTextField"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-
-                android:layout_alignParentEnd="true"
-                android:layout_alignTop="@+id/textViewCC"
-                android:backgroundTint="@android:color/transparent"
-                android:inputType="textMultiLine"
-                android:labelFor="@+id/ccTextField"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/textViewCC"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/ccView"
-                style="@style/Divider"
-                android:layout_width="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ccTextField" />
-
-        </android.support.constraint.ConstraintLayout>
-
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/ConstraintLayoutBCC"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintLayoutCC">
-
-            <TextView
-                android:id="@+id/textViewBCC"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text=" Bcc"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toStartOf="@+id/bccTextField"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <AutoCompleteTextView
-                android:id="@+id/bccTextField"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@android:color/transparent"
-                android:inputType="textMultiLine"
-                android:labelFor="@+id/bccTextField"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/textViewBCC"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/bccView"
-                style="@style/Divider"
-                android:layout_width="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bccTextField" />
-        </android.support.constraint.ConstraintLayout>
-
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/ConstraintLayoutSubject"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintLayoutBCC">
-
-            <TextView
-                android:id="@+id/textViewSubject"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:labelFor="@+id/recipientTextField"
-                android:text=" Subject"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toStartOf="@+id/subjectTextField"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/subjectTextField"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@android:color/transparent"
-                android:ems="10"
-                android:inputType="textMultiLine"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/textViewSubject"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/subjectView"
-                style="@style/Divider"
-                android:layout_width="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/subjectTextField" />
-        </android.support.constraint.ConstraintLayout>
-
-
-        <EditText
-            android:id="@+id/messageTextField"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-
-            android:backgroundTint="@android:color/transparent"
-            android:ems="10"
-            android:hint="Compose message"
-            android:inputType="textMultiLine"
-            android:singleLine="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintLayoutSubject" />
-
-        <WebView
-            android:id="@+id/webView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:backgroundTint="@android:color/transparent"
-            android:ems="10"
-            android:gravity="top"
-            android:hint="Compose email"
-            android:inputType="textMultiLine"
-            android:singleLine="false"
+            android:id="@+id/ConstraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/messageTextField">
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout3"
+            app:layout_constraintVertical_bias="0.0">
 
-        </WebView>
 
-    </android.support.constraint.ConstraintLayout>
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/ConstraintLayoutRecipient"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <AutoCompleteTextView
+                    android:id="@+id/recipientTextField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/transparent"
+                    android:inputType="textMultiLine"
+                    android:labelFor="@+id/recipientTextField"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@+id/recipientTextField"
+                    android:gravity="center_vertical"
+                    android:text=" To"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toStartOf="@+id/recipientTextField"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/moreRecipients"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center_vertical"
+                    android:src="@drawable/ic_keyboard_arrow_down_blue_24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/recipientTextField"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/view"
+                    style="@style/Divider"
+                    android:layout_width="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/recipientTextField" />
+
+            </android.support.constraint.ConstraintLayout>
+
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/ConstraintLayoutCC"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ConstraintLayoutRecipient">
+
+                <TextView
+                    android:id="@+id/textViewCC"
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:gravity="center_vertical"
+                    android:text=" Cc"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/ccTextField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@+id/textViewCC"
+                    android:backgroundTint="@android:color/transparent"
+                    android:inputType="textMultiLine"
+                    android:labelFor="@+id/ccTextField"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/textViewCC"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/ccView"
+                    style="@style/Divider"
+                    android:layout_width="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ccTextField" />
+
+            </android.support.constraint.ConstraintLayout>
+
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/ConstraintLayoutBCC"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ConstraintLayoutCC">
+
+                <TextView
+                    android:id="@+id/textViewBCC"
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text=" Bcc"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toStartOf="@+id/bccTextField"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <AutoCompleteTextView
+                    android:id="@+id/bccTextField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/transparent"
+                    android:inputType="textMultiLine"
+                    android:labelFor="@+id/bccTextField"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/textViewBCC"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/bccView"
+                    style="@style/Divider"
+                    android:layout_width="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bccTextField" />
+            </android.support.constraint.ConstraintLayout>
+
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/ConstraintLayoutSubject"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ConstraintLayoutBCC">
+
+                <TextView
+                    android:id="@+id/textViewSubject"
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:labelFor="@+id/recipientTextField"
+                    android:text=" Subject"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toStartOf="@+id/subjectTextField"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/subjectTextField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/transparent"
+                    android:ems="10"
+                    android:inputType="textMultiLine"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/textViewSubject"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/subjectView"
+                    style="@style/Divider"
+                    android:layout_width="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/subjectTextField" />
+            </android.support.constraint.ConstraintLayout>
+
+
+            <EditText
+                android:id="@+id/messageTextField"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+
+                android:backgroundTint="@android:color/transparent"
+                android:ems="10"
+                android:hint="Compose message"
+                android:inputType="textMultiLine"
+                android:singleLine="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ConstraintLayoutSubject" />
+
+            <WebView
+                android:id="@+id/webView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/transparent"
+                android:ems="10"
+                android:gravity="top"
+                android:hint="Compose email"
+                android:inputType="textMultiLine"
+                android:singleLine="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/messageTextField">
+
+            </WebView>
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
