@@ -5,11 +5,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -45,13 +47,15 @@ public class NewMailActivity extends AppCompatActivityRest {
     private AutoCompleteTextView bccTextField;
     private EditText subjectTextField;
     private EditText messageTextField;
+    private WebView webView;
     private List<Contact> contacts = new ArrayList<>();
-    private LinearLayout ccBar;
-    private LinearLayout bccBar;
+    private TextView textViewCC;
+    private TextView textViewBCC;
     private View ccView;
     private View bccView;
     private boolean hasOpenedMenu;
     public SendMailType mailTypeEnum = SendMailType.SEND;
+    public Body body;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,7 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         subjectTextField = (EditText) findViewById(R.id.subjectTextField);
         messageTextField = (EditText) findViewById(R.id.messageTextField);
+        webView = (WebView) findViewById(R.id.webView);
         recipientTextField = (AutoCompleteTextView) findViewById(R.id.recipientTextField);
         ccTextField = (AutoCompleteTextView) findViewById(R.id.ccTextField);
         bccTextField = (AutoCompleteTextView) findViewById(R.id.bccTextField);
@@ -72,15 +77,19 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         ImageView moreRecipients = (ImageView)findViewById(R.id.moreRecipients);
 
-        ccBar = (LinearLayout) findViewById(R.id.ccBar);
-        bccBar = (LinearLayout) findViewById(R.id.bccBar);
+
+
+        textViewCC =  findViewById(R.id.textViewCC);
+        textViewBCC = findViewById(R.id.textViewBCC);
         ccView = (View) findViewById(R.id.ccView);
         bccView = (View) findViewById(R.id.bccView);
 
-        ccBar.setVisibility(View.GONE);
-        bccBar.setVisibility(View.GONE);
+        textViewCC.setVisibility(View.GONE);
+        textViewBCC.setVisibility(View.GONE);
         ccView.setVisibility(View.GONE);
         bccView.setVisibility(View.GONE);
+        ccTextField.setVisibility(View.GONE);
+        bccTextField.setVisibility(View.GONE);
         hasOpenedMenu = false;
 
         moreRecipients.setOnClickListener(new View.OnClickListener() {
@@ -91,21 +100,25 @@ public class NewMailActivity extends AppCompatActivityRest {
                 hasOpenedMenu = !hasOpenedMenu;
 
                 if (hasOpenedMenu) {
-                    ccBar.setVisibility(View.VISIBLE);
-                    bccBar.setVisibility(View.VISIBLE);
+                    textViewCC.setVisibility(View.VISIBLE);
+                    textViewBCC.setVisibility(View.VISIBLE);
                     ccView.setVisibility(View.VISIBLE);
                     bccView.setVisibility(View.VISIBLE);
+                    ccTextField.setVisibility(View.VISIBLE);
+                    bccTextField.setVisibility(View.VISIBLE);
                 } else if (!hasOpenedMenu) {
-                    ccBar.setVisibility(View.GONE);
-                    bccBar.setVisibility(View.GONE);
+                    textViewCC.setVisibility(View.GONE);
+                    textViewBCC.setVisibility(View.GONE);
                     ccView.setVisibility(View.GONE);
                     bccView.setVisibility(View.GONE);
+                    ccTextField.setVisibility(View.GONE);
+                    bccTextField.setVisibility(View.GONE);
                 }
 
             }
         });
 
-        //https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/user_post_messages
+        https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/user_post_messages
 
         getContacts();
 
@@ -129,6 +142,7 @@ public class NewMailActivity extends AppCompatActivityRest {
                 }
                 break;
         }
+
 
     }
 
@@ -216,15 +230,21 @@ public class NewMailActivity extends AppCompatActivityRest {
                     List<Recipient> toRecipients = new Gson().fromJson(String.valueOf(toRecipientsJSON), listType);
                     String recipientsString = convertRecipientsToString(toRecipients);
 
-                    Body body = gson.fromJson(String.valueOf(response.get("body")), Body.class);
+                    body = gson.fromJson(String.valueOf(response.get("body")), Body.class);
                     System.out.println(body.getContent());
                     String subject = response.get("subject").toString();
                     System.out.println(subject);
 
                     subjectTextField.setText(subject);
-                    messageTextField.setText(body.getContent());
+                    messageTextField.setText("");
                     recipientTextField.setText(recipientsString);
 
+                    //String bodyContent = body.getContent();
+                    //bodyContent = "<div contenteditable=\"true\"" + bodyContent + "</div>";
+
+                    webView.setPadding(0,0,0,0);
+                    webView.loadDataWithBaseURL("", body.getContent(), "text/html", "utf-8","");
+                    webView.getSettings().setLoadWithOverviewMode(true);
                     //recipientTextField.setText();
 
                     //Body body = gson.fromJson(String.valueOf(response.get("body")), Body.class);
@@ -262,32 +282,11 @@ public class NewMailActivity extends AppCompatActivityRest {
         //noinspection SimplifiableIfStatement
         if (id == R.id.send_mail) {
 
-            switch (mailTypeEnum) {
-
-                case SEND:
-
-                Toast.makeText(getApplicationContext(), "Sending mail...", Toast.LENGTH_SHORT).show();
-                try {
-                    sendMail();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                break;
-
-                //do this on load
-                case REPLY:
-
-                    System.out.println("In reply case!");
-                    try {
-                        new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this);
-                        new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReply");
-                        Toast.makeText(getApplicationContext(), "Creating reply!", Toast.LENGTH_SHORT).show();
-                    } catch (IllegalAccessException e) {
-                        Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
-                    break;
+            Toast.makeText(getApplicationContext(), "Sending mail...", Toast.LENGTH_SHORT).show();
+            try {
+                sendMail();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
             return true;
@@ -303,10 +302,22 @@ public class NewMailActivity extends AppCompatActivityRest {
 
     public void sendMail() throws JSONException {
 
-        String subject = subjectTextField.getText().toString();
-        String messageString = messageTextField.getText().toString();
-        Body body = new Body(messageString, "Text");
+        //body + addedMessage
 
+        switch (mailTypeEnum) {
+            case REPLY:
+
+                String bodyContent = body.getContent();
+                bodyContent = messageTextField.getText().toString() + bodyContent;
+                body = new Body(bodyContent, body.getContentType());
+                break;
+            case SEND:
+
+                body = new Body(messageTextField.getText().toString(), "Text");
+                break;
+        }
+
+        String subject = subjectTextField.getText().toString();
         String recipientsString = recipientTextField.getText().toString();
         List<Recipient> toRecipients = splitEmailadresses(recipientsString);
         String ccString = ccTextField.getText().toString();
@@ -344,6 +355,7 @@ public class NewMailActivity extends AppCompatActivityRest {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("message", JSON);
 
+        System.out.println("Message here!");
         System.out.println(jsonMessage);
 
         //do our call
@@ -387,8 +399,8 @@ public class NewMailActivity extends AppCompatActivityRest {
         String recipientsString = "";
 
         for (Recipient recipient: recipientList
-             ) {
-            recipientsString = recipientsString + recipient.getEmailAddress().getAddress();
+                ) {
+            recipientsString = recipient.getEmailAddress().getAddress() + ";" + recipientsString;
         }
         return recipientsString;
     }
