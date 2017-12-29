@@ -36,6 +36,7 @@ import java.util.List;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.DAL.enums.SendMailType;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.mailing.adapter.FolderAdapter;
@@ -267,7 +268,22 @@ public class ReadMailActivity extends AppCompatActivityRest {
                         .show();
                 break;
             case R.id.reply:
-                // go to new email screen
+                Intent intentReply = new Intent(this, NewMailActivity.class);
+                intentReply.putExtra("mailType", SendMailType.REPLY.value());
+                intentReply.putExtra("ID", getIntent().getStringExtra("ID"));
+                startActivity(intentReply);
+                break;
+            case R.id.reply_all:
+                Intent intentReplyAll = new Intent(this, NewMailActivity.class);
+                intentReplyAll.putExtra("mailType", SendMailType.REPLYALL.value());
+                intentReplyAll.putExtra("ID", getIntent().getStringExtra("ID"));
+                startActivity(intentReplyAll);
+                break;
+            case R.id.forward:
+                Intent intentForward = new Intent(this, NewMailActivity.class);
+                intentForward.putExtra("mailType", SendMailType.FORWARD.value());
+                intentForward.putExtra("ID", getIntent().getStringExtra("ID"));
+                startActivity(intentForward);
                 break;
             case R.id.action_map:
                 folders = new Gson().fromJson(sharedPreferences.getString("AllMailFolders", "[]"), new TypeToken<ArrayList<MailFolder>>(){}.getType());

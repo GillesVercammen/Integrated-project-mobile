@@ -5,11 +5,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,6 +26,7 @@ import java.util.List;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.DAL.enums.SendMailType;
 import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Contact;
 import ap.student.outlook_mobile_app.DAL.models.EmailAddress;
@@ -44,12 +47,15 @@ public class NewMailActivity extends AppCompatActivityRest {
     private AutoCompleteTextView bccTextField;
     private EditText subjectTextField;
     private EditText messageTextField;
+    private WebView webView;
     private List<Contact> contacts = new ArrayList<>();
-    private LinearLayout ccBar;
-    private LinearLayout bccBar;
+    private TextView textViewCC;
+    private TextView textViewBCC;
     private View ccView;
     private View bccView;
     private boolean hasOpenedMenu;
+    public SendMailType mailTypeEnum = SendMailType.SEND;
+    public Body body;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,7 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         subjectTextField = (EditText) findViewById(R.id.subjectTextField);
         messageTextField = (EditText) findViewById(R.id.messageTextField);
+        webView = (WebView) findViewById(R.id.webView);
         recipientTextField = (AutoCompleteTextView) findViewById(R.id.recipientTextField);
         ccTextField = (AutoCompleteTextView) findViewById(R.id.ccTextField);
         bccTextField = (AutoCompleteTextView) findViewById(R.id.bccTextField);
@@ -70,15 +77,17 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         ImageView moreRecipients = (ImageView)findViewById(R.id.moreRecipients);
 
-        ccBar = (LinearLayout) findViewById(R.id.ccBar);
-        bccBar = (LinearLayout) findViewById(R.id.bccBar);
+        textViewCC =  findViewById(R.id.textViewCC);
+        textViewBCC = findViewById(R.id.textViewBCC);
         ccView = (View) findViewById(R.id.ccView);
         bccView = (View) findViewById(R.id.bccView);
 
-        ccBar.setVisibility(View.GONE);
-        bccBar.setVisibility(View.GONE);
+        textViewCC.setVisibility(View.GONE);
+        textViewBCC.setVisibility(View.GONE);
         ccView.setVisibility(View.GONE);
         bccView.setVisibility(View.GONE);
+        ccTextField.setVisibility(View.GONE);
+        bccTextField.setVisibility(View.GONE);
         hasOpenedMenu = false;
 
         moreRecipients.setOnClickListener(new View.OnClickListener() {
@@ -89,22 +98,66 @@ public class NewMailActivity extends AppCompatActivityRest {
                 hasOpenedMenu = !hasOpenedMenu;
 
                 if (hasOpenedMenu) {
-                    ccBar.setVisibility(View.VISIBLE);
-                    bccBar.setVisibility(View.VISIBLE);
+                    textViewCC.setVisibility(View.VISIBLE);
+                    textViewBCC.setVisibility(View.VISIBLE);
                     ccView.setVisibility(View.VISIBLE);
                     bccView.setVisibility(View.VISIBLE);
+                    ccTextField.setVisibility(View.VISIBLE);
+                    bccTextField.setVisibility(View.VISIBLE);
                 } else if (!hasOpenedMenu) {
-                    ccBar.setVisibility(View.GONE);
-                    bccBar.setVisibility(View.GONE);
+                    textViewCC.setVisibility(View.GONE);
+                    textViewBCC.setVisibility(View.GONE);
                     ccView.setVisibility(View.GONE);
                     bccView.setVisibility(View.GONE);
+                    ccTextField.setVisibility(View.GONE);
+                    bccTextField.setVisibility(View.GONE);
                 }
 
             }
         });
 
-        //https://developer.android.com/reference/android/widget/AutoCompleteTextView.html
         getContacts();
+
+        System.out.println("mailType should be here:");
+        if (getIntent().getExtras() != null) {
+            mailTypeEnum = SendMailType.valueOf(getIntent().getExtras().get("mailType").toString().toUpperCase());
+            System.out.println(mailTypeEnum);
+        }
+
+        switch (mailTypeEnum) {
+            case REPLY:
+
+                System.out.println("In reply case!");
+                try {
+                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReply");
+                } catch (IllegalAccessException e) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                break;
+
+            case REPLYALL:
+
+                System.out.println("In reply all case!");
+                try {
+                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReplyAll");
+                } catch (IllegalAccessException e) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                break;
+
+            case FORWARD:
+
+                System.out.println("In forward case!");
+                try {
+                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createForward");
+                } catch (IllegalAccessException e) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                break;
+        }
 
     }
 
@@ -179,7 +232,42 @@ public class NewMailActivity extends AppCompatActivityRest {
             case SENDMAIL: {
                 System.out.println(response.toString());
             }
+            break;
 
+            case UPDATEMAIL:{
+                try {
+                    System.out.println(response);
+                    Gson gson = new Gson();
+
+                    JSONArray toRecipientsJSON = response.getJSONArray("toRecipients");
+                    Type listType = new TypeToken<List<Recipient>>() {
+                    }.getType();
+                    List<Recipient> toRecipients = new Gson().fromJson(String.valueOf(toRecipientsJSON), listType);
+                    String recipientsString = convertRecipientsToString(toRecipients);
+
+                    body = gson.fromJson(String.valueOf(response.get("body")), Body.class);
+                    System.out.println(body.getContent());
+                    String subject = response.get("subject").toString();
+                    System.out.println(subject);
+
+                    subjectTextField.setText(subject);
+                    messageTextField.setText("");
+                    recipientTextField.setText(recipientsString);
+
+                    //Use this to make the webview editable
+                    //String bodyContent = body.getContent();
+                    //bodyContent = "<div contenteditable=\"true\"" + bodyContent + "</div>";
+
+                    webView.setPadding(0,0,0,0);
+                    webView.loadDataWithBaseURL("", body.getContent(), "text/html", "utf-8","");
+                    webView.getSettings().setLoadWithOverviewMode(true);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            break;
 
         }
     }
@@ -200,13 +288,16 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.send_mail) {
+
             Toast.makeText(getApplicationContext(), "Sending mail...", Toast.LENGTH_SHORT).show();
             try {
                 sendMail();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
             return true;
+
         }
 
         else if (id == android.R.id.home) {
@@ -218,10 +309,20 @@ public class NewMailActivity extends AppCompatActivityRest {
 
     public void sendMail() throws JSONException {
 
-        String subject = subjectTextField.getText().toString();
-        String messageString = messageTextField.getText().toString();
-        Body body = new Body(messageString, "Text");
+        //body + addedMessage
 
+        if (mailTypeEnum == mailTypeEnum.SEND)
+        {
+            body = new Body(messageTextField.getText().toString(), "Text");
+        }
+
+        else {
+            String bodyContent = body.getContent();
+            bodyContent = messageTextField.getText().toString() + bodyContent;
+            body = new Body(bodyContent, body.getContentType());
+        }
+
+        String subject = subjectTextField.getText().toString();
         String recipientsString = recipientTextField.getText().toString();
         List<Recipient> toRecipients = splitEmailadresses(recipientsString);
         String ccString = ccTextField.getText().toString();
@@ -259,6 +360,7 @@ public class NewMailActivity extends AppCompatActivityRest {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("message", JSON);
 
+        System.out.println("Message here!");
         System.out.println(jsonMessage);
 
         //do our call
@@ -296,6 +398,16 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         return recipients;
 
+    }
+
+    public String convertRecipientsToString(List<Recipient> recipientList){
+        String recipientsString = "";
+
+        for (Recipient recipient: recipientList
+                ) {
+            recipientsString = recipient.getEmailAddress().getAddress() + ";" + recipientsString;
+        }
+        return recipientsString;
     }
 
 }
