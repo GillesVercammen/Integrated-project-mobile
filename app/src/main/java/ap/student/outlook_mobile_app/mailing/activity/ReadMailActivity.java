@@ -276,11 +276,13 @@ public class ReadMailActivity extends AppCompatActivityRest {
             case R.id.reply_all:
                 Intent intentReplyAll = new Intent(this, NewMailActivity.class);
                 intentReplyAll.putExtra("mailType", SendMailType.REPLYALL.value());
+                intentReplyAll.putExtra("ID", getIntent().getStringExtra("ID"));
                 startActivity(intentReplyAll);
                 break;
             case R.id.forward:
                 Intent intentForward = new Intent(this, NewMailActivity.class);
                 intentForward.putExtra("mailType", SendMailType.FORWARD.value());
+                intentForward.putExtra("ID", getIntent().getStringExtra("ID"));
                 startActivity(intentForward);
                 break;
             case R.id.action_map:

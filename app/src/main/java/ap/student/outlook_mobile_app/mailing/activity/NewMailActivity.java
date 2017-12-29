@@ -77,8 +77,6 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         ImageView moreRecipients = (ImageView)findViewById(R.id.moreRecipients);
 
-
-
         textViewCC =  findViewById(R.id.textViewCC);
         textViewBCC = findViewById(R.id.textViewBCC);
         ccView = (View) findViewById(R.id.ccView);
@@ -118,8 +116,6 @@ public class NewMailActivity extends AppCompatActivityRest {
             }
         });
 
-        https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/user_post_messages
-
         getContacts();
 
         System.out.println("mailType should be here:");
@@ -133,16 +129,35 @@ public class NewMailActivity extends AppCompatActivityRest {
 
                 System.out.println("In reply case!");
                 try {
-                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this);
                     new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReply");
-                    Toast.makeText(getApplicationContext(), "Creating reply!", Toast.LENGTH_SHORT).show();
+                } catch (IllegalAccessException e) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                break;
+
+            case REPLYALL:
+
+                System.out.println("In reply all case!");
+                try {
+                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReplyAll");
+                } catch (IllegalAccessException e) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                break;
+
+            case FORWARD:
+
+                System.out.println("In forward case!");
+                try {
+                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createForward");
                 } catch (IllegalAccessException e) {
                     Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
                 break;
         }
-
 
     }
 
@@ -239,22 +254,14 @@ public class NewMailActivity extends AppCompatActivityRest {
                     messageTextField.setText("");
                     recipientTextField.setText(recipientsString);
 
+                    //Use this to make the webview editable
                     //String bodyContent = body.getContent();
                     //bodyContent = "<div contenteditable=\"true\"" + bodyContent + "</div>";
 
                     webView.setPadding(0,0,0,0);
                     webView.loadDataWithBaseURL("", body.getContent(), "text/html", "utf-8","");
                     webView.getSettings().setLoadWithOverviewMode(true);
-                    //recipientTextField.setText();
 
-                    //Body body = gson.fromJson(String.valueOf(response.get("body")), Body.class);
-
-
-                    //wrap JSONobject in another JSONobject to make sure format is correct {"message": message}
-                    //JSONObject jsonMessage = new JSONObject();
-                    //jsonMessage.put("message", JSON);
-//
-                    //System.out.println(jsonMessage);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -304,17 +311,15 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         //body + addedMessage
 
-        switch (mailTypeEnum) {
-            case REPLY:
+        if (mailTypeEnum == mailTypeEnum.SEND)
+        {
+            body = new Body(messageTextField.getText().toString(), "Text");
+        }
 
-                String bodyContent = body.getContent();
-                bodyContent = messageTextField.getText().toString() + bodyContent;
-                body = new Body(bodyContent, body.getContentType());
-                break;
-            case SEND:
-
-                body = new Body(messageTextField.getText().toString(), "Text");
-                break;
+        else {
+            String bodyContent = body.getContent();
+            bodyContent = messageTextField.getText().toString() + bodyContent;
+            body = new Body(bodyContent, body.getContentType());
         }
 
         String subject = subjectTextField.getText().toString();
