@@ -35,7 +35,7 @@ public class HomeActivity extends AppCompatActivityRest {
     private ArrayList<MailFolder> foldersWithMail;
     private ArrayList<String> foldernames;
     private ArrayList<Integer> folderunread;
-    private User user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,20 +60,9 @@ public class HomeActivity extends AppCompatActivityRest {
 
         if (connectivityManager.isConnected()) {
             System.out.println("CONNECTED");
-            try {
-                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            user = Authentication.getAuthentication().getAuthResult().getUser();
         } else {
             System.out.println("NOT CONNECTED");
-            user = new Gson().fromJson(sharedPreferences.getString("User",  "{}"), User.class);
             foldersWithMail = new Gson().fromJson(sharedPreferences.getString("MailFolders", "[]"), new TypeToken<ArrayList<MailFolder>>(){}.getType());
-        }
-
-        if (user.getName() != null) {
-            getSupportActionBar().setTitle("welcome ".concat(user.getName()));
         }
     }
 
@@ -81,28 +70,6 @@ public class HomeActivity extends AppCompatActivityRest {
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
         switch (outlookObjectCall) {
             case READMAIL: {
-                foldernames = new ArrayList<>();
-                folderunread = new ArrayList<>();
-                JSONObject list = response;
-                foldersWithMail = new ArrayList<>();
-                try {
-                    JSONArray folders = list.getJSONArray("value");
-                    Type listType = new TypeToken<List<MailFolder>>() {
-                    }.getType();
-                    folderObjectList = new Gson().fromJson(String.valueOf(folders), listType);
-                    editor.putString("AllMailFolders", new Gson().toJson(folderObjectList));
-                    for(int i = 0; i < folderObjectList.size(); i++){
-                        // CHECK IF TOTALCOUNT > 0, OTHERWISE IRRELEVANT FOLDER. ALSO EASIER TO ORDER FOLDER
-                        // IN BETA GRAPH API ENDPOINT, FIELD wellKnownName exists --> General name to check for (easier)
-                        if (folderObjectList.get(i).getTotalItemCount() > 0) {
-                            foldersWithMail.add(folderObjectList.get(i));
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                editor.putString("MailFolders", new Gson().toJson(foldersWithMail));
             }
             break;
         }
@@ -110,18 +77,7 @@ public class HomeActivity extends AppCompatActivityRest {
     }
 
     private void onMailButtonClicked() {
-        String user_name = "user_name";
-        String user_email = "user_email";
-            if (user.getName() != null) {
-                user_name = user.getName();
-                user_email = user.getDisplayableId();
-            }
-        Bundle args = new Bundle();
-        args.putSerializable("FOLDERS", (Serializable) foldersWithMail);
-        startActivity(new Intent(this, MailActivity.class)
-            .putExtra("USER_NAME", user_name)
-            .putExtra("USER_EMAIL", user_email)
-                .putExtra("BUNDLE",args));
+        startActivity(new Intent(this, MailActivity.class));
 
     }
 

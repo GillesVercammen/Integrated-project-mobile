@@ -51,6 +51,7 @@ import java.util.prefs.Preferences;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.HomeActivity;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.mailing.adapter.FolderAdapter;
@@ -90,6 +91,7 @@ public class ReadMailActivity extends AppCompatActivityRest{
     private ArrayList<Integer> folderunread;
     private static final int REQUEST_WRITE_STORAGE = 112;
     private static final int REQUEST_READ_STORAGE = 113;
+    private boolean CHECK_ATTACHEMENT = false;
     StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
 
     @Override
@@ -118,6 +120,7 @@ public class ReadMailActivity extends AppCompatActivityRest{
         if (getIntent().getStringExtra("HAS_ATTACHMENT").toLowerCase().equals("false")){
             attachment_download.setVisibility(View.GONE);
         } else {
+            CHECK_ATTACHEMENT = true;
             try {
                 new GraphAPI().getRequest(OutlookObjectCall.UPDATEMAIL, ReadMailActivity.this,"/" + getIntent().getStringExtra("ID") + "/attachments");
             } catch (IllegalAccessException e) {
@@ -311,16 +314,19 @@ public class ReadMailActivity extends AppCompatActivityRest{
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
         switch (outlookObjectCall) {
             case UPDATEMAIL: {
-                attachmentsList.clear();
-                JSONObject list = response;
-                try {
-                    JSONArray attachmentsArray = list.getJSONArray("value");
-                    // MAP ON POJO
-                    Type listType = new TypeToken<List<Attachment>>() {
-                    }.getType();
-                    attachmentsList = new Gson().fromJson(String.valueOf(attachmentsArray), listType);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (CHECK_ATTACHEMENT) {
+                    attachmentsList.clear();
+                    JSONObject list = response;
+                    try {
+                        JSONArray attachmentsArray = list.getJSONArray("value");
+                        // MAP ON POJO
+                        Type listType = new TypeToken<List<Attachment>>() {
+                        }.getType();
+                        attachmentsList = new Gson().fromJson(String.valueOf(attachmentsArray), listType);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    CHECK_ATTACHEMENT = false;
                 }
             }
             break;
@@ -339,7 +345,6 @@ public class ReadMailActivity extends AppCompatActivityRest{
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent2 = new Intent();
-                setResult(RESULT_OK,intent2);
                 finish();
                 break;
             case R.id.action_delete:
@@ -355,14 +360,12 @@ public class ReadMailActivity extends AppCompatActivityRest{
                                     Toast.makeText(ReadMailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent();
                                     intent.putExtra("POSITION", getIntent().getIntExtra("POSITION", -1));
-                                    setResult(500,intent);
                                     finish();//finishing activity
                                 } catch (IllegalAccessException e) {
                                     Toast.makeText(ReadMailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
                                     e.getStackTrace();
                                 }
                                 Intent intent = new Intent();
-                                setResult(500,intent);
                                 finish();//finishing activity
                             }
                         })
@@ -406,9 +409,8 @@ public class ReadMailActivity extends AppCompatActivityRest{
                                     Toast.makeText(ReadMailActivity.this, R.string.move_failed, Toast.LENGTH_SHORT).show();
                                     e.printStackTrace();
                                 }
-                                Intent intent = new Intent();
-                                setResult(500,intent);
-                                finish();//finishing activity
+                                startActivity(new Intent(ReadMailActivity.this, MailActivity.class));
+
                             }
                         })
                                 .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {

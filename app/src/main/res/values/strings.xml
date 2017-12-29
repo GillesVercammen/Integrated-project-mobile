@@ -66,5 +66,9 @@
     <string name="attachment_saved_failed">Failed saving attachment</string>
     <string name="delete_succes">Email(s) deleted</string>
     <string name="delete_nosucces">Failed to delete email(s)</string>
+    <string name="text_email">Email</string>
+    <string name="text_calendar">Calendar</string>
+    <string name="text_contacts">Contacts</string>
+    <string name="folder_error">Couldn\'t find folders</string>
 
 </resources>
