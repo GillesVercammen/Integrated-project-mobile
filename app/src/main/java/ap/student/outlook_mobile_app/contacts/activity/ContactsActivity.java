@@ -148,15 +148,19 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // filter recycler view when query submitted
+                System.out.println("SUBMITTED");
                 mAdapter.getFilter().filter(query);
-                return false;
+                mAdapter.notifyDataSetChanged();
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchView.getWindowToken(),0);
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String query) {
                 // filter recycler view when text is changed
                 mAdapter.getFilter().filter(query);
-                return false;
+                return true;
             }
         });
         return true;
