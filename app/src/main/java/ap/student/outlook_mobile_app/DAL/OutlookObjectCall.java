@@ -17,6 +17,7 @@ public enum OutlookObjectCall {
     POSTEVENT("/events"),
     POSTCALENDAR("/calendars"),
     LOGINERROR("/loginError"),
+    CONTACTS("/contacts"),
     PERMISSIONSERROR("/permissionsError");
     private String action;
 

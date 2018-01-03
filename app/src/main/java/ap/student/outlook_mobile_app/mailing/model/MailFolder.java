@@ -17,6 +17,13 @@ public class MailFolder implements Serializable {
     public MailFolder() {
     }
 
+    public MailFolder(String id, String displayName, int unreadItemCount, int totalItemCount) {
+        this.id = id;
+        this.displayName = displayName;
+        this.unreadItemCount = unreadItemCount;
+        this.totalItemCount = totalItemCount;
+    }
+
     public String getDisplayName() {
         return displayName;
     }

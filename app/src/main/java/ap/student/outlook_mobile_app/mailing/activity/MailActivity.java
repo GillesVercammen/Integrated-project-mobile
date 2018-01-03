@@ -62,6 +62,7 @@ import ap.student.outlook_mobile_app.Calendar.CalendarActivity;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
+import ap.student.outlook_mobile_app.contacts.activity.ContactsActivity;
 import ap.student.outlook_mobile_app.mailing.adapter.MessagesAdapter;
 import ap.student.outlook_mobile_app.mailing.helpers.DividerItemDecoration;
 import ap.student.outlook_mobile_app.mailing.model.MailFolder;
@@ -96,6 +97,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         setContentView(R.layout.activity_mail);
         super.onCreate(savedInstanceState);
 
@@ -135,6 +137,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             e.printStackTrace();
             Toast.makeText(MailActivity.this, R.string.folder_error, Toast.LENGTH_SHORT).show();
         }
+
         // SET FLOATINGBUTTON
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -157,18 +160,16 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_email:
-                                System.out.println("mail clicked");
                                 Intent intent = new Intent(MailActivity.this, MailActivity.class);
                                 startActivity(intent);
                                 break;
                             case R.id.action_calendar:
-                                System.out.println("calender klicked");
                                 Intent intent2 = new Intent(MailActivity.this, CalendarActivity.class);
                                 startActivity(intent2);
                                 break;
                             case R.id.action_contacts:
-                                System.out.println("contact clicked");
-                                break;
+                                Intent intent3 = new Intent(MailActivity.this, ContactsActivity.class);
+                                startActivity(intent3);                                break;
 
                         }
                         return true;
@@ -212,6 +213,18 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 }
             }
         });
+
+
+        /*
+        DIRTIEST SHITTY CODE EVER WRITTEN IN JAVA/ANDROID HISTORY
+        REMOVE THIS CODE AND THE SCREEN JUMPS TO THE TOP ON LOADING BECAUSE IT HAS TO WAIT ON THE CALL TO LOAD MENU,
+        SO WE INITIALIZE MENU WITH 1 NOT FOUND ITEM, WHEN CALL IS DONE, IT REPLACES THE MENU WITH CORRECT MENU
+        SORRY :) :) :)
+         */
+        foldersWithMail = new ArrayList<>();
+        foldersWithMail.add(new MailFolder("1", "Not found", 0, 0));
+
+        createMenu(toolbar, currentUserName, currentUserEmail, foldersWithMail);
     }
 
     @Override
@@ -317,6 +330,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
         switch (outlookObjectCall) {
             case READFOLDERS: {
+                foldersWithMail.clear();
                 foldernames = new ArrayList<>();
                 folderunread = new ArrayList<>();
                 JSONObject list = response;
@@ -334,11 +348,13 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                             foldersWithMail.add(folderObjectList.get(i));
                         }
                     }
+                    createMenu(toolbar, currentUserName, currentUserEmail, foldersWithMail);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 editor.putString("MailFolders", new Gson().toJson(foldersWithMail));
-                createMenu(toolbar, currentUserName, currentUserEmail);
+
             } break;
             case READMAIL: {
                 messages.clear();
@@ -440,7 +456,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     new GraphAPI().patchRequest(OutlookObjectCall.UPDATEMAIL,this, body, "/" + message.getId());
                     message.setIsRead("true");
                     readClicked++;
-                    createMenu(toolbar, currentUserName, currentUserEmail);
+                    createMenu(toolbar, currentUserName, currentUserEmail, foldersWithMail);
 
                 } catch (JSONException | IllegalAccessException e) {
                     e.printStackTrace();
@@ -504,6 +520,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
             // DISABLE REFRESH WHEN ACTIONMODE ENABLED
             swipeRefreshLayout.setEnabled(false);
+            loadmore=false;
             return true;
         }
 
@@ -558,6 +575,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         public void onDestroyActionMode(ActionMode mode) {
             mAdapter.clearSelections();
             swipeRefreshLayout.setEnabled(true);
+            loadmore=true;
             actionMode = null;
             recyclerView.post(new Runnable() {
                 @Override
@@ -679,13 +697,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     * - SELECTED ITEM COLOR IS NOT WORKING CORRECTLY (EG: CURRENT SELECTION = DARK GREY)
     * - CAN'T ORDER THE LIST OF FODLER PROPERLY (INBOX ON TOP)
      */
-    public void createMenu(Toolbar toolbar, String name, String email){
+    public void createMenu(Toolbar toolbar, String name, String email,  ArrayList<MailFolder> folders){
 
         ArrayList<IDrawerItem> drawerItems = new ArrayList<>();
-        ArrayList<MailFolder> folders =  foldersWithMail;
 
         // SET DRAWERITEMS WITH DYNAMIC FOLDER, ONLY FOLDERS WITH TOTALMAILCOUNT > 0 ARE RECEIVED WITH INTENT
-        for(MailFolder folder : folders) {
+       for(MailFolder folder : folders) {
             PrimaryDrawerItem item = new PrimaryDrawerItem();
             if(folder.getUnreadItemCount() == 0){
                 item.withName(folder.getDisplayName())
@@ -698,6 +715,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             item.withTag(folder);
             drawerItems.add(item);
         }
+
 
 
         // CREATE THE ACCOUNT HEADER = NAME/EMAIL/ICON

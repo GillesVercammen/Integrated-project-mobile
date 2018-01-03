@@ -66,9 +66,17 @@
     <string name="attachment_saved_failed">Failed saving attachment</string>
     <string name="delete_succes">Email(s) deleted</string>
     <string name="delete_nosucces">Failed to delete email(s)</string>
+    <string name="delete_succes_contacts">Contact(s) deleted</string>
+    <string name="delete_nosucces_contacts">Failed to delete contact(s)</string>
     <string name="text_email">Email</string>
     <string name="text_calendar">Calendar</string>
     <string name="text_contacts">Contacts</string>
     <string name="folder_error">Couldn\'t find folders</string>
+    <string name="title_activity_contacts">ContactsActivity</string>
+    <string name="contacts_title">Contacts</string>
+    <string name="no_contacts">No contacts found, add a new contact</string>
+    <string name="alert_delete_title_contacts">deleting contact(s)</string>
+    <string name="alert_delete_contacts_multiple">Are you sure you want to delete these contacts?</string>
+    <string name="alert_delete_contact">Are you sure you want to delete this contact?</string>
 
 </resources>
