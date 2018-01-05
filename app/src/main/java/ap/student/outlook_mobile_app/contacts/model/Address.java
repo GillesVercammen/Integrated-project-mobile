@@ -1,14 +1,13 @@
 package ap.student.outlook_mobile_app.contacts.model;
 
-/**
- * Created by Demmy on 2/01/2018.
- */
+import java.io.Serializable;
 
-public class Address {
+public class Address implements Serializable {
     private String street;
     private String city;
     private String state;
-    private String countryorRegion;
+    private String countryOrRegion;
+
     private String postalCode;
 
     public String getStreet() {
@@ -35,12 +34,12 @@ public class Address {
         this.state = state;
     }
 
-    public String getCountryorRegion() {
-        return countryorRegion;
+    public String getCountryOrRegion() {
+        return countryOrRegion;
     }
 
-    public void setCountryorRegion(String countryorRegion) {
-        this.countryorRegion = countryorRegion;
+    public void setCountryOrRegion(String countryOrRegion) {
+        this.countryOrRegion = countryOrRegion;
     }
 
     public String getPostalCode() {

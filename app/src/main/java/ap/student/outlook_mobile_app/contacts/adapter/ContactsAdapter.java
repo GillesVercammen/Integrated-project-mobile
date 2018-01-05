@@ -67,13 +67,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         messageContainer = (LinearLayout) view.findViewById(R.id.message_container);
         iconContainer = (RelativeLayout) view.findViewById(R.id.icon_container);
         view.setOnLongClickListener(this);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // send selected contact in callback
-                listener.onContactSelected(contactListFiltered.get(getAdapterPosition()));
-            }
-        });
     }
 
     @Override
@@ -252,7 +245,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
         void onRowLongClicked(int position);
 
-        void onContactSelected(Contact contact);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ap.student.outlook_mobile_app.contacts.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import ap.student.outlook_mobile_app.mailing.model.EmailAddress;
@@ -8,7 +9,7 @@ import ap.student.outlook_mobile_app.mailing.model.EmailAddress;
  * Created by Demmy on 30/12/2017.
  */
 
-public class Contact implements Comparable<Contact> {
+public class Contact implements Comparable<Contact>, Serializable {
 
     private int autoId;
     private int color = -1;

@@ -39,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +56,7 @@ import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.contacts.adapter.ContactsAdapter;
 import ap.student.outlook_mobile_app.contacts.model.Contact;
 import ap.student.outlook_mobile_app.mailing.activity.MailActivity;
+import ap.student.outlook_mobile_app.mailing.activity.ReadMailActivity;
 import ap.student.outlook_mobile_app.mailing.adapter.MessagesAdapter;
 import ap.student.outlook_mobile_app.mailing.helpers.DividerItemDecoration;
 import ap.student.outlook_mobile_app.mailing.model.MailFolder;
@@ -258,6 +260,15 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
     @Override
     public void onMessageRowClicked(int position) {
 
+        if (mAdapter.getSelectedItemCount() > 0) {
+            enableActionMode(position);
+        } else {
+            // READ THE MESSAGE, REMOVE BOLD FONT
+            Contact contact = contacts.get(position);
+            Intent intent = new Intent(this, ContactDetailActivity.class);
+            intent.putExtra("CONTACT", contact);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -402,16 +413,9 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                 mAdapter.getSelectedItems();
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
             Contact contact = contacts.get(i);
-            System.out.println("TEST: " + contact.getId());
            new GraphAPI().deleteRequest(OutlookObjectCall.CONTACTS,this, "/" + contact.getId());
             mAdapter.removeData(selectedItemPositions.get(i));
         }
         mAdapter.notifyDataSetChanged();
     }
-
-    @Override
-    public void onContactSelected(Contact contact) {
-        //clicked
-    }
-
 }

@@ -291,6 +291,8 @@ public class ReadMailActivity extends AppCompatActivityRest{
                 Toast.makeText(ReadMailActivity.this, R.string.attachment_saved_failed, Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
+        } else {
+            System.out.println("MORE ATTACHEMENTS");
         }
     }
 
@@ -344,7 +346,6 @@ public class ReadMailActivity extends AppCompatActivityRest{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent2 = new Intent();
                 finish();
                 break;
             case R.id.action_delete:
@@ -477,7 +478,7 @@ public class ReadMailActivity extends AppCompatActivityRest{
                     listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 2);
             return false;
         }
-        System.out.println("HALLO");
+
         return true;
     }
 
