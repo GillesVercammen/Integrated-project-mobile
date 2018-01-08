@@ -3,6 +3,8 @@
     package="ap.student.outlook_mobile_app">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -48,7 +50,13 @@
         <activity android:name=".HomeActivity" />
         <activity android:name=".Calendar.CalendarActivity" />
         <activity android:name=".Calendar.EventActivity" />
-        <activity android:name=".Calendar.CustomRecurrenceActivity"></activity>
+        <activity android:name=".Calendar.CustomRecurrenceActivity" />
+        <activity
+            android:name=".contacts.activity.ContactsActivity"
+            android:label="@string/title_activity_contacts"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".contacts.activity.ContactDetailActivity"></activity>
     </application>
 
 </manifest>
