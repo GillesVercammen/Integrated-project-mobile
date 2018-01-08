@@ -20,7 +20,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
@@ -226,6 +228,8 @@ public class CalendarActivity extends AppCompatActivityRest {
             case READEVENTS: {
                 event = gson.fromJson(response.toString(), Event.class);
                 buildMonthCalendar();
+                buildWeekCalendar();
+                buildDayCalendar();
                 editor.putString("Events", response.toString());
             }
             break;
@@ -337,8 +341,12 @@ public class CalendarActivity extends AppCompatActivityRest {
                     textView.setTextColor(getResources().getColor(R.color.black));
                 }
 
+                if (getEvents(index) != null) {
+                    hasEvent = true;
+                }
+
                 if (index.getDayOfYear() == selectedTime.getDayOfYear()) {
-                    if (checkIfEvent(index)) {
+                    if (hasEvent) {
                         textView.setBackgroundResource(R.drawable.monthcalendar_select_event);
                         hasEvent = true;
                     } else {
@@ -347,7 +355,7 @@ public class CalendarActivity extends AppCompatActivityRest {
                     isSelected = true;
                     lastId = textView.getId();
                 }
-                else if (checkIfEvent(index)) {
+                else if (hasEvent) {
                     textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     hasEvent = true;
                 }
@@ -402,26 +410,26 @@ public class CalendarActivity extends AppCompatActivityRest {
             row.removeAllViews();
             row.setMinimumHeight(cellSize);
 
-            if (checkIfEvent(startDate)) {
-                for (Event event : event.getEvents()) {
-                    if (event.getStart().getDateTime().getDayOfYear() == startDate.getDayOfYear()) {
-                        stringBuilder = new StringBuilder();
-                        stringBuilder.append(event.getStart().getDateTime().format(hourFormat)).append(event.getSubject());
+            Event[] events = getEvents(startDate);
 
-                        TextView textView = new TextView(this);
-                        textView.setText(stringBuilder.toString());
-                        textView.setTextAppearance(R.style.TextAppearance_AppCompat_Subhead);
-                        textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            if (events != null) {
+                for (Event event : events) {
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append(event.getStart().getDateTime().format(hourFormat)).append(event.getSubject());
 
-                        textView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                    TextView textView = new TextView(this);
+                    textView.setText(stringBuilder.toString());
+                    textView.setTextAppearance(R.style.TextAppearance_AppCompat_Subhead);
+                    textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
-                            }
-                        });
+                    textView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                        row.addView(textView);
-                    }
+                        }
+                    });
+
+                    row.addView(textView);
                 }
             }
             startDate = startDate.plusDays(1);
@@ -441,19 +449,18 @@ public class CalendarActivity extends AppCompatActivityRest {
                 .append(' ').append(selectedTime.getDayOfMonth()).append(' ')
                 .append(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.getMonthValue()-1].value())).toString());
 
-        if (checkIfEvent(selectedTime.toLocalDate())) {
+        Event[] events = getEvents(selectedTime.toLocalDate());
+        if (events != null) {
             dayCalendarNoEventsTextview.setVisibility(View.GONE);
             dayCalendar.setVisibility(View.VISIBLE);
 
-            for (Event event : event.getEvents()) {
-                if (event.getStart().getDateTime().getDayOfYear() == selectedTime.getDayOfYear()) {
-                    TableRow row = new TableRow(this);
-                    TextView header = new TextView(this);
-                    header.setText(event.getStart().getDateTime().format(hourFormat).concat(" - ")
-                            .concat(event.getEnd().getDateTime().format(hourFormat)));
-                    row.addView(header);
-                    dayCalendar.addView(row);
-                }
+            for (Event event : events) {
+                TableRow row = new TableRow(this);
+                TextView header = new TextView(this);
+                header.setText(event.getStart().getDateTime().format(hourFormat).concat(" - ")
+                        .concat(event.getEnd().getDateTime().format(hourFormat)));
+                row.addView(header);
+                dayCalendar.addView(row);
             }
         } else {
             dayCalendarNoEventsTextview.setVisibility(View.VISIBLE);
@@ -461,17 +468,19 @@ public class CalendarActivity extends AppCompatActivityRest {
         }
     }
 
-    private boolean checkIfEvent(LocalDate index) {
-        if (event == null || event.getEvents() == null) {
-            return false;
-        }
-        for (Event event : event.getEvents()) {
-            LocalDateTime eventTime = event.getStart().getDateTime();
-            if (eventTime.getYear() == index.getYear() && eventTime.getDayOfYear() == index.getDayOfYear()) {
-                return true;
+    private Event[] getEvents(LocalDate index) {
+        if (event != null || event.getEvents() != null) {
+            List<Event> events = new ArrayList<>();
+            for (Event event : event.getEvents()) {
+                if (event.getStart().getDateTime().getYear() == index.getYear() && event.getStart().getDateTime().getDayOfYear() == index.getDayOfYear()) {
+                    events.add(event);
+                }
+            }
+            if (events.size() > 0) {
+                return events.toArray(new Event[]{});
             }
         }
-        return false;
+        return null;
     }
 
     private void eventClicked(int id) {
