@@ -49,6 +49,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.BLL.UserAuth;
 import ap.student.outlook_mobile_app.Calendar.CalendarActivity;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
@@ -65,6 +66,7 @@ import ap.student.outlook_mobile_app.mailing.model.Message;
 public class ContactsActivity extends AppCompatActivityRest implements ContactsAdapter.ContactsAdapterListener{
 
     private static final int REQ_CODE_SPEECH_INPUT = 100;
+    private static final int AANTAL_CONTACTS = 350;
     private ViewGroup linearLayout;
     private EditText searchField;
     private RecyclerView recyclerView;
@@ -378,7 +380,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
     private void getAllContacts() {
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.CONTACTS, this);
+            new GraphAPI().getRequest(OutlookObjectCall.CONTACTS, this, "?$top=" + AANTAL_CONTACTS);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

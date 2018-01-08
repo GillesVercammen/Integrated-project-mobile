@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
@@ -23,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
@@ -127,13 +129,13 @@ public class ContactDetailActivity extends AppCompatActivityRest {
                 item.setVisible(false);
                 saveContact.setVisible(true);
                 cancelEdit.setVisible(true);
-                setEditable(displayname); setEditable(givenname); setEditable(initials); setEditable(middlename); setEditable(nickname); setEditable(surname);
-                setEditable(title); setEditable(companyname); setEditable(jobtitle); setEditable(department); setEditable(officelocation); setEditable(profession);
-                setEditable(businesshomepage); setEditable(assistantname); setEditable(manager); setEditable(homephones); setEditable(mobilephone);
-                setEditable(businessphones); setEditable(spousename); setEditable(birthday); setEditable(personalNotes);
-                setEditable(spousename); setEditable(birthday); setEditable(personalNotes); setEditable(streethome);
-                setEditable(homeaddress); setEditable(countryhome); setEditable(streetother); setEditable(otheraddress);
-                setEditable(countryother); setEditable(streetbusiness); setEditable(businessaddress); setEditable(countrybusiness);
+                setEditable(displayname, R.id.layout1); setEditable(givenname, R.id.layout2); setEditable(initials, R.id.layout3); setEditable(middlename, R.id.layout4); setEditable(nickname, R.id.layout5);
+                setEditable(surname, R.id.layout6); setEditable(title, R.id.layout7); setEditable(companyname, R.id.layout8); setEditable(jobtitle, R.id.layout9); setEditable(department, R.id.layout10);
+                setEditable(officelocation, R.id.layout11); setEditable(profession, R.id.layout12);
+                setEditable(businesshomepage, R.id.layout13); setEditable(assistantname, R.id.layout14); setEditable(manager, R.id.layout15); setEditable(homephones, R.id.layout16); setEditable(mobilephone, R.id.layout17);
+                setEditable(businessphones, R.id.layout18); setEditable(spousename, R.id.layout19); setEditable(birthday, R.id.layout21); setEditable(personalNotes, R.id.layout22); setEditable(streethome, R.id.layout23);
+                setEditable(homeaddress, R.id.layout24); setEditable(countryhome, R.id.layout25); setEditable(streetother, R.id.layout26); setEditable(otheraddress, R.id.layout27);
+                setEditable(countryother, R.id.layout28); setEditable(streetbusiness, R.id.layout29); setEditable(businessaddress, R.id.layout30); setEditable(countrybusiness, R.id.layout31);
                 break;
             case R.id.action_save:
                 item.setVisible(false);
@@ -151,9 +153,15 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setEditable(EditText editText) {
+    private void setEditable(EditText editText, int layoutid) {
         editText.setFocusableInTouchMode(true);
         editText.setClickable(true);
+
+        // Add the empty edittexts
+        layout = (ViewGroup) findViewById(layoutid);
+        if (layout.getVisibility() == View.GONE) {
+            layout.setVisibility(View.VISIBLE);
+        }
     }
 
 

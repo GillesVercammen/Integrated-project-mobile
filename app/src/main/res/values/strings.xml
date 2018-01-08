@@ -102,7 +102,7 @@
     <string name="mobilephone">Mobilephone: </string>
     <string name="businessphone">Businessphones: </string>
     <string name="spousename">Spousename: </string>
-    <string name="emailaddresses">Emailaddresses: </string>
+    <string name="emailaddresses">Emailaddress: </string>
     <string name="birthday">Birthday: </string>
     <string name="personalnotes">personal note</string>
     <string name="homeaddress">Homeaddress:</string>
@@ -117,5 +117,6 @@
     <string name="action_edit">Edit contact</string>
     <string name="action_save">Save contac</string>
     <string name="action_cancel_edit">Cancel edit</string>
+    <string name="edit">Edit</string>
 
 </resources>
