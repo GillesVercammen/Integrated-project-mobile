@@ -125,6 +125,10 @@ public class GraphAPI {
         sendRequest(Request.Method.POST, objectCall, body, context, "", new ArrayList<String[]>());
     }
 
+    public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, String parameters) throws IllegalAccessException {
+        sendRequest(Request.Method.POST, objectCall, createEmptyBody(), context, parameters, new ArrayList<String[]>());
+    }
+
     public void postRequest(OutlookObjectCall objectCall, final AppCompatActivityRest context, JSONObject body, String parameters) throws IllegalAccessException {
         sendRequest(Request.Method.POST, objectCall, body, context, parameters, new ArrayList<String[]>());
     }
