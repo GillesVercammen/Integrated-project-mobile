@@ -367,8 +367,8 @@ public class ReadMailActivity extends AppCompatActivityRest{
                                     Toast.makeText(ReadMailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
                                     e.getStackTrace();
                                 }
-                                Intent intent = new Intent();
-                                finish();//finishing activity
+                                Intent intent = new Intent(ReadMailActivity.this, MailActivity.class);
+                                startActivity(intent);
                             }
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
