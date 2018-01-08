@@ -60,9 +60,7 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        String homeString = contact.getHomeAddress().getCity() + ", " + contact.getHomeAddress().getState() + ", " + contact.getHomeAddress().getPostalCode();
-        String businessString = contact.getBusinessAddress().getCity() + ", " + contact.getBusinessAddress().getState() + ", " + contact.getBusinessAddress().getPostalCode();
-        String otherString = contact.getOtherAddress().getCity() + ", " + contact.getOtherAddress().getState() + ", " + contact.getOtherAddress().getPostalCode();
+
 
         displayname = (EditText) findViewById(R.id.displayname);
         givenname = (EditText) findViewById(R.id.givenname);
@@ -95,42 +93,7 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         businessaddress = (EditText) findViewById(R.id.citybusiness);
         countrybusiness = (EditText) findViewById(R.id.countryorregionbusiness);
 
-
-        checkIfInfoExist(contact.getDisplayName(), (EditText) findViewById(R.id.displayname), R.id.displayname, layout2, R.id.layout1);
-        checkIfInfoExist(contact.getGivenName(), (EditText) findViewById(R.id.givenname), R.id.givenname, layout2, R.id.layout2);
-        checkIfInfoExist(contact.getInitials(), (EditText) findViewById(R.id.initials), R.id.initials, layout2, R.id.layout3);
-        checkIfInfoExist(contact.getMiddleName(), (EditText) findViewById(R.id.middlename), R.id.middlename, layout2, R.id.layout4);
-        checkIfInfoExist(contact.getNickName(), (EditText) findViewById(R.id.nickname), R.id.nickname, layout2, R.id.layout5);
-        checkIfInfoExist(contact.getSurname(), (EditText) findViewById(R.id.surname), R.id.surname, layout2, R.id.layout6);
-        checkIfInfoExist(contact.getTitle(), (EditText) findViewById(R.id.title), R.id.title, layout2, R.id.layout7);
-        checkIfInfoExist(contact.getCompanyName(), (EditText) findViewById(R.id.companyname), R.id.companyname, layout2, R.id.layout8);
-        checkIfInfoExist(contact.getJobTitle(), (EditText) findViewById(R.id.jobtitle), R.id.jobtitle, layout2, R.id.layout9);
-        checkIfInfoExist(contact.getDepartment(), (EditText) findViewById(R.id.department), R.id.department, layout2, R.id.layout10);
-        checkIfInfoExist(contact.getOfficeLocation(), (EditText) findViewById(R.id.officelocation), R.id.officelocation, layout2, R.id.layout11);
-        checkIfInfoExist(contact.getProfession(), (EditText) findViewById(R.id.profession), R.id.profession, layout2, R.id.layout12);
-        checkIfInfoExist(contact.getBusinessHomePage(), (EditText) findViewById(R.id.businesshomepage), R.id.businesshomepage, layout2, R.id.layout13);
-        checkIfInfoExist(contact.getAssistantName(), (EditText) findViewById(R.id.assistantname), R.id.assistantname, layout2, R.id.layout14);
-        checkIfInfoExist(contact.getManager(), (EditText) findViewById(R.id.manager), R.id.manager, layout2, R.id.layout15);
-        checkIfArrayExist(contact.getHomePhones().toArray(new String[0]), (EditText) findViewById(R.id.homephones), R.id.homephones, layout2, R.id.layout16);
-        checkIfInfoExist(contact.getMobilePhone(), (EditText) findViewById(R.id.mobilephone), R.id.mobilephone, layout2, R.id.layout17);
-        checkIfArrayExist(contact.getBusinessPhones().toArray(new String[0]), (EditText) findViewById(R.id.businessphones), R.id.businessphones, layout2, R.id.layout18);
-        checkIfInfoExist(contact.getSpouseName(), (EditText) findViewById(R.id.spousename), R.id.spousename, layout2, R.id.layout19);
-        try {
-            checkIfInfoExist(transformDate(contact.getBirthday()), (EditText) findViewById(R.id.birthday), R.id.birthday, layout2, R.id.layout21);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        checkIfInfoExist(contact.getPersonalNotes(), (EditText) findViewById(R.id.personalNotes), R.id.personalNotes, layout2, R.id.layout22);
-        //      checkIfInfoExist(Arrays.toString(contact.getEmailAddresses().toArray(new String[0])), emailaddresses, R.id.emailaddresses);
-        checkIfInfoExist(contact.getHomeAddress().getStreet(), (EditText) findViewById(R.id.streethome), R.id.streethome, layout2, R.id.layout23);
-        checkIfInfoExist(homeString, (EditText) findViewById(R.id.cityhome), R.id.cityhome, layout2, R.id.layout24);
-        checkIfInfoExist(contact.getHomeAddress().getCountryOrRegion(), (EditText) findViewById(R.id.countryorregionhome), R.id.countryorregionhome, layout2, R.id.layout25);
-        checkIfInfoExist(contact.getBusinessAddress().getStreet(), (EditText) findViewById(R.id.streetbusiness), R.id.streetbusiness, layout2, R.id.layout26);
-        checkIfInfoExist(businessString, (EditText) findViewById(R.id.citybusiness), R.id.citybusiness, layout2, R.id.layout26);
-        checkIfInfoExist(contact.getBusinessAddress().getCountryOrRegion(), (EditText) findViewById(R.id.countryorregionbusiness), R.id.countryorregionbusiness, layout2, R.id.layout26);
-        checkIfInfoExist(contact.getOtherAddress().getStreet(), (EditText) findViewById(R.id.streetother), R.id.streetother, layout2, R.id.layout26);
-        checkIfInfoExist(otherString, (EditText) findViewById(R.id.cityother), R.id.cityother, layout2, R.id.layout26);
-        checkIfInfoExist(contact.getOtherAddress().getCountryOrRegion(), (EditText) findViewById(R.id.countryorregionother), R.id.countryorregionother, layout2, R.id.layout26);
+        fillEditTexts();
     }
 
 
@@ -231,6 +194,48 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         } else {
             return "";
         }
+    }
+
+
+    private void fillEditTexts() {
+        String homeString = contact.getHomeAddress().getCity() + ", " + contact.getHomeAddress().getState() + ", " + contact.getHomeAddress().getPostalCode();
+        String businessString = contact.getBusinessAddress().getCity() + ", " + contact.getBusinessAddress().getState() + ", " + contact.getBusinessAddress().getPostalCode();
+        String otherString = contact.getOtherAddress().getCity() + ", " + contact.getOtherAddress().getState() + ", " + contact.getOtherAddress().getPostalCode();
+        checkIfInfoExist(contact.getDisplayName(), (EditText) findViewById(R.id.displayname), R.id.displayname, layout2, R.id.layout1);
+        checkIfInfoExist(contact.getGivenName(), (EditText) findViewById(R.id.givenname), R.id.givenname, layout2, R.id.layout2);
+        checkIfInfoExist(contact.getInitials(), (EditText) findViewById(R.id.initials), R.id.initials, layout2, R.id.layout3);
+        checkIfInfoExist(contact.getMiddleName(), (EditText) findViewById(R.id.middlename), R.id.middlename, layout2, R.id.layout4);
+        checkIfInfoExist(contact.getNickName(), (EditText) findViewById(R.id.nickname), R.id.nickname, layout2, R.id.layout5);
+        checkIfInfoExist(contact.getSurname(), (EditText) findViewById(R.id.surname), R.id.surname, layout2, R.id.layout6);
+        checkIfInfoExist(contact.getTitle(), (EditText) findViewById(R.id.title), R.id.title, layout2, R.id.layout7);
+        checkIfInfoExist(contact.getCompanyName(), (EditText) findViewById(R.id.companyname), R.id.companyname, layout2, R.id.layout8);
+        checkIfInfoExist(contact.getJobTitle(), (EditText) findViewById(R.id.jobtitle), R.id.jobtitle, layout2, R.id.layout9);
+        checkIfInfoExist(contact.getDepartment(), (EditText) findViewById(R.id.department), R.id.department, layout2, R.id.layout10);
+        checkIfInfoExist(contact.getOfficeLocation(), (EditText) findViewById(R.id.officelocation), R.id.officelocation, layout2, R.id.layout11);
+        checkIfInfoExist(contact.getProfession(), (EditText) findViewById(R.id.profession), R.id.profession, layout2, R.id.layout12);
+        checkIfInfoExist(contact.getBusinessHomePage(), (EditText) findViewById(R.id.businesshomepage), R.id.businesshomepage, layout2, R.id.layout13);
+        checkIfInfoExist(contact.getAssistantName(), (EditText) findViewById(R.id.assistantname), R.id.assistantname, layout2, R.id.layout14);
+        checkIfInfoExist(contact.getManager(), (EditText) findViewById(R.id.manager), R.id.manager, layout2, R.id.layout15);
+        checkIfArrayExist(contact.getHomePhones().toArray(new String[0]), (EditText) findViewById(R.id.homephones), R.id.homephones, layout2, R.id.layout16);
+        checkIfInfoExist(contact.getMobilePhone(), (EditText) findViewById(R.id.mobilephone), R.id.mobilephone, layout2, R.id.layout17);
+        checkIfArrayExist(contact.getBusinessPhones().toArray(new String[0]), (EditText) findViewById(R.id.businessphones), R.id.businessphones, layout2, R.id.layout18);
+        checkIfInfoExist(contact.getSpouseName(), (EditText) findViewById(R.id.spousename), R.id.spousename, layout2, R.id.layout19);
+        try {
+            checkIfInfoExist(transformDate(contact.getBirthday()), (EditText) findViewById(R.id.birthday), R.id.birthday, layout2, R.id.layout21);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        checkIfInfoExist(contact.getPersonalNotes(), (EditText) findViewById(R.id.personalNotes), R.id.personalNotes, layout2, R.id.layout22);
+        //      checkIfInfoExist(Arrays.toString(contact.getEmailAddresses().toArray(new String[0])), emailaddresses, R.id.emailaddresses);
+        checkIfInfoExist(contact.getHomeAddress().getStreet(), (EditText) findViewById(R.id.streethome), R.id.streethome, layout2, R.id.layout23);
+        checkIfInfoExist(homeString, (EditText) findViewById(R.id.cityhome), R.id.cityhome, layout2, R.id.layout24);
+        checkIfInfoExist(contact.getHomeAddress().getCountryOrRegion(), (EditText) findViewById(R.id.countryorregionhome), R.id.countryorregionhome, layout2, R.id.layout25);
+        checkIfInfoExist(contact.getBusinessAddress().getStreet(), (EditText) findViewById(R.id.streetbusiness), R.id.streetbusiness, layout2, R.id.layout26);
+        checkIfInfoExist(businessString, (EditText) findViewById(R.id.citybusiness), R.id.citybusiness, layout2, R.id.layout26);
+        checkIfInfoExist(contact.getBusinessAddress().getCountryOrRegion(), (EditText) findViewById(R.id.countryorregionbusiness), R.id.countryorregionbusiness, layout2, R.id.layout26);
+        checkIfInfoExist(contact.getOtherAddress().getStreet(), (EditText) findViewById(R.id.streetother), R.id.streetother, layout2, R.id.layout26);
+        checkIfInfoExist(otherString, (EditText) findViewById(R.id.cityother), R.id.cityother, layout2, R.id.layout26);
+        checkIfInfoExist(contact.getOtherAddress().getCountryOrRegion(), (EditText) findViewById(R.id.countryorregionother), R.id.countryorregionother, layout2, R.id.layout26);
     }
 
 }

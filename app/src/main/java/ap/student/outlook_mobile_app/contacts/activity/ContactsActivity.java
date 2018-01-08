@@ -84,6 +84,9 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
         String title = getString(R.string.contacts_title);
         setActionBarMail(title, toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -173,10 +176,12 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
         // HANDLE ACTIONBAR CLICKS.
         // AUTOMATICLY SPECIFY HOME/BACK BUTTON IF PARENTACTIVTY IS SET IN MANIFEST
-        int id = item.getItemId();
-
-        if (id == R.id.action_search) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.action_search:
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
