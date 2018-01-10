@@ -66,7 +66,8 @@ public class HomeActivity extends AppCompatActivityRest {
             }
             user = Authentication.getAuthentication().getAuthResult().getUser();
         } else {
-            user = new Gson().fromJson(sharedPreferences.getString(USER,  "{}"), User.class);
+            user = new Gson().fromJson(sharedPreferences.getString("User",  "{}"), User.class);
+            System.out.println("NOT CONNECTED");
             foldersWithMail = new Gson().fromJson(sharedPreferences.getString("MailFolders", "[]"), new TypeToken<ArrayList<MailFolder>>(){}.getType());
         }
 

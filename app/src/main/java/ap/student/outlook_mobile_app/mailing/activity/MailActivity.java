@@ -2,16 +2,20 @@ package ap.student.outlook_mobile_app.mailing.activity;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.speech.RecognizerIntent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,9 +31,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.microsoft.identity.client.User;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -50,10 +56,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import ap.student.outlook_mobile_app.BLL.Authentication;
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.Calendar.CalendarActivity;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
+import ap.student.outlook_mobile_app.contacts.activity.ContactsActivity;
 import ap.student.outlook_mobile_app.mailing.adapter.MessagesAdapter;
 import ap.student.outlook_mobile_app.mailing.helpers.DividerItemDecoration;
 import ap.student.outlook_mobile_app.mailing.model.MailFolder;
@@ -80,9 +89,15 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     private ViewGroup linearLayout;
     private Drawer drawer;
     private Toolbar toolbar;
+    private User user;
+    private ArrayList<MailFolder> folderObjectList;
+    private ArrayList<MailFolder> foldersWithMail;
+    private ArrayList<String> foldernames;
+    private ArrayList<Integer> folderunread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         setContentView(R.layout.activity_mail);
         super.onCreate(savedInstanceState);
 
@@ -109,13 +124,19 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
      //   ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
 
         // SET TOOLBAR
-        currentUserEmail = getIntent().getStringExtra("USER_EMAIL");
-        currentUserName = getIntent().getStringExtra("USER_NAME");
+        user = Authentication.getAuthentication().getAuthResult().getUser();
+        currentUserEmail = user.getDisplayableId();
+        currentUserName = user.getName();
         setActionBarMail(currentFolderName, currentUserEmail, toolbar);
         setSupportActionBar(toolbar);
 
         // SET DRAWER (HAMBURGER MENU)
-        createMenu(toolbar, currentUserName, currentUserEmail);
+        try {
+            new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            Toast.makeText(MailActivity.this, R.string.folder_error, Toast.LENGTH_SHORT).show();
+        }
 
         // SET FLOATINGBUTTON
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -129,6 +150,31 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
             }
         });
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_email:
+                                Intent intent = new Intent(MailActivity.this, MailActivity.class);
+                                startActivity(intent);
+                                break;
+                            case R.id.action_calendar:
+                                Intent intent2 = new Intent(MailActivity.this, CalendarActivity.class);
+                                startActivity(intent2);
+                                break;
+                            case R.id.action_contacts:
+                                Intent intent3 = new Intent(MailActivity.this, ContactsActivity.class);
+                                startActivity(intent3);                                break;
+
+                        }
+                        return true;
+                    }
+                });
 
         // SET RECYCLERVIEW
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -156,15 +202,29 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
-                if (lastVisiblePosition == recyclerView.getAdapter().getItemCount() -1 &&
-                        recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom() <= recyclerView.getHeight() && recyclerView.getAdapter().getItemCount() > 5) {
-                    if (loadmore) {
-                        loadmore = false;
-                        loadMoreEmails(recyclerView.getAdapter().getItemCount(), LOAD_MORE_EMAILS);
+                if (recyclerView.getAdapter().getItemCount() != 0) {
+                    if (lastVisiblePosition == recyclerView.getAdapter().getItemCount() -1 &&
+                            recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom() <= recyclerView.getHeight() && recyclerView.getAdapter().getItemCount() > 5) {
+                        if (loadmore) {
+                            loadmore = false;
+                            loadMoreEmails(recyclerView.getAdapter().getItemCount(), LOAD_MORE_EMAILS);
+                        }
                     }
                 }
             }
         });
+
+
+        /*
+        DIRTIEST SHITTY CODE EVER WRITTEN IN JAVA/ANDROID HISTORY
+        REMOVE THIS CODE AND THE SCREEN JUMPS TO THE TOP ON LOADING BECAUSE IT HAS TO WAIT ON THE CALL TO LOAD MENU,
+        SO WE INITIALIZE MENU WITH 1 NOT FOUND ITEM, WHEN CALL IS DONE, IT REPLACES THE MENU WITH CORRECT MENU
+        SORRY :) :) :)
+         */
+        foldersWithMail = new ArrayList<>();
+        foldersWithMail.add(new MailFolder("1", "Not found", 0, 0));
+
+        createMenu(toolbar, currentUserName, currentUserEmail, foldersWithMail);
     }
 
     @Override
@@ -269,8 +329,32 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
 
         switch (outlookObjectCall) {
-            case READUSER: {
-                System.out.println("reading user");
+            case READFOLDERS: {
+                foldersWithMail.clear();
+                foldernames = new ArrayList<>();
+                folderunread = new ArrayList<>();
+                JSONObject list = response;
+                foldersWithMail = new ArrayList<>();
+                try {
+                    JSONArray folders = list.getJSONArray("value");
+                    Type listType = new TypeToken<List<MailFolder>>() {
+                    }.getType();
+                    folderObjectList = new Gson().fromJson(String.valueOf(folders), listType);
+                    editor.putString("AllMailFolders", new Gson().toJson(folderObjectList));
+                    for(int i = 0; i < folderObjectList.size(); i++){
+                        // CHECK IF TOTALCOUNT > 0, OTHERWISE IRRELEVANT FOLDER. ALSO EASIER TO ORDER FOLDER
+                        // IN BETA GRAPH API ENDPOINT, FIELD wellKnownName exists --> General name to check for (easier)
+                        if (folderObjectList.get(i).getTotalItemCount() > 0) {
+                            foldersWithMail.add(folderObjectList.get(i));
+                        }
+                    }
+                    createMenu(toolbar, currentUserName, currentUserEmail, foldersWithMail);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                editor.putString("MailFolders", new Gson().toJson(foldersWithMail));
+
             } break;
             case READMAIL: {
                 messages.clear();
@@ -372,7 +456,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     new GraphAPI().patchRequest(OutlookObjectCall.UPDATEMAIL,this, body, "/" + message.getId());
                     message.setIsRead("true");
                     readClicked++;
-                    createMenu(toolbar, currentUserName, currentUserEmail);
+                    createMenu(toolbar, currentUserName, currentUserEmail, foldersWithMail);
 
                 } catch (JSONException | IllegalAccessException e) {
                     e.printStackTrace();
@@ -397,7 +481,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     .putExtra("CC", args)
                     .putExtra("TO", args2)
                     .putExtra("FOLDER_NAME", currentFolderName)
-                    .putExtra("FOLDER_ID", currentFolderId);
+                    .putExtra("FOLDER_ID", currentFolderId)
+                    .putExtra("POSITION", position);
             startActivity(intent);
         }
     }
@@ -435,6 +520,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
             // DISABLE REFRESH WHEN ACTIONMODE ENABLED
             swipeRefreshLayout.setEnabled(false);
+            loadmore=false;
             return true;
         }
 
@@ -444,13 +530,40 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
             // CHECK WHICH ITEM CLICKED WHEN IN ACTIONMODE
             switch (item.getItemId()) {
                 case R.id.action_delete:
                     // delete all the selected messages
-                    deleteMessages();
-                    mode.finish();
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MailActivity.this);
+                    alertDialogBuilder.setTitle(R.string.alert_delete_title)
+                            .setIcon(R.drawable.ic_delete_black_24dp)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface arg0, int arg1) {
+                                    try {
+                                        deleteMessages();
+                                        Toast.makeText(MailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                        Toast.makeText(MailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
+                                    }
+                                    mode.finish();
+                                }
+                            })
+                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                            if (mAdapter.getSelectedItemCount() > 1) {
+                                alertDialogBuilder.setMessage(R.string.alert_delete_message_multiple);
+                            } else {
+                                alertDialogBuilder.setMessage(R.string.alert_delete_message);
+                            }
+                            alertDialogBuilder.create().show();
+
                     return true;
 
                 default:
@@ -462,6 +575,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         public void onDestroyActionMode(ActionMode mode) {
             mAdapter.clearSelections();
             swipeRefreshLayout.setEnabled(true);
+            loadmore=true;
             actionMode = null;
             recyclerView.post(new Runnable() {
                 @Override
@@ -475,17 +589,14 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
 
     // DELETING MESSAGES FROM RECYCLERVIEW AND FOLDER
-    private void deleteMessages() {
+    private void deleteMessages() throws IllegalAccessException {
         mAdapter.resetAnimationIndex();
         List<Integer> selectedItemPositions =
                 mAdapter.getSelectedItems();
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
             Message message = messages.get(i);
-            try {
-                new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this, "/" + message.getId());
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this, "/" + message.getId());
+
             mAdapter.removeData(selectedItemPositions.get(i));
         }
         mAdapter.notifyDataSetChanged();
@@ -567,9 +678,9 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 }
                 break;
             }
-
         }
     }
+
 
     /*
     * CREATE HAMBURGER MENU USING MATERIALDRAWER LIBRARY
@@ -586,14 +697,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     * - SELECTED ITEM COLOR IS NOT WORKING CORRECTLY (EG: CURRENT SELECTION = DARK GREY)
     * - CAN'T ORDER THE LIST OF FODLER PROPERLY (INBOX ON TOP)
      */
-    public void createMenu(Toolbar toolbar, String name, String email){
+    public void createMenu(Toolbar toolbar, String name, String email,  ArrayList<MailFolder> folders){
 
         ArrayList<IDrawerItem> drawerItems = new ArrayList<>();
-        Bundle args = getIntent().getBundleExtra("BUNDLE");
-        ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
 
         // SET DRAWERITEMS WITH DYNAMIC FOLDER, ONLY FOLDERS WITH TOTALMAILCOUNT > 0 ARE RECEIVED WITH INTENT
-        for(MailFolder folder : folders) {
+       for(MailFolder folder : folders) {
             PrimaryDrawerItem item = new PrimaryDrawerItem();
             if(folder.getUnreadItemCount() == 0){
                 item.withName(folder.getDisplayName())
@@ -608,12 +717,13 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
 
 
+
         // CREATE THE ACCOUNT HEADER = NAME/EMAIL/ICON
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.colorPrimary)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(name).withEmail(email).withIcon(R.drawable.ic_close_whitevector_24dp)
+                        new ProfileDrawerItem().withName(name).withEmail(email).withIcon(R.drawable.ic_person_white_24dp)
                 )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
