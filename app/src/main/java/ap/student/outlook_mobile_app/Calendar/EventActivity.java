@@ -87,6 +87,8 @@ public class EventActivity extends AppCompatActivityRest {
     private Map<Integer, Calendar> calendarMap;
     private EmailAddress organiser;
 
+    private Event event;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_event);
@@ -184,6 +186,18 @@ public class EventActivity extends AppCompatActivityRest {
                 onConfirmButtonClicked();
             }
         });
+
+        event = null;
+        String eventId = getIntent().getStringExtra("event");
+        if (eventId != null && !eventId.isEmpty()) {
+            Event events = new Gson().fromJson(sharedPreferences.getString("Events", "{}"), Event.class);
+            for (Event e : events.getEvents()) {
+                if (e.getId().equals(eventId)) {
+                    event = e;
+                    break;
+                }
+            }
+        }
     }
 
     private void onMoreSelected() {

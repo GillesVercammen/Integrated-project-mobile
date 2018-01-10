@@ -57,7 +57,7 @@
         app:layout_constraintStart_toEndOf="@+id/previousDayButton"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- FIXME : why in the fuck won't  this just let me match constraints for the height-->
+    <!-- TODO : why in the fuck won't  this just let me match constraints for the height-->
     <ScrollView
         android:id="@+id/dayScrollview"
         android:layout_width="match_parent"

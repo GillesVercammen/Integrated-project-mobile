@@ -454,12 +454,18 @@ public class CalendarActivity extends AppCompatActivityRest {
             dayCalendarNoEventsTextview.setVisibility(View.GONE);
             dayCalendar.setVisibility(View.VISIBLE);
 
-            for (Event event : events) {
+            for (final Event event : events) {
                 TableRow row = new TableRow(this);
                 TextView header = new TextView(this);
                 header.setText(event.getStart().getDateTime().format(hourFormat).concat(" - ")
                         .concat(event.getEnd().getDateTime().format(hourFormat)));
                 row.addView(header);
+                row.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        eventClicked(event.getId());
+                    }
+                });
                 dayCalendar.addView(row);
             }
         } else {
@@ -483,7 +489,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         return null;
     }
 
-    private void eventClicked(int id) {
-        //TODO : show event details
+    private void eventClicked(String id) {
+        startActivity(new Intent(this, EventActivity.class).putExtra("event", id).putExtra("date", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)));
     }
 }
