@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -85,6 +87,7 @@ public class EventActivity extends AppCompatActivityRest {
     private PatternedRecurrence customRecurrence;
     private Calendar calendar;
     private Map<Integer, Calendar> calendarMap;
+    private Button addAttendeesButton;
     private EmailAddress organiser;
 
     private String id;
@@ -102,6 +105,7 @@ public class EventActivity extends AppCompatActivityRest {
 
         setStartTimeButton = (Button) findViewById(R.id.eventSetStartTimeButton);
         setEndTimeButton = (Button) findViewById(R.id.evenSetEndTimeButton);
+        addAttendeesButton = (Button) findViewById(R.id.eventAddAttendeesButton);
         confirmButton = (Button) findViewById(R.id.eventConfirmButton);
         showAsSpinner = (Spinner) findViewById(R.id.eventDisplayAsSpinner);
         recurrenceSpinner = (Spinner) findViewById(R.id.eventRepeatSpinner);
@@ -181,6 +185,26 @@ public class EventActivity extends AppCompatActivityRest {
             }
         });
 
+        isAllDayCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    endTimeTextview.setVisibility(View.GONE);
+                    setEndTimeButton.setVisibility(View.GONE);
+                } else {
+                    endTimeTextview.setVisibility(View.VISIBLE);
+                    setEndTimeButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        addAttendeesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onAddAttendeesButtonClicked();
+            }
+        });
+
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,7 +232,7 @@ public class EventActivity extends AppCompatActivityRest {
         titleTextInput.setText(event.getSubject());
         descriptionText.setText(event.getBody().getContent().split("<body>")[1].split("</body>")[0].replaceAll("<br>", "").substring(2));
         locationTextInput.setText(event.getLocation().getDisplayName());
-        // TODO : set recurrence
+
         Recurrence recurrence = new RecurrenceFinder().findRecurrenceFromPatternedRecurrence(event);
         int index = 0;
         for (Recurrence recurrence1 : recurrenceMap.values()) {
@@ -216,6 +240,9 @@ public class EventActivity extends AppCompatActivityRest {
                 break;
             }
             index++;
+        }
+        if (index >= recurrenceMap.size()) {
+            index = 0;
         }
         recurrenceSpinner.setSelection(index);
 
@@ -228,8 +255,32 @@ public class EventActivity extends AppCompatActivityRest {
         if (event.getSensitivity().equals("private")) {
             isPrivateCheckBox.setChecked(true);
         }
-        // TODO : set reminder before start
 
+        // TODO : agenda is fucked
+
+        index = 0;
+        for (ReminderMinutesBeforeStart r : reminderMap.values()) {
+            if (r.getValue() == event.getReminderMinutesBeforeStart()) {
+                break;
+            }
+            index ++;
+        }
+        if (index >= reminderMap.size()) {
+            index = 0;
+        }
+        reminderSpinner.setSelection(index);
+
+        index = 0;
+        for (ShowAs s : showAsMap.values()) {
+            if (s.action().equals(event.getShowAs())) {
+                break;
+            }
+            index++;
+        }
+        if (index >= showAsMap.size()) {
+            index = 0;
+        }
+        showAsSpinner.setSelection(index);
     }
 
     private void onMoreSelected() {
@@ -294,6 +345,10 @@ public class EventActivity extends AppCompatActivityRest {
         patternedRecurrence.setPattern(recurrencePattern);
         patternedRecurrence.setRange(recurrenceRange);
         return patternedRecurrence;
+    }
+
+    private void onAddAttendeesButtonClicked() {
+        // TODO : add action for attendees
     }
 
     private void onConfirmButtonClicked() {

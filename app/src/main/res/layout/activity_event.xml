@@ -146,7 +146,8 @@
                 android:id="@+id/eventRemindPerMailButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/event_send_reminder_button" />
+                android:text="@string/event_send_reminder_button"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/eventDescriptionText"
@@ -154,6 +155,12 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textMultiLine" />
+
+            <Button
+                android:id="@+id/eventAddAttendeesButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/eventAddAttendeesButton" />
 
             <Button
                 android:id="@+id/eventConfirmButton"

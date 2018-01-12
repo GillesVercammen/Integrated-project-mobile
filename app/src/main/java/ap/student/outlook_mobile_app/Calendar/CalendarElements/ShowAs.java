@@ -5,12 +5,12 @@ package ap.student.outlook_mobile_app.Calendar.CalendarElements;
  */
 
 public enum ShowAs {
-    FREE("Free"),
-    TENTATIVE("Tentative"),
-    BUSY("Busy"),
-    OOF("Oof"),
-    WORKING_ELSEWHERE("WorkingElseWhere"),
-    UNKNOWN("Unknown");
+    FREE("free"),
+    TENTATIVE("tentative"),
+    BUSY("busy"),
+    OOF("oof"),
+    WORKING_ELSEWHERE("workingElsewhere"),
+    UNKNOWN("unknown");
 
     private String action;
 
