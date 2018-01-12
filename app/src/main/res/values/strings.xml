@@ -118,5 +118,12 @@
     <string name="action_save">Save contac</string>
     <string name="action_cancel_edit">Cancel edit</string>
     <string name="edit">Edit</string>
+    <string name="Info">General Information</string>
+    <string name="info">General Information</string>
+    <string name="businessInfo">Business Info</string>
+    <string name="phonesInfo">Phonenumbers</string>
+    <string name="emailaddressInfo">Emailaddress</string>
+    <string name="addresses">Addresses</string>
+    <string name="title_activity_add_contact">AddContactActivity</string>
 
 </resources>

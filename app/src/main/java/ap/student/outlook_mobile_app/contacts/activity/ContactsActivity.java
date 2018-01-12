@@ -155,7 +155,6 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // filter recycler view when query submitted
-                System.out.println("SUBMITTED");
                 mAdapter.getFilter().filter(query);
                 mAdapter.notifyDataSetChanged();
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -167,6 +166,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
             public boolean onQueryTextChange(String query) {
                 // filter recycler view when text is changed
                 mAdapter.getFilter().filter(query);
+                mAdapter.notifyDataSetChanged();
                 return true;
             }
         });
@@ -271,7 +271,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
             enableActionMode(position);
         } else {
             // READ THE MESSAGE, REMOVE BOLD FONT
-            Contact contact = contacts.get(position);
+            Contact contact = mAdapter.getItemAtPosition(position);
             Intent intent = new Intent(this, ContactDetailActivity.class);
             intent.putExtra("CONTACT", contact);
             startActivity(intent);
