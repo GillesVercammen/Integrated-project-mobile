@@ -55,8 +55,18 @@
             android:name=".contacts.activity.ContactsActivity"
             android:label="@string/title_activity_contacts"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".contacts.activity.ContactDetailActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".contacts.activity.ContactDetailActivity" />
+        <activity
+            android:name=".contacts.activity.AddContactActivity"
+            android:label="@string/title_activity_add_contact"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
