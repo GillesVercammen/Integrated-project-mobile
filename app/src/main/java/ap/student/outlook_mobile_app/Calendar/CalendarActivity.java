@@ -463,8 +463,13 @@ public class CalendarActivity extends AppCompatActivityRest {
             for (final Event event : events) {
                 TableRow row = new TableRow(this);
                 TextView header = new TextView(this);
-                header.setText(event.getStart().getDateTime().format(hourFormat).concat(" - ")
-                        .concat(event.getEnd().getDateTime().format(hourFormat)));
+                if (event.isAllDay()) {
+                    header.setText(getResources().getText(R.string.event_all_day_checkbox));
+                } else {
+                    header.setText(event.getStart().getDateTime().format(hourFormat).concat(" - ")
+                            .concat(event.getEnd().getDateTime().format(hourFormat)));
+                }
+                header.setTextAppearance(R.style.TextAppearance_AppCompat_Headline);
                 row.addView(header);
                 row.setOnClickListener(new View.OnClickListener() {
                     @Override
