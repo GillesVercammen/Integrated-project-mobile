@@ -87,6 +87,7 @@ public class EventActivity extends AppCompatActivityRest {
     private Map<Integer, Calendar> calendarMap;
     private EmailAddress organiser;
 
+    private String id;
     private Event event;
 
     @Override
@@ -188,16 +189,47 @@ public class EventActivity extends AppCompatActivityRest {
         });
 
         event = null;
+        id = null;
         String eventId = getIntent().getStringExtra("event");
         if (eventId != null && !eventId.isEmpty()) {
             Event events = new Gson().fromJson(sharedPreferences.getString("Events", "{}"), Event.class);
             for (Event e : events.getEvents()) {
                 if (e.getId().equals(eventId)) {
                     event = e;
+                    id = e.getId();
+                    loadEventSettings();
                     break;
                 }
             }
         }
+    }
+
+    private void loadEventSettings() {
+        titleTextInput.setText(event.getSubject());
+        descriptionText.setText(event.getBody().getContent().split("<body>")[1].split("</body>")[0].replaceAll("<br>", "").substring(2));
+        locationTextInput.setText(event.getLocation().getDisplayName());
+        // TODO : set recurrence
+        Recurrence recurrence = new RecurrenceFinder().findRecurrenceFromPatternedRecurrence(event);
+        int index = 0;
+        for (Recurrence recurrence1 : recurrenceMap.values()) {
+            if (recurrence1 == recurrence) {
+                break;
+            }
+            index++;
+        }
+        recurrenceSpinner.setSelection(index);
+
+        startTimeTextview.setText(event.getStart().getDateTime().format(dateTimeFormatter));
+        if (event.isAllDay()) {
+            isAllDayCheckBox.setChecked(event.isAllDay());
+        } else {
+            endTimeTextview.setText(event.getEnd().getDateTime().format(dateTimeFormatter));
+        }
+        if (event.getSensitivity().equals("private")) {
+            isPrivateCheckBox.setChecked(true);
+        }
+        // TODO : set reminder before start
+
     }
 
     private void onMoreSelected() {
@@ -266,8 +298,9 @@ public class EventActivity extends AppCompatActivityRest {
 
     private void onConfirmButtonClicked() {
         Event event = new Event();
+        event.setId(id);
         event.setSubject(titleTextInput.getText().toString());
-        event.setBody(new Body(descriptionText.getText().toString(), "HTML"));
+        event.setBody(new Body(descriptionText.getText().toString().replaceAll("\\n", "<br/>"), "HTML"));
         event.setLocation(new Location(locationTextInput.getText().toString()));
 
         if (!recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()).equals(Recurrence.NEVER)) {
@@ -303,7 +336,11 @@ public class EventActivity extends AppCompatActivityRest {
         try {
             JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
             //new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, jsonObject);
-            new GraphAPI().postRequest(OutlookObjectCall.POSTCALENDAR, this, jsonObject, "/".concat(calendar).concat(OutlookObjectCall.POSTEVENT.action()));
+            if (id == null) {
+                new GraphAPI().postRequest(OutlookObjectCall.POSTCALENDAR, this, jsonObject, "/".concat(calendar).concat(OutlookObjectCall.POSTEVENT.action()));
+            } else {
+                new GraphAPI().patchRequest(OutlookObjectCall.POSTEVENT, this, jsonObject, "/".concat(id));
+            }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (JSONException e) {

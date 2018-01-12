@@ -64,6 +64,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     private int lastId = 0;
 
     DateTimeFormatter hourFormat;
+    private GraphAPI graph;
 
     private Map<Integer, MonthCalendarCell> monthCalendarCellMap;
     private int cellSize;
@@ -201,9 +202,11 @@ public class CalendarActivity extends AppCompatActivityRest {
         calendar = gson.fromJson(sharedPreferences.getString("Calendars", "{}"), Calendar.class);
         event = gson.fromJson(sharedPreferences.getString("Events", "{}"), Event.class);
 
+        graph = new GraphAPI();
+
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.READEVENTS, this);
-            new GraphAPI().getRequest(OutlookObjectCall.READCALENDAR, this);
+            graph.getRequest(OutlookObjectCall.READEVENTS, this);
+            graph.getRequest(OutlookObjectCall.READCALENDAR, this);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -212,8 +215,11 @@ public class CalendarActivity extends AppCompatActivityRest {
     @Override
     public void onResume() {
         super.onResume();
-        //buildMonthCalendar();
-        //buildWeekCalendar();
+        try {
+            graph.getRequest(OutlookObjectCall.READEVENTS, this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -475,7 +481,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private Event[] getEvents(LocalDate index) {
-        if (event != null || event.getEvents() != null) {
+        if (event != null && event.getEvents() != null) {
             List<Event> events = new ArrayList<>();
             for (Event event : event.getEvents()) {
                 if (event.getStart().getDateTime().getYear() == index.getYear() && event.getStart().getDateTime().getDayOfYear() == index.getDayOfYear()) {
