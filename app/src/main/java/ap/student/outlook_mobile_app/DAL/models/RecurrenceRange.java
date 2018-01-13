@@ -1,6 +1,11 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.*;
+
+import ap.student.outlook_mobile_app.DAL.MicrosoftDateFormat;
 
 /**
  * Created by alek on 12/1/17.
@@ -12,6 +17,12 @@ public class RecurrenceRange {
     private String recurrenceTimeZone;
     private String startDate;
     private String type;
+
+    private SimpleDateFormat microsoftDateFormat;
+
+    public RecurrenceRange() {
+        microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
+    }
 
     public LocalDate getEndDate() {
         return LocalDate.parse(endDate);
@@ -37,12 +48,18 @@ public class RecurrenceRange {
         this.recurrenceTimeZone = recurrenceTimeZone;
     }
 
-    public LocalDate getStartDate() {
-        return LocalDate.parse(startDate);
+    public java.util.Calendar getStartDate() {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        try {
+            calendar.setTime(microsoftDateFormat.parse(startDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return calendar;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate.toString();
+    public void setStartDate(java.util.Calendar startDate) {
+        this.startDate = microsoftDateFormat.format(startDate.getTime());
     }
 
     public String getType() {

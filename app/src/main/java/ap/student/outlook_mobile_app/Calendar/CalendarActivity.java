@@ -17,9 +17,6 @@ import com.google.gson.Gson;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -206,7 +203,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         graph = new GraphAPI();
 
         try {
-            graph.getRequest(OutlookObjectCall.READEVENTS, this);
+            //graph.getRequest(OutlookObjectCall.READEVENTS, this);
             graph.getRequest(OutlookObjectCall.READCALENDAR, this);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -312,21 +309,22 @@ public class CalendarActivity extends AppCompatActivityRest {
 
         monthCalendar.getChildAt(0).setMinimumHeight(cellSize);
 
-        monthCalendarYearTextView.setText(String.format("YYYY" ,selectedTime.get(java.util.Calendar.YEAR)));
-        monthCalendarMonthTextView.setText(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.get(java.util.Calendar.MONTH)-1].value()));
+        monthCalendarYearTextView.setText(Integer.toString(selectedTime.get(java.util.Calendar.YEAR)));
+        monthCalendarMonthTextView.setText(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.get(java.util.Calendar.MONTH)].value()));
 
-        java.util.Calendar firstDayOfMonth = selectedTime;
-        firstDayOfMonth.add(java.util.Calendar.DAY_OF_MONTH, -firstDayOfMonth.get(java.util.Calendar.DAY_OF_MONTH));
-        int day = firstDayOfMonth.get(java.util.Calendar.DAY_OF_WEEK);
-        if (day == 7) day = 0;
-        java.util.Calendar lastDayOfMonth = selectedTime;
-        lastDayOfMonth.set(selectedTime.get(java.util.Calendar.YEAR), selectedTime.get(java.util.Calendar.MONTH), selectedTime.getMaximum(java.util.Calendar.DAY_OF_MONTH));
-        java.util.Calendar index = selectedTime;
+        java.util.Calendar firstDayOfMonth = java.util.Calendar.getInstance();
+        firstDayOfMonth.setTime(selectedTime.getTime());
+        firstDayOfMonth.set(java.util.Calendar.DAY_OF_MONTH, selectedTime.getMinimum(java.util.Calendar.DAY_OF_MONTH));
+        int day = firstDayOfMonth.get(java.util.Calendar.DAY_OF_WEEK)-1;
+        if (day == -1) day = 6;
+
+        java.util.Calendar index = java.util.Calendar.getInstance();
+        index.setTime(selectedTime.getTime());
         index.set(selectedTime.get(java.util.Calendar.YEAR), selectedTime.get(java.util.Calendar.MONTH), selectedTime.getMinimum(java.util.Calendar.DAY_OF_MONTH));
 
-        while (index.get(java.util.Calendar.DAY_OF_MONTH) <= lastDayOfMonth.get(java.util.Calendar.DAY_OF_MONTH)) {
+        while (index.get(java.util.Calendar.MONTH) == selectedTime.get(java.util.Calendar.MONTH) && (index.get(java.util.Calendar.DAY_OF_MONTH) <= selectedTime.getMaximum(java.util.Calendar.DAY_OF_MONTH))) {
             TableRow tableRow = new TableRow(this);
-            while (index.get(java.util.Calendar.DAY_OF_MONTH) <= lastDayOfMonth.get(java.util.Calendar.DAY_OF_MONTH) && day < 7) {
+            while (index.get(java.util.Calendar.MONTH) == selectedTime.get(java.util.Calendar.MONTH) && index.get(java.util.Calendar.DAY_OF_MONTH) <= selectedTime.getMaximum(java.util.Calendar.DAY_OF_MONTH) && day < 7) {
 
                 boolean hasEvent = false;
                 boolean isSelected = false;
@@ -379,7 +377,7 @@ public class CalendarActivity extends AppCompatActivityRest {
                 index.add(java.util.Calendar.DAY_OF_YEAR,1);
             }
 
-            if (index.get(java.util.Calendar.DAY_OF_MONTH) <= 7 && index.get(java.util.Calendar.MONTH) == (lastDayOfMonth.get(java.util.Calendar.MONTH))) {
+            if (index.get(java.util.Calendar.DAY_OF_MONTH) <= 7 && index.get(java.util.Calendar.MONTH) == selectedTime.get(java.util.Calendar.MONTH)) {
                 tableRow.setGravity(Gravity.END);
             } else {
                 tableRow.setGravity(Gravity.START);
@@ -391,9 +389,11 @@ public class CalendarActivity extends AppCompatActivityRest {
 
     private void buildWeekCalendar() {
         weekCalendarCurrentYearTextview.setText(Integer.toString(selectedTime.get(java.util.Calendar.YEAR)));
-        java.util.Calendar startDate = selectedTime;
+        java.util.Calendar startDate = java.util.Calendar.getInstance();
+        startDate.setTime(selectedTime.getTime());
         startDate.add(java.util.Calendar.DAY_OF_YEAR, -selectedTime.get(java.util.Calendar.DAY_OF_WEEK));
-        java.util.Calendar endDate = startDate;
+        java.util.Calendar endDate = java.util.Calendar.getInstance();
+        endDate.setTime(startDate.getTime());
         endDate.add(java.util.Calendar.DAY_OF_YEAR, 6);
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -402,12 +402,12 @@ public class CalendarActivity extends AppCompatActivityRest {
             weekCalendarCurrentYearTextview.setText(Integer.toString(startDate.get(java.util.Calendar.YEAR)).concat(" - ").concat(Integer.toString(endDate.get(java.util.Calendar.YEAR))));
         }
         if (startDate.get(java.util.Calendar.MONTH) != endDate.get(java.util.Calendar.MONTH)) {
-            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.get(java.util.Calendar.MONTH)-1].value()).substring(0, 3))
+            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.get(java.util.Calendar.MONTH)].value()).substring(0, 3))
                     .append(' ').append(startDate.get(java.util.Calendar.DAY_OF_MONTH)).append(" - ")
-                    .append(getResources().getString(MonthsInTheYearEnum.values()[endDate.get(java.util.Calendar.MONTH)-1].value()).substring(0, 3))
+                    .append(getResources().getString(MonthsInTheYearEnum.values()[endDate.get(java.util.Calendar.MONTH)].value()).substring(0, 3))
                     .append(' ').append(endDate.get(java.util.Calendar.DAY_OF_MONTH));
         } else {
-            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.get(java.util.Calendar.MONTH)-1].value()))
+            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.get(java.util.Calendar.MONTH)].value()))
                     .append(' ').append(startDate.get(java.util.Calendar.DAY_OF_MONTH))
                     .append(" - ").append(endDate.get(java.util.Calendar.MONTH));
         }
@@ -428,7 +428,7 @@ public class CalendarActivity extends AppCompatActivityRest {
             if (events != null) {
                 for (Event event : events) {
                     stringBuilder = new StringBuilder();
-                    stringBuilder.append(hourFormat.format(event.getStart().getDateTime())).append(event.getSubject());
+                    stringBuilder.append(hourFormat.format(event.getStart().getDateTime().getTime())).append(event.getSubject());
 
                     TextView textView = new TextView(this);
                     textView.setText(stringBuilder.toString());
@@ -460,7 +460,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         dayCalendarTextview.setText(new StringBuilder()
                 .append(getResources().getString(DaysOfTheWeekEnum.values()[dayOfWeek].value()))
                 .append(' ').append(selectedTime.get(java.util.Calendar.DAY_OF_MONTH)).append(' ')
-                .append(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.get(java.util.Calendar.MONTH)-1].value())).toString());
+                .append(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.get(java.util.Calendar.MONTH)].value())).toString());
 
         Event[] events = getEvents(selectedTime);
         if (events != null) {

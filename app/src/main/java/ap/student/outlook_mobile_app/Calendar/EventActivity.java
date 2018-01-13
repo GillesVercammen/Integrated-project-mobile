@@ -23,13 +23,8 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +34,7 @@ import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ReminderMinutesBeforeStart;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ShowAs;
+import ap.student.outlook_mobile_app.DAL.MicrosoftDateFormat;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
@@ -55,8 +51,8 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 
 public class EventActivity extends AppCompatActivityRest {
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private java.util.Calendar startTime;
+    private java.util.Calendar endTime;
     private EditText titleTextInput;
     private EditText locationTextInput;
     private Button setEndTimeButton;
@@ -88,6 +84,7 @@ public class EventActivity extends AppCompatActivityRest {
 
     private String id;
     private Event event;
+    private SimpleDateFormat microsoftDateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,8 +111,11 @@ public class EventActivity extends AppCompatActivityRest {
         isPrivateCheckBox = (CheckBox) findViewById(R.id.eventPrivateCheckbox);
 
         dateTimeFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
-        startTime = LocalDateTime.of(LocalDate.parse(getIntent().getStringExtra("date")), LocalTime.of(8, 30));
-        endTime = startTime.plusMinutes(30);
+        startTime = java.util.Calendar.getInstance();
+        startTime.set(java.util.Calendar.HOUR, 8);
+        startTime.set(java.util.Calendar.MINUTE, 30);
+        endTime = startTime;
+        endTime.add(java.util.Calendar.MINUTE, 30);
 
         startTimeTextview = (TextView) findViewById(R.id.eventStartDateText);
         startTimeTextview.setText(dateTimeFormatter.format(startTime));
@@ -141,14 +141,14 @@ public class EventActivity extends AppCompatActivityRest {
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 onDatePicked(year, ++month, dayOfMonth);
             }
-        }, startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth());
+        }, startTime.get(java.util.Calendar.YEAR), startTime.get(java.util.Calendar.MONTH), startTime.get(java.util.Calendar.DAY_OF_MONTH));
 
         timePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 onTimePicked(hourOfDay, minute);
             }
-        }, startTime.getHour(), startTime.getMinute(), true);
+        }, startTime.get(java.util.Calendar.HOUR), startTime.get(java.util.Calendar.MINUTE), true);
 
         setStartTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -222,6 +222,8 @@ public class EventActivity extends AppCompatActivityRest {
                 }
             }
         }
+
+        microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
     }
 
     private void loadEventSettings() {
@@ -242,20 +244,12 @@ public class EventActivity extends AppCompatActivityRest {
         }
         recurrenceSpinner.setSelection(index);
 
-        try {
-            startTimeTextview.setText(dateTimeFormatter.format(event.getStart().getDateTime().getTime()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        startTimeTextview.setText(dateTimeFormatter.format(event.getStart().getDateTime().getTime()));
 
         if (event.isAllDay()) {
             isAllDayCheckBox.setChecked(event.isAllDay());
         } else {
-            try {
-                endTimeTextview.setText(dateTimeFormatter.format(event.getEnd().getDateTime().getTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            endTimeTextview.setText(dateTimeFormatter.format(event.getEnd().getDateTime().getTime()));
         }
         if (event.getSensitivity().equals("private")) {
             isPrivateCheckBox.setChecked(true);
@@ -292,7 +286,7 @@ public class EventActivity extends AppCompatActivityRest {
         startActivityForResult(new Intent(this, CustomRecurrenceActivity.class), 200);
     }
 
-    private PatternedRecurrence setRecurrence(Recurrence recurrence, LocalDate startDate) {
+    private PatternedRecurrence setRecurrence(Recurrence recurrence, java.util.Calendar startDate) {
         PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
         RecurrencePattern recurrencePattern = new RecurrencePattern();
         RecurrenceRange recurrenceRange = new RecurrenceRange();
@@ -322,7 +316,7 @@ public class EventActivity extends AppCompatActivityRest {
             break;
             case EACH_MONTH_TODAY: {
                 recurrencePattern.setType(RecurrencePatternType.ABSOLUTEMONTHLY.value());
-                recurrencePattern.setDayOfMonth(startDate.getDayOfMonth());
+                recurrencePattern.setDayOfMonth(startDate.get(java.util.Calendar.DAY_OF_MONTH));
                 recurrencePattern.setInterval(1);
             }
             break;
@@ -334,8 +328,8 @@ public class EventActivity extends AppCompatActivityRest {
             break;
             case EVERY_YEAR: {
                 recurrencePattern.setType(RecurrencePatternType.ABSOLUTEYEARLY.value());
-                recurrencePattern.setMonth(startDate.getMonthValue());
-                recurrencePattern.setDayOfMonth(startDate.getDayOfMonth());
+                recurrencePattern.setMonth(startDate.get(java.util.Calendar.MONTH));
+                recurrencePattern.setDayOfMonth(startDate.get(java.util.Calendar.DAY_OF_MONTH));
                 recurrencePattern.setInterval(1);
             }
             break;
@@ -365,17 +359,19 @@ public class EventActivity extends AppCompatActivityRest {
         event.setLocation(new Location(locationTextInput.getText().toString()));
 
         if (!recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()).equals(Recurrence.NEVER)) {
-            event.setRecurrence(setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), LocalDate.of(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth())));
+            event.setRecurrence(setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), startTime));
         }
 
         if (isAllDayCheckBox.isChecked()) {
             event.setAllDay(isAllDayCheckBox.isChecked());
-            LocalDateTime time = LocalDateTime.of(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth(), 0, 0);
-            event.setStart(new DateTimeTimeZone(time.toString(), TimeZone.getDefault().getDisplayName()));
-            event.setEnd(new DateTimeTimeZone(time.plusDays(1).toString(), TimeZone.getDefault().getDisplayName()));
+            java.util.Calendar time = java.util.Calendar.getInstance();
+            time.set(startTime.get(java.util.Calendar.YEAR), startTime.get(java.util.Calendar.MONTH), startTime.get(java.util.Calendar.DAY_OF_MONTH), 0, 0);
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
+            time.add(java.util.Calendar.DAY_OF_YEAR, 1);
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
         } else {
-            event.setStart(new DateTimeTimeZone(startTime.toString(), TimeZone.getDefault().getDisplayName()));
-            event.setEnd(new DateTimeTimeZone(endTime.toString(), TimeZone.getDefault().getDisplayName()));
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(startTime), TimeZone.getDefault().getDisplayName()));
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(endTime), TimeZone.getDefault().getDisplayName()));
         }
 
         if (isPrivateCheckBox.isChecked()) { event.setSensitivity("private"); }
@@ -411,9 +407,9 @@ public class EventActivity extends AppCompatActivityRest {
 
     private void onDatePicked(int yearPicked, int monthPicked, int dayOfMonthPicked) {
         if (isStartTime) {
-            startTime = LocalDateTime.of(yearPicked, monthPicked, dayOfMonthPicked, startTime.getHour(), startTime.getMinute());
+            startTime.set(yearPicked, monthPicked, dayOfMonthPicked);
         } else {
-            endTime = LocalDateTime.of(yearPicked, monthPicked, dayOfMonthPicked, endTime.getHour(), endTime.getMinute());
+            endTime.set(yearPicked, monthPicked, dayOfMonthPicked);
         }
 
         if (!isAllDayCheckBox.isChecked()) {
@@ -423,10 +419,12 @@ public class EventActivity extends AppCompatActivityRest {
 
     private void onTimePicked(int hourPicked, int minutePicked) {
         if (isStartTime) {
-            startTime = LocalDateTime.of(startTime.getYear(), startTime.getMonth(), startTime.getDayOfMonth(),hourPicked, minutePicked);
+            startTime.set(java.util.Calendar.HOUR, hourPicked);
+            startTime.set(java.util.Calendar.MINUTE, minutePicked);
             startTimeTextview.setText(dateTimeFormatter.format(startTime));
         } else {
-            endTime = LocalDateTime.of(endTime.getYear(), endTime.getMonth(), endTime.getDayOfMonth(), hourPicked, minutePicked);
+            endTime.set(java.util.Calendar.HOUR, hourPicked);
+            endTime.set(java.util.Calendar.MINUTE, minutePicked);
             endTimeTextview.setText(dateTimeFormatter.format(endTime));
         }
     }

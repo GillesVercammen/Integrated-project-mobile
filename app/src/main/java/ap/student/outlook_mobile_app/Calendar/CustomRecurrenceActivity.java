@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -207,7 +208,7 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
         RecurrenceRange recurrenceRange = new RecurrenceRange();
 
         recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
-        recurrenceRange.setStartDate(LocalDate.now());
+        recurrenceRange.setStartDate(Calendar.getInstance());
         recurrencePattern.setFirstDayOfWeek(DayOfWeek.SUNDAY.name());
 
         SpecifiedRecurrence recurrence = recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition());

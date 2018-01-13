@@ -12,5 +12,5 @@ public class MicrosoftDateFormat {
         return microsoftDateFormat;
     }
 
-    private SimpleDateFormat microsoftDateFormat = new SimpleDateFormat("YYYY-MM-DD HH-MM-SS", Locale.getDefault());
+    private SimpleDateFormat microsoftDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 }

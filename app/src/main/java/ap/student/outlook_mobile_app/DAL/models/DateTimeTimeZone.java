@@ -31,7 +31,8 @@ public class DateTimeTimeZone {
     public java.util.Calendar getDateTime() {
         Calendar calendar = java.util.Calendar.getInstance();
         try {
-            calendar.setTime(microsoftDateFormat.parse(dateTime));
+            String parseDate = dateTime.replaceAll("T", " ").substring(0, 19);
+            calendar.setTime(microsoftDateFormat.parse(parseDate));
         } catch (ParseException e) {
             e.printStackTrace();
         }
