@@ -105,9 +105,9 @@
     <string name="emailaddresses">Emailaddress: </string>
     <string name="birthday">Birthday: </string>
     <string name="personalnotes">personal note</string>
-    <string name="homeaddress">Homeaddress:</string>
-    <string name="businessaddress">Businessaddress:</string>
-    <string name="otheraddress">Otheraddress:</string>
+    <string name="homeaddress">Home address:</string>
+    <string name="businessaddress">Business address:</string>
+    <string name="otheraddress">Other address:</string>
     <string name="homestreet">Homestreet</string>
     <string name="homecountry">Homecountry:</string>
     <string name="businessstreet">Business street:</string>
@@ -125,5 +125,15 @@
     <string name="emailaddressInfo">Emailaddress</string>
     <string name="addresses">Addresses</string>
     <string name="title_activity_add_contact">AddContactActivity</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="Userinfo">User info</string>
+    <string name="Generalinfo">General info</string>
+    <string name="street">Street:</string>
+    <string name="city">City:</string>
+    <string name="postalcode">Postalcode:</string>
+    <string name="state">State:</string>
+    <string name="countryorregion">Country:</string>
+    <string name="email">Email:</string>
+    <string name="btnRemove">Remove</string>
 
 </resources>

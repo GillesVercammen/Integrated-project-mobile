@@ -113,7 +113,7 @@ public class ReadMailActivity extends AppCompatActivityRest{
         mListView = (ListView) findViewById(R.id.folderlist);
         closeFolderList = (ImageView) findViewById(R.id.close_folder_list);
         bgTemp = (ImageView) findViewById(R.id.bg_temp);
-        minimize.setImageResource(R.drawable.ic_minimize_blackvector_24dp);
+        minimize.setImageResource(R.drawable.ic_remove_black_24dp);
         attachment_download = (ImageView) findViewById(R.id.attachment_download);
         attachment_download.setImageResource(R.drawable.ic_attach_file_blackvector_24dp);
 
@@ -156,7 +156,7 @@ public class ReadMailActivity extends AppCompatActivityRest{
                 findViewById(R.id.date).setVisibility(View.GONE);
                 minimize.setVisibility(View.GONE);
                 maximize = (ImageView) findViewById(R.id.maximize);
-                maximize.setImageResource(R.drawable.ic_maximize_blackvector_24dp);
+                maximize.setImageResource(R.drawable.ic_add_black_24dp);
                 maximize.setVisibility(View.VISIBLE);
 
                 maximize.setOnClickListener(new View.OnClickListener() {

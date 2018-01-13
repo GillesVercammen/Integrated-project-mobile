@@ -132,7 +132,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
         // SET DRAWER (HAMBURGER MENU)
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this);
+            new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this, "?$top=20");
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             Toast.makeText(MailActivity.this, R.string.folder_error, Toast.LENGTH_SHORT).show();
@@ -722,6 +722,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.colorPrimary)
+                .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
                         new ProfileDrawerItem().withName(name).withEmail(email).withIcon(R.drawable.ic_person_white_24dp)
                 )
