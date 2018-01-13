@@ -409,7 +409,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         } else {
             stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.get(java.util.Calendar.MONTH)].value()))
                     .append(' ').append(startDate.get(java.util.Calendar.DAY_OF_MONTH))
-                    .append(" - ").append(endDate.get(java.util.Calendar.MONTH));
+                    .append(" - ").append(endDate.get(java.util.Calendar.DAY_OF_MONTH));
         }
         weekCalendarTextview.setText(stringBuilder.toString());
 

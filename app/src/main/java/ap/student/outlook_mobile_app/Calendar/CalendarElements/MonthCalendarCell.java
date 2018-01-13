@@ -17,23 +17,30 @@ public class MonthCalendarCell {
     private boolean isSelected = false;
     private TextView textView;
 
+    private void construct() {
+        date = Calendar.getInstance();
+    }
+
     public MonthCalendarCell(int id, TextView textView, Calendar date) {
+        construct();
         this.id = id;
         this.textView = textView;
-        this.date = date;
+        this.date.setTime(date.getTime());
     }
 
     public MonthCalendarCell(int id, TextView textView, Calendar date, boolean hasEvent) {
+        construct();
         this.id = id;
         this.textView = textView;
-        this.date = date;
+        this.date.setTime(date.getTime());
         this.hasEvent = hasEvent;
     }
 
     public MonthCalendarCell(int id, TextView textView, Calendar date, boolean hasEvent, boolean isSelected) {
+        construct();
         this.id = id;
         this.textView = textView;
-        this.date = date;
+        this.date.setTime(date.getTime());
         this.hasEvent = hasEvent;
         this.isSelected = isSelected;
     }
