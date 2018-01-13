@@ -1,7 +1,10 @@
 package ap.student.outlook_mobile_app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -13,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.microsoft.identity.client.User;
 
@@ -42,6 +46,13 @@ public class MainActivity extends AppCompatActivityRest {
         outlookImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
         welcomeText.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
 
+        try {
+            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+            Log.d("Firebase id login", "Refreshed token: " + refreshedToken);
+            System.out.println("Refreshed token " + refreshedToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (connectivityManager.isConnected()) {
             actionLogin();

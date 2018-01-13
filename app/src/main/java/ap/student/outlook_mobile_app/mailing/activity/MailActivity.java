@@ -111,10 +111,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         if (getIntent().getSerializableExtra("FOLDER_INFO") == null){
             currentFolderName = getString(R.string.inbox);
             currentFolderId = getString(R.string.inbox).toLowerCase();
+            System.out.println("Folder ID here: " + currentFolderId);
         } else {
             MailFolder folderInfo = (MailFolder) getIntent().getSerializableExtra("FOLDER_INFO");
             currentFolderName = folderInfo.getDisplayName();
             currentFolderId = folderInfo.getId();
+            System.out.println("Folder ID here: " + folderInfo.getId());
         }
 
         // SET # OF CLICK ON NON_READ ITEMS
