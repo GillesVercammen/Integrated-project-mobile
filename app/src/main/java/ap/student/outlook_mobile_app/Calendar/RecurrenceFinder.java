@@ -2,6 +2,7 @@ package ap.student.outlook_mobile_app.Calendar;
 
 import java.time.DayOfWeek;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
@@ -55,13 +56,13 @@ public class RecurrenceFinder {
                 }
                 break;
                 case ABSOLUTEMONTHLY: {
-                    if (event.getRecurrence().getPattern().getDayOfMonth() == event.getStart().getDateTime().getDayOfMonth() && event.getRecurrence().getPattern().getInterval() == 1) {
+                    if (event.getRecurrence().getPattern().getDayOfMonth() == event.getStart().getDateTime().get(Calendar.DAY_OF_MONTH) && event.getRecurrence().getPattern().getInterval() == 1) {
                         recurrence = Recurrence.EACH_MONTH_TODAY;
                     }
                 }
                 break;
                 case ABSOLUTEYEARLY: {
-                    if (event.getRecurrence().getPattern().getInterval() == 1 && event.getRecurrence().getPattern().getDayOfMonth() == event.getStart().getDateTime().getDayOfMonth() && event.getRecurrence().getPattern().getMonth() == event.getStart().getDateTime().getMonthValue()) {
+                    if (event.getRecurrence().getPattern().getInterval() == 1 && event.getRecurrence().getPattern().getDayOfMonth() == event.getStart().getDateTime().get(Calendar.DAY_OF_MONTH) && event.getRecurrence().getPattern().getMonth() == event.getStart().getDateTime().get(Calendar.MONTH)) {
                         recurrence = Recurrence.EVERY_YEAR;
                     }
                 }

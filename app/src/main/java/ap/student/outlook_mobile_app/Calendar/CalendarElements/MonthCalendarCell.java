@@ -4,6 +4,7 @@ import android.widget.TextView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 
 /**
  * Created by alek on 12/8/17.
@@ -12,24 +13,24 @@ import java.time.LocalDateTime;
 public class MonthCalendarCell {
     private int id;
     private boolean hasEvent = false;
-    private LocalDate date;
+    private Calendar date;
     private boolean isSelected = false;
     private TextView textView;
 
-    public MonthCalendarCell(int id, TextView textView, LocalDate date) {
+    public MonthCalendarCell(int id, TextView textView, Calendar date) {
         this.id = id;
         this.textView = textView;
         this.date = date;
     }
 
-    public MonthCalendarCell(int id, TextView textView, LocalDate date, boolean hasEvent) {
+    public MonthCalendarCell(int id, TextView textView, Calendar date, boolean hasEvent) {
         this.id = id;
         this.textView = textView;
         this.date = date;
         this.hasEvent = hasEvent;
     }
 
-    public MonthCalendarCell(int id, TextView textView, LocalDate date, boolean hasEvent, boolean isSelected) {
+    public MonthCalendarCell(int id, TextView textView, Calendar date, boolean hasEvent, boolean isSelected) {
         this.id = id;
         this.textView = textView;
         this.date = date;
@@ -53,11 +54,11 @@ public class MonthCalendarCell {
         this.hasEvent = hasEvent;
     }
 
-    public LocalDate getDate() {
+    public Calendar getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(Calendar date) {
         this.date = date;
     }
 

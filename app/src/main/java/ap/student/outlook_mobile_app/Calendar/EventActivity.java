@@ -1,11 +1,9 @@
 package ap.student.outlook_mobile_app.Calendar;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -21,20 +19,19 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.gson.Gson;
-import com.microsoft.identity.client.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -52,7 +49,6 @@ import ap.student.outlook_mobile_app.DAL.models.EmailAddress;
 import ap.student.outlook_mobile_app.DAL.models.Event;
 import ap.student.outlook_mobile_app.DAL.models.Location;
 import ap.student.outlook_mobile_app.DAL.models.PatternedRecurrence;
-import ap.student.outlook_mobile_app.DAL.models.Recipient;
 import ap.student.outlook_mobile_app.DAL.models.RecurrencePattern;
 import ap.student.outlook_mobile_app.DAL.models.RecurrenceRange;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
@@ -68,7 +64,7 @@ public class EventActivity extends AppCompatActivityRest {
     private CheckBox isPrivateCheckBox;
     private TextView startTimeTextview;
     private TextView endTimeTextview;
-    private DateTimeFormatter dateTimeFormatter;
+    private SimpleDateFormat dateTimeFormatter;
     private AutoCompleteTextView timeZonePicker;
     private Spinner showAsSpinner;
     private Spinner recurrenceSpinner;
@@ -117,14 +113,14 @@ public class EventActivity extends AppCompatActivityRest {
         isAllDayCheckBox = (CheckBox) findViewById(R.id.eventAllDayCheckbox);
         isPrivateCheckBox = (CheckBox) findViewById(R.id.eventPrivateCheckbox);
 
-        dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm");
+        dateTimeFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
         startTime = LocalDateTime.of(LocalDate.parse(getIntent().getStringExtra("date")), LocalTime.of(8, 30));
         endTime = startTime.plusMinutes(30);
 
         startTimeTextview = (TextView) findViewById(R.id.eventStartDateText);
-        startTimeTextview.setText(startTime.format(dateTimeFormatter));
+        startTimeTextview.setText(dateTimeFormatter.format(startTime));
         endTimeTextview = (TextView) findViewById(R.id.eventEndDateText);
-        endTimeTextview.setText(endTime.format(dateTimeFormatter));
+        endTimeTextview.setText(dateTimeFormatter.format(endTime));
 
         timeZonePicker = (AutoCompleteTextView) findViewById(R.id.eventTimezoneAutocomplete);
 
@@ -246,11 +242,20 @@ public class EventActivity extends AppCompatActivityRest {
         }
         recurrenceSpinner.setSelection(index);
 
-        startTimeTextview.setText(event.getStart().getDateTime().format(dateTimeFormatter));
+        try {
+            startTimeTextview.setText(dateTimeFormatter.format(event.getStart().getDateTime().getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         if (event.isAllDay()) {
             isAllDayCheckBox.setChecked(event.isAllDay());
         } else {
-            endTimeTextview.setText(event.getEnd().getDateTime().format(dateTimeFormatter));
+            try {
+                endTimeTextview.setText(dateTimeFormatter.format(event.getEnd().getDateTime().getTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         if (event.getSensitivity().equals("private")) {
             isPrivateCheckBox.setChecked(true);
@@ -348,7 +353,8 @@ public class EventActivity extends AppCompatActivityRest {
     }
 
     private void onAddAttendeesButtonClicked() {
-        // TODO : add action for attendees
+        event.getCreatedDateTime();
+        startActivityForResult(new Intent(this, AttendeesActivity.class), 201);
     }
 
     private void onConfirmButtonClicked() {
@@ -418,10 +424,10 @@ public class EventActivity extends AppCompatActivityRest {
     private void onTimePicked(int hourPicked, int minutePicked) {
         if (isStartTime) {
             startTime = LocalDateTime.of(startTime.getYear(), startTime.getMonth(), startTime.getDayOfMonth(),hourPicked, minutePicked);
-            startTimeTextview.setText(startTime.format(dateTimeFormatter));
+            startTimeTextview.setText(dateTimeFormatter.format(startTime));
         } else {
             endTime = LocalDateTime.of(endTime.getYear(), endTime.getMonth(), endTime.getDayOfMonth(), hourPicked, minutePicked);
-            endTimeTextview.setText(endTime.format(dateTimeFormatter));
+            endTimeTextview.setText(dateTimeFormatter.format(endTime));
         }
     }
 
@@ -466,14 +472,16 @@ public class EventActivity extends AppCompatActivityRest {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 200) {
-            switch (resultCode) {
-                case Activity.RESULT_OK: {
+        switch (requestCode) {
+            case 200 : {
+                if (resultCode == RESULT_OK) {
                     customRecurrence = new Gson().fromJson(data.getStringExtra("PatternedRecurrence"), PatternedRecurrence.class);
                 }
-                break;
-                case Activity.RESULT_CANCELED: {
-
+            }
+            break;
+            case 201 : {
+                if (resultCode == RESULT_OK) {
+                    System.out.println("Yolo");
                 }
             }
         }

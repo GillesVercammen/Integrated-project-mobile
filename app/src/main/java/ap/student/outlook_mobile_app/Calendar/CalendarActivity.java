@@ -16,13 +16,14 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
@@ -51,7 +52,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     private TextView dayCalendarTextview;
     private TextView dayCalendarCurrentYearTextview;
     private TextView dayCalendarNoEventsTextview;
-    private LocalDateTime selectedTime;
+    private java.util.Calendar selectedTime;
     private Button editDayButton;
 
     private ImageButton nextMonthButton;
@@ -63,7 +64,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     private static final int monthCalendarChildId = 8;
     private int lastId = 0;
 
-    DateTimeFormatter hourFormat;
+    SimpleDateFormat hourFormat;
     private GraphAPI graph;
 
     private Map<Integer, MonthCalendarCell> monthCalendarCellMap;
@@ -186,9 +187,9 @@ public class CalendarActivity extends AppCompatActivityRest {
          * global settings
          */
         event = null;
-        selectedTime = LocalDateTime.now();
+        selectedTime = java.util.Calendar.getInstance();
         editDayButton = (Button) findViewById(R.id.createNewEventButton);
-        hourFormat = DateTimeFormatter.ofPattern("H:mm ");
+        hourFormat = new SimpleDateFormat("H.mm ", Locale.getDefault());
 
         editDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,9 +250,9 @@ public class CalendarActivity extends AppCompatActivityRest {
 
     private void calendarSetMonthButtonClicked(boolean next) {
         if (next) {
-            selectedTime = selectedTime.plusMonths(1);
+            selectedTime.add(java.util.Calendar.MONTH, 1);
         } else {
-            selectedTime = selectedTime.minusMonths(1);
+            selectedTime.add(java.util.Calendar.MONTH, -1);
         }
         buildMonthCalendar();
         buildWeekCalendar();
@@ -260,9 +261,9 @@ public class CalendarActivity extends AppCompatActivityRest {
 
     private void calendarSetWeekButtonClicked(boolean next) {
         if (next) {
-            selectedTime = selectedTime.plusDays(7);
+            selectedTime.add(java.util.Calendar.DAY_OF_YEAR, 7);
         } else {
-            selectedTime = selectedTime.minusDays(7);
+            selectedTime.add(java.util.Calendar.DAY_OF_YEAR, -7);
         }
         buildWeekCalendar();
         buildMonthCalendar();
@@ -271,9 +272,9 @@ public class CalendarActivity extends AppCompatActivityRest {
 
     private void calendarSetDayButtonClicked(boolean next) {
         if (next) {
-            selectedTime = selectedTime.plusDays(1);
+            selectedTime.add(java.util.Calendar.DAY_OF_YEAR, 1);
         } else {
-            selectedTime = selectedTime.minusDays(1);
+            selectedTime.add(java.util.Calendar.DAY_OF_YEAR, -1);
         }
         buildDayCalendar();
         buildMonthCalendar();
@@ -297,7 +298,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         }
 
         lastId = id;
-        selectedTime = LocalDateTime.of(selectedTime.getYear(), selectedTime.getMonth(), selectedCell.getDate().getDayOfMonth(), selectedTime.getHour(), selectedTime.getMinute());
+        selectedTime.set(selectedTime.get(java.util.Calendar.YEAR), selectedTime.get(java.util.Calendar.MONTH), selectedCell.getDate().get(java.util.Calendar.DAY_OF_MONTH));
         buildWeekCalendar();
         buildDayCalendar();
     }
@@ -311,29 +312,33 @@ public class CalendarActivity extends AppCompatActivityRest {
 
         monthCalendar.getChildAt(0).setMinimumHeight(cellSize);
 
-        monthCalendarYearTextView.setText(Integer.toString(selectedTime.getYear()));
-        monthCalendarMonthTextView.setText(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.getMonthValue()-1].value()));
+        monthCalendarYearTextView.setText(String.format("YYYY" ,selectedTime.get(java.util.Calendar.YEAR)));
+        monthCalendarMonthTextView.setText(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.get(java.util.Calendar.MONTH)-1].value()));
 
-        int day = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).getDayOfWeek().getValue();
+        java.util.Calendar firstDayOfMonth = selectedTime;
+        firstDayOfMonth.add(java.util.Calendar.DAY_OF_MONTH, -firstDayOfMonth.get(java.util.Calendar.DAY_OF_MONTH));
+        int day = firstDayOfMonth.get(java.util.Calendar.DAY_OF_WEEK);
         if (day == 7) day = 0;
-        LocalDate lastDayOfMonth = selectedTime.with(TemporalAdjusters.lastDayOfMonth()).toLocalDate();
-        LocalDate index = selectedTime.with(TemporalAdjusters.firstDayOfMonth()).toLocalDate();
+        java.util.Calendar lastDayOfMonth = selectedTime;
+        lastDayOfMonth.set(selectedTime.get(java.util.Calendar.YEAR), selectedTime.get(java.util.Calendar.MONTH), selectedTime.getMaximum(java.util.Calendar.DAY_OF_MONTH));
+        java.util.Calendar index = selectedTime;
+        index.set(selectedTime.get(java.util.Calendar.YEAR), selectedTime.get(java.util.Calendar.MONTH), selectedTime.getMinimum(java.util.Calendar.DAY_OF_MONTH));
 
-        while (index.isBefore(lastDayOfMonth) || index.equals(lastDayOfMonth)) {
+        while (index.get(java.util.Calendar.DAY_OF_MONTH) <= lastDayOfMonth.get(java.util.Calendar.DAY_OF_MONTH)) {
             TableRow tableRow = new TableRow(this);
-            while ((index.isBefore(lastDayOfMonth) || index.equals(lastDayOfMonth)) && day < 7) {
+            while (index.get(java.util.Calendar.DAY_OF_MONTH) <= lastDayOfMonth.get(java.util.Calendar.DAY_OF_MONTH) && day < 7) {
 
                 boolean hasEvent = false;
                 boolean isSelected = false;
 
                 final TextView textView = new TextView(this);
-                textView.setText(Integer.toString(index.getDayOfMonth()));
+                textView.setText(Integer.toString(index.get(java.util.Calendar.DAY_OF_MONTH)));
                 textView.setGravity(Gravity.CENTER);
-                textView.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button_Borderless_Colored);
+                textView.setTextAppearance(this, R.style.TextAppearance_AppCompat_Widget_Button_Borderless_Colored);
                 textView.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 textView.setWidth(cellSize);
                 textView.setHeight(cellSize);
-                textView.setId(monthCalendarChildId + index.getDayOfMonth());
+                textView.setId(monthCalendarChildId + index.get(java.util.Calendar.DAY_OF_MONTH));
                 textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundLight));
 
                 textView.setOnClickListener(new View.OnClickListener() {
@@ -343,7 +348,7 @@ public class CalendarActivity extends AppCompatActivityRest {
                     }
                 });
 
-                if (index.getDayOfYear() == LocalDateTime.now().getDayOfYear()) {
+                if (index.get(java.util.Calendar.DAY_OF_YEAR) == java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR)) {
                     textView.setTextColor(getResources().getColor(R.color.black));
                 }
 
@@ -351,7 +356,7 @@ public class CalendarActivity extends AppCompatActivityRest {
                     hasEvent = true;
                 }
 
-                if (index.getDayOfYear() == selectedTime.getDayOfYear()) {
+                if (index.get(java.util.Calendar.DAY_OF_YEAR) == selectedTime.get(java.util.Calendar.DAY_OF_YEAR)) {
                     if (hasEvent) {
                         textView.setBackgroundResource(R.drawable.monthcalendar_select_event);
                         hasEvent = true;
@@ -371,10 +376,10 @@ public class CalendarActivity extends AppCompatActivityRest {
                 monthCalendarCellMap.put(textView.getId(), new MonthCalendarCell(textView.getId(), textView, index, hasEvent, isSelected));
 
                 day++;
-                index = index.plusDays(1);
+                index.add(java.util.Calendar.DAY_OF_YEAR,1);
             }
 
-            if (index.getDayOfMonth() <= 7 && index.getMonth().equals(lastDayOfMonth.getMonth())) {
+            if (index.get(java.util.Calendar.DAY_OF_MONTH) <= 7 && index.get(java.util.Calendar.MONTH) == (lastDayOfMonth.get(java.util.Calendar.MONTH))) {
                 tableRow.setGravity(Gravity.END);
             } else {
                 tableRow.setGravity(Gravity.START);
@@ -385,24 +390,26 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void buildWeekCalendar() {
-        weekCalendarCurrentYearTextview.setText(Integer.toString(selectedTime.getYear()));
-        LocalDate startDate = selectedTime.minusDays(selectedTime.getDayOfWeek().getValue()).toLocalDate();
-        LocalDate endDate = startDate.plusDays(6);
+        weekCalendarCurrentYearTextview.setText(Integer.toString(selectedTime.get(java.util.Calendar.YEAR)));
+        java.util.Calendar startDate = selectedTime;
+        startDate.add(java.util.Calendar.DAY_OF_YEAR, -selectedTime.get(java.util.Calendar.DAY_OF_WEEK));
+        java.util.Calendar endDate = startDate;
+        endDate.add(java.util.Calendar.DAY_OF_YEAR, 6);
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (startDate.getYear() != endDate.getYear()) {
-            weekCalendarCurrentYearTextview.setText(Integer.toString(startDate.getYear()).concat(" - ").concat(Integer.toString(endDate.getYear())));
+        if (startDate.get(java.util.Calendar.YEAR) != endDate.get(java.util.Calendar.YEAR)) {
+            weekCalendarCurrentYearTextview.setText(Integer.toString(startDate.get(java.util.Calendar.YEAR)).concat(" - ").concat(Integer.toString(endDate.get(java.util.Calendar.YEAR))));
         }
-        if (!startDate.getMonth().equals(endDate.getMonth())) {
-            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.getMonthValue()-1].value()).substring(0, 3))
-                    .append(' ').append(startDate.getDayOfMonth()).append(" - ")
-                    .append(getResources().getString(MonthsInTheYearEnum.values()[endDate.getMonthValue()-1].value()).substring(0, 3))
-                    .append(' ').append(endDate.getDayOfMonth());
+        if (startDate.get(java.util.Calendar.MONTH) != endDate.get(java.util.Calendar.MONTH)) {
+            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.get(java.util.Calendar.MONTH)-1].value()).substring(0, 3))
+                    .append(' ').append(startDate.get(java.util.Calendar.DAY_OF_MONTH)).append(" - ")
+                    .append(getResources().getString(MonthsInTheYearEnum.values()[endDate.get(java.util.Calendar.MONTH)-1].value()).substring(0, 3))
+                    .append(' ').append(endDate.get(java.util.Calendar.DAY_OF_MONTH));
         } else {
-            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.getMonthValue()-1].value()))
-                    .append(' ').append(startDate.getDayOfMonth())
-                    .append(" - ").append(endDate.getDayOfMonth());
+            stringBuilder.append(getResources().getString(MonthsInTheYearEnum.values()[startDate.get(java.util.Calendar.MONTH)-1].value()))
+                    .append(' ').append(startDate.get(java.util.Calendar.DAY_OF_MONTH))
+                    .append(" - ").append(endDate.get(java.util.Calendar.MONTH));
         }
         weekCalendarTextview.setText(stringBuilder.toString());
 
@@ -410,7 +417,7 @@ public class CalendarActivity extends AppCompatActivityRest {
             TableRow row = (TableRow) weekCalendarHeader.getChildAt(i);
             row.setMinimumHeight(cellSize);
             TextView header = (TextView)row.getChildAt(0);
-            header.setText(getResources().getString(DaysOfTheWeekEnum.values()[i].value()).concat(" ").concat(String.valueOf(startDate.getDayOfMonth())));
+            header.setText(getResources().getString(DaysOfTheWeekEnum.values()[i].value()).concat(" ").concat(String.valueOf(startDate.get(java.util.Calendar.DAY_OF_MONTH))));
 
             row = (TableRow) weekCalendarBody.getChildAt(i);
             row.removeAllViews();
@@ -421,11 +428,11 @@ public class CalendarActivity extends AppCompatActivityRest {
             if (events != null) {
                 for (Event event : events) {
                     stringBuilder = new StringBuilder();
-                    stringBuilder.append(event.getStart().getDateTime().format(hourFormat)).append(event.getSubject());
+                    stringBuilder.append(hourFormat.format(event.getStart().getDateTime())).append(event.getSubject());
 
                     TextView textView = new TextView(this);
                     textView.setText(stringBuilder.toString());
-                    textView.setTextAppearance(R.style.TextAppearance_AppCompat_Subhead);
+                    textView.setTextAppearance(this, R.style.TextAppearance_AppCompat_Subhead);
                     textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
                     textView.setOnClickListener(new View.OnClickListener() {
@@ -438,24 +445,24 @@ public class CalendarActivity extends AppCompatActivityRest {
                     row.addView(textView);
                 }
             }
-            startDate = startDate.plusDays(1);
+            startDate.add(java.util.Calendar.DAY_OF_YEAR, 1);
         }
     }
 
     private void buildDayCalendar() {
-        dayCalendarCurrentYearTextview.setText(String.valueOf(selectedTime.getYear()));
+        dayCalendarCurrentYearTextview.setText(String.valueOf(selectedTime.get(java.util.Calendar.YEAR)));
 
         dayCalendar.removeAllViews();
 
-        int dayOfWeek = selectedTime.getDayOfWeek().getValue();
+        int dayOfWeek = selectedTime.get(java.util.Calendar.DAY_OF_WEEK);
         if (dayOfWeek == 7) dayOfWeek = 0;
 
         dayCalendarTextview.setText(new StringBuilder()
                 .append(getResources().getString(DaysOfTheWeekEnum.values()[dayOfWeek].value()))
-                .append(' ').append(selectedTime.getDayOfMonth()).append(' ')
-                .append(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.getMonthValue()-1].value())).toString());
+                .append(' ').append(selectedTime.get(java.util.Calendar.DAY_OF_MONTH)).append(' ')
+                .append(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.get(java.util.Calendar.MONTH)-1].value())).toString());
 
-        Event[] events = getEvents(selectedTime.toLocalDate());
+        Event[] events = getEvents(selectedTime);
         if (events != null) {
             dayCalendarNoEventsTextview.setVisibility(View.GONE);
             dayCalendar.setVisibility(View.VISIBLE);
@@ -466,10 +473,10 @@ public class CalendarActivity extends AppCompatActivityRest {
                 if (event.isAllDay()) {
                     header.setText(getResources().getText(R.string.event_all_day_checkbox));
                 } else {
-                    header.setText(event.getStart().getDateTime().format(hourFormat).concat(" - ")
-                            .concat(event.getEnd().getDateTime().format(hourFormat)));
+                    header.setText(hourFormat.format(event.getStart().getDateTime()).concat(" - ")
+                            .concat(hourFormat.format(event.getEnd().getDateTime())));
                 }
-                header.setTextAppearance(R.style.TextAppearance_AppCompat_Headline);
+                header.setTextAppearance(this, R.style.TextAppearance_AppCompat_Headline);
                 row.addView(header);
                 row.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -485,11 +492,11 @@ public class CalendarActivity extends AppCompatActivityRest {
         }
     }
 
-    private Event[] getEvents(LocalDate index) {
+    private Event[] getEvents(java.util.Calendar index) {
         if (event != null && event.getEvents() != null) {
             List<Event> events = new ArrayList<>();
             for (Event event : event.getEvents()) {
-                if (event.getStart().getDateTime().getYear() == index.getYear() && event.getStart().getDateTime().getDayOfYear() == index.getDayOfYear()) {
+                if (event.getStart().getDateTime().get(java.util.Calendar.YEAR) == index.get(java.util.Calendar.YEAR) && event.getStart().getDateTime().get(java.util.Calendar.DAY_OF_YEAR) == index.get(java.util.Calendar.DAY_OF_YEAR)) {
                     events.add(event);
                 }
             }
