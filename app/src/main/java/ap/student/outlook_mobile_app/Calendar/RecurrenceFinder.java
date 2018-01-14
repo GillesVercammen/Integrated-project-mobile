@@ -21,7 +21,11 @@ public class RecurrenceFinder {
 
     public Recurrence findRecurrenceFromPatternedRecurrence(Event event) {
         // Time for horrible code
+        if (event.getRecurrence() == null) {
+                return Recurrence.NEVER;
+        }
         RecurrencePatternType patternType = null;
+
         for (RecurrencePatternType recurrencePatternType : RecurrencePatternType.values()) {
             if (recurrencePatternType.value().equals(event.getRecurrence().getPattern().getType())) {
                 patternType = recurrencePatternType;
@@ -29,10 +33,6 @@ public class RecurrenceFinder {
             }
         }
 
-        if (patternType == null) {
-            recurrence = Recurrence.NEVER;
-        }
-        else {
             switch (patternType) {
                 case DAILY: {
                     recurrence = Recurrence.DAILY;
@@ -68,7 +68,7 @@ public class RecurrenceFinder {
                 }
                 break;
             }
-        }
+
 
         return recurrence;
     }

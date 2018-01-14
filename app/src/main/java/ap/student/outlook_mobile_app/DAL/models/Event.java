@@ -46,7 +46,7 @@ public class Event {
     private String webLink;
     private Location location;
 
-    private SimpleDateFormat microsoftDateFormat;
+    private transient SimpleDateFormat microsoftDateFormat;
 
     public Event() {
         microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();

@@ -112,15 +112,21 @@ public class EventActivity extends AppCompatActivityRest {
 
         dateTimeFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
         startTime = java.util.Calendar.getInstance();
+        if (getIntent().getStringExtra("time") != null) {
+            startTime.setTime(new Gson().fromJson(getIntent().getStringExtra("time"), java.util.Calendar.class).getTime());
+        }
         startTime.set(java.util.Calendar.HOUR, 8);
         startTime.set(java.util.Calendar.MINUTE, 30);
-        endTime = startTime;
+        startTime.set(java.util.Calendar.SECOND, 0);
+
+        endTime = java.util.Calendar.getInstance();
+        endTime.setTime(startTime.getTime());
         endTime.add(java.util.Calendar.MINUTE, 30);
 
         startTimeTextview = (TextView) findViewById(R.id.eventStartDateText);
-        startTimeTextview.setText(dateTimeFormatter.format(startTime));
+        startTimeTextview.setText(dateTimeFormatter.format(startTime.getTime()));
         endTimeTextview = (TextView) findViewById(R.id.eventEndDateText);
-        endTimeTextview.setText(dateTimeFormatter.format(endTime));
+        endTimeTextview.setText(dateTimeFormatter.format(endTime.getTime()));
 
         timeZonePicker = (AutoCompleteTextView) findViewById(R.id.eventTimezoneAutocomplete);
 
@@ -228,7 +234,12 @@ public class EventActivity extends AppCompatActivityRest {
 
     private void loadEventSettings() {
         titleTextInput.setText(event.getSubject());
-        descriptionText.setText(event.getBody().getContent().split("<body>")[1].split("</body>")[0].replaceAll("<br>", "").substring(2));
+
+        String description = event.getBody().getContent();
+
+        if (description.length() > 2) {
+            descriptionText.setText(description.split("<body>")[1].split("</body>")[0].replaceAll("<br>", "").substring(2));
+        }
         locationTextInput.setText(event.getLocation().getDisplayName());
 
         Recurrence recurrence = new RecurrenceFinder().findRecurrenceFromPatternedRecurrence(event);
@@ -244,10 +255,14 @@ public class EventActivity extends AppCompatActivityRest {
         }
         recurrenceSpinner.setSelection(index);
 
+        startTime.setTime(event.getStart().getDateTime().getTime());
+        endTime.setTime(event.getEnd().getDateTime().getTime());
         startTimeTextview.setText(dateTimeFormatter.format(event.getStart().getDateTime().getTime()));
 
         if (event.isAllDay()) {
             isAllDayCheckBox.setChecked(event.isAllDay());
+            endTime.setTime(startTime.getTime());
+            endTime.set(java.util.Calendar.MINUTE, 30);
         } else {
             endTimeTextview.setText(dateTimeFormatter.format(event.getEnd().getDateTime().getTime()));
         }
@@ -370,8 +385,8 @@ public class EventActivity extends AppCompatActivityRest {
             time.add(java.util.Calendar.DAY_OF_YEAR, 1);
             event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
         } else {
-            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(startTime), TimeZone.getDefault().getDisplayName()));
-            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(endTime), TimeZone.getDefault().getDisplayName()));
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(startTime.getTime()), TimeZone.getDefault().getDisplayName()));
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(endTime.getTime()), TimeZone.getDefault().getDisplayName()));
         }
 
         if (isPrivateCheckBox.isChecked()) { event.setSensitivity("private"); }
@@ -391,7 +406,9 @@ public class EventActivity extends AppCompatActivityRest {
         String calendar = calendarMap.get(agendaSpinner.getSelectedItemPosition()).getId();
 
         try {
-            JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
+            Gson gson = new Gson();
+            String array = gson.toJson(event);
+            JSONObject jsonObject = new JSONObject(array);
             //new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, jsonObject);
             if (id == null) {
                 new GraphAPI().postRequest(OutlookObjectCall.POSTCALENDAR, this, jsonObject, "/".concat(calendar).concat(OutlookObjectCall.POSTEVENT.action()));
@@ -407,9 +424,9 @@ public class EventActivity extends AppCompatActivityRest {
 
     private void onDatePicked(int yearPicked, int monthPicked, int dayOfMonthPicked) {
         if (isStartTime) {
-            startTime.set(yearPicked, monthPicked, dayOfMonthPicked);
+            startTime.set(yearPicked, --monthPicked, dayOfMonthPicked);
         } else {
-            endTime.set(yearPicked, monthPicked, dayOfMonthPicked);
+            endTime.set(yearPicked, --monthPicked, dayOfMonthPicked);
         }
 
         if (!isAllDayCheckBox.isChecked()) {
@@ -421,11 +438,11 @@ public class EventActivity extends AppCompatActivityRest {
         if (isStartTime) {
             startTime.set(java.util.Calendar.HOUR, hourPicked);
             startTime.set(java.util.Calendar.MINUTE, minutePicked);
-            startTimeTextview.setText(dateTimeFormatter.format(startTime));
+            startTimeTextview.setText(dateTimeFormatter.format(startTime.getTime()));
         } else {
             endTime.set(java.util.Calendar.HOUR, hourPicked);
             endTime.set(java.util.Calendar.MINUTE, minutePicked);
-            endTimeTextview.setText(dateTimeFormatter.format(endTime));
+            endTimeTextview.setText(dateTimeFormatter.format(endTime.getTime()));
         }
     }
 

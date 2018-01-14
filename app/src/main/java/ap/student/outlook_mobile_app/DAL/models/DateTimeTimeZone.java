@@ -17,7 +17,7 @@ public class DateTimeTimeZone {
     private String dateTime;
     private String timeZone;
 
-    private SimpleDateFormat microsoftDateFormat;
+    private transient SimpleDateFormat microsoftDateFormat;
 
     public DateTimeTimeZone() {
         microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
@@ -31,16 +31,15 @@ public class DateTimeTimeZone {
     public java.util.Calendar getDateTime() {
         Calendar calendar = java.util.Calendar.getInstance();
         try {
-            String parseDate = dateTime.replaceAll("T", " ").substring(0, 19);
-            calendar.setTime(microsoftDateFormat.parse(parseDate));
+            calendar.setTime(microsoftDateFormat.parse(dateTime.replaceAll("T", " ").substring(0, 19)));
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return calendar;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime.toString();
+    public void setDateTime(Calendar dateTime) {
+        this.dateTime = microsoftDateFormat.format(dateTime.getTime());
     }
 
     public String getTimeZone() {

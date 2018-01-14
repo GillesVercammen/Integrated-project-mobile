@@ -242,7 +242,7 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void editDayButtonClicked() {
-        startActivity(new Intent(this, EventActivity.class).putExtra("date", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)));
+        startActivity(new Intent(this, EventActivity.class).putExtra("date", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)).putExtra("time", gson.toJson(selectedTime)));
     }
 
     private void calendarSetMonthButtonClicked(boolean next) {
@@ -473,8 +473,8 @@ public class CalendarActivity extends AppCompatActivityRest {
                 if (event.isAllDay()) {
                     header.setText(getResources().getText(R.string.event_all_day_checkbox));
                 } else {
-                    header.setText(hourFormat.format(event.getStart().getDateTime()).concat(" - ")
-                            .concat(hourFormat.format(event.getEnd().getDateTime())));
+                    header.setText(hourFormat.format(event.getStart().getDateTime().getTime()).concat(" - ")
+                            .concat(hourFormat.format(event.getEnd().getDateTime().getTime())));
                 }
                 header.setTextAppearance(this, R.style.TextAppearance_AppCompat_Headline);
                 row.addView(header);
@@ -508,6 +508,6 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void eventClicked(String id) {
-        startActivity(new Intent(this, EventActivity.class).putExtra("event", id).putExtra("date", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)));
+        startActivity(new Intent(this, EventActivity.class).putExtra("event", id).putExtra("date", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)).putExtra("time", gson.toJson(selectedTime)));
     }
 }

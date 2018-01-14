@@ -2,26 +2,19 @@ package ap.student.outlook_mobile_app.Calendar;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.CounterEnum;
-import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.DaysOfWeekEnum;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.SpecifiedRecurrence;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
@@ -60,7 +53,7 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
     private Spinner yearlyWeekDaysOfTheWeekSpinner;
     private Spinner yearlyWeekMonthsSpinner;
     private Map<Integer, CounterEnum> counterEnumMap;
-    private Map<Integer, DayOfWeek> dayOfWeekMap;
+    private Map<Integer, DaysOfWeekEnum> dayOfWeekMap;
     private Map<Integer, Month> monthMap;
 
     private TextView specifiedDayInterval;
@@ -187,7 +180,7 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
         counterSpinner.setAdapter(counterAdapter);
         yearlyWeekCounterSpinner.setAdapter(counterAdapter);
 
-        for (DayOfWeek day : DayOfWeek.values()) {
+        for (DaysOfWeekEnum day : DaysOfWeekEnum.values()) {
             dayOfWeekMap.put(dayOfWeekMap.size(), day);
         }
         ArrayAdapter<String> weekDayAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Arrays.asList(getResources().getStringArray(R.array.DaysOfTheWeekArray)));
@@ -209,7 +202,7 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
 
         recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
         recurrenceRange.setStartDate(Calendar.getInstance());
-        recurrencePattern.setFirstDayOfWeek(DayOfWeek.SUNDAY.name());
+        recurrencePattern.setFirstDayOfWeek(DaysOfWeekEnum.SUNDAY.name());
 
         SpecifiedRecurrence recurrence = recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition());
 
@@ -221,13 +214,13 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
             break;
             case WEEKLY: {
                 List<String> daysOfTheWeek = new ArrayList<>();
-                if (mondayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.MONDAY.name());
-                if (tuesdayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.TUESDAY.name());
-                if (wednesdayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.WEDNESDAY.name());
-                if (thursdayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.THURSDAY.name());
-                if (fridayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.FRIDAY.name());
-                if (saturdayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.SATURDAY.name());
-                if (sundayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.SUNDAY.name());
+                if (mondayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.MONDAY.name());
+                if (tuesdayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.TUESDAY.name());
+                if (wednesdayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.WEDNESDAY.name());
+                if (thursdayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.THURSDAY.name());
+                if (fridayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.FRIDAY.name());
+                if (saturdayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.SATURDAY.name());
+                if (sundayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.SUNDAY.name());
 
                 recurrencePattern.setDaysOfWeek(daysOfTheWeek.toArray(new String[]{}));
                 recurrencePattern.setInterval(Integer.parseInt(specifiedWeekInterval.getText().toString()));

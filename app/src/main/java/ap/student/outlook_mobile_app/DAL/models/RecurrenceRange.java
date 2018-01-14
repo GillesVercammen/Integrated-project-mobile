@@ -2,8 +2,7 @@ package ap.student.outlook_mobile_app.DAL.models;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Calendar;
 
 import ap.student.outlook_mobile_app.DAL.MicrosoftDateFormat;
 
@@ -18,18 +17,24 @@ public class RecurrenceRange {
     private String startDate;
     private String type;
 
-    private SimpleDateFormat microsoftDateFormat;
+    private transient SimpleDateFormat microsoftDateFormat;
 
     public RecurrenceRange() {
         microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
     }
 
-    public LocalDate getEndDate() {
-        return LocalDate.parse(endDate);
+    public java.util.Calendar getEndDate() {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        try {
+            calendar.setTime(microsoftDateFormat.parse(endDate.replaceAll("T", " ").substring(0, 19)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return calendar;
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate.toString();
+    public void setEndDate(Calendar endDate) {
+        this.endDate = microsoftDateFormat.format(endDate.getTime());
     }
 
     public int getNumberOfOccurrences() {
@@ -51,7 +56,7 @@ public class RecurrenceRange {
     public java.util.Calendar getStartDate() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         try {
-            calendar.setTime(microsoftDateFormat.parse(startDate));
+            calendar.setTime(microsoftDateFormat.parse(startDate.replaceAll("T", " ").substring(0, 19)));
         } catch (ParseException e) {
             e.printStackTrace();
         }
