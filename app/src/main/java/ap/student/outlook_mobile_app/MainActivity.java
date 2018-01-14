@@ -17,10 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.microsoft.identity.client.User;
 
 import org.json.JSONObject;
+
+import java.util.UUID;
 
 import ap.student.outlook_mobile_app.BLL.Authentication;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
@@ -67,6 +71,16 @@ public class MainActivity extends AppCompatActivityRest {
 
     @Override
     public void loginSuccessfull() {
+
+        //Send the Microsoft authentication token to the nodeJS server so it can make API calls
+        String senderID = "371442591215";
+        System.out.println("MS token here: " + Authentication.getAuthentication().getAuthResult().getAccessToken());
+        FirebaseMessaging fm = FirebaseMessaging.getInstance();
+        fm.send(new RemoteMessage.Builder(senderID + "@gcm.googleapis.com")
+                .setMessageId(UUID.randomUUID().toString())
+                .addData("MS_token", Authentication.getAuthentication().getAuthResult().getAccessToken())
+                .build());
+
         startActivity(new Intent(this, MailActivity.class));
         this.finish();
         editor.putString("User", new Gson().toJson(Authentication.getAuthentication().getAuthResult().getUser()));
@@ -77,7 +91,7 @@ public class MainActivity extends AppCompatActivityRest {
     public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject graphResponse) {
         switch (outlookObjectCall) {
             case LOGINERROR: {
-                Toast.makeText(this, "Can't connect to the internet, you can try again, or continue offline.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Can't connect to the internet.", Toast.LENGTH_LONG).show();
             }
             break;
             case PERMISSIONSERROR: {
