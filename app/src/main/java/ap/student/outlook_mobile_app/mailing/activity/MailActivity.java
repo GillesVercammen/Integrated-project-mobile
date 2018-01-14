@@ -376,7 +376,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                         noEmail.setVisibility(View.GONE);
                         for (Message message : messages) {
                             // RANDOM COLOR OF ICON
-                            message.setColor(getRandomMaterialColor("400"));
+                            System.out.println("First letter here!" + message.getFrom().getEmailAddress().getName().charAt(0));
+                            message.setColor(getColorForCharacter(message.getFrom().getEmailAddress().getName().charAt(0)));
                         }
                     } else {
                         noEmail.setVisibility(View.VISIBLE);
@@ -627,15 +628,14 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
     }
 
-    // PICK A RANDOM COLOR TO COLOR THE ICON
-    private int getRandomMaterialColor(String typeColor) {
+    // Pick the color for a specific character
+    private int getColorForCharacter(Character c) {
         int returnColor = Color.GRAY;
-        int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getPackageName());
-
+        int arrayId = getResources().getIdentifier("mdcolor_400", "array", getPackageName());
+        int x = c - '0';
         if (arrayId != 0) {
             TypedArray colors = getResources().obtainTypedArray(arrayId);
-            int index = (int) (Math.random() * colors.length());
-            returnColor = colors.getColor(index, Color.GRAY);
+            returnColor = colors.getColor(x-17, Color.GRAY); //A = 17, so -17 so we benefit from the entire range
             colors.recycle();
         }
         return returnColor;
