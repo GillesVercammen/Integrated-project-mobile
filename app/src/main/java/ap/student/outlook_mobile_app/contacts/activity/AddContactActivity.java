@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import ap.student.outlook_mobile_app.R;
 
@@ -46,6 +47,7 @@ public class AddContactActivity extends AppCompatActivity {
     private boolean businessAddressOpen = false;
     private boolean otherOpen = false;
     private boolean emailOpen = false;
+    public int numberOfeditTexts = 0;
 
 
 
@@ -104,6 +106,13 @@ public class AddContactActivity extends AppCompatActivity {
         
         setOnclickListeners();
 
+        addMoreEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addEditText();
+            }
+        });
+
     }
 
     @Override
@@ -121,6 +130,27 @@ public class AddContactActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addEditText(){
+        LinearLayout ll = (LinearLayout)
+                findViewById(R.id.emailaddressesLayout);
+
+        // add edittext
+        EditText et = new EditText(this);
+
+        et.setId(numberOfeditTexts + 1);
+        ll.addView(et);
+
+        numberOfeditTexts++;
+
+        if (numberOfeditTexts > 0){
+            ImageView removeEmail = (ImageView) findViewById(R.id.remove_email);
+            removeEmail.setVisibility(View.VISIBLE);
+        } else {
+            ImageView removeEmail = (ImageView) findViewById(R.id.remove_email);
+            removeEmail.setVisibility(View.GONE);
+        }
     }
 
     private void setOnclickListeners() {
