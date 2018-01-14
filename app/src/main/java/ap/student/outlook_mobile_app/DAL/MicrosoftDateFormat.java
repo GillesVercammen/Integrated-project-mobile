@@ -13,7 +13,7 @@ public class MicrosoftDateFormat {
 
     public MicrosoftDateFormat() {
         microsoftDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        microsoftDateFormat.setTimeZone(TimeZone.getDefault());
+        microsoftDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     public SimpleDateFormat getMicrosoftDateFormat() {

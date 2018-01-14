@@ -24,13 +24,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.DaysOfWeekEnum;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ReminderMinutesBeforeStart;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ShowAs;
@@ -230,6 +230,7 @@ public class EventActivity extends AppCompatActivityRest {
         }
 
         microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
+        microsoftDateFormat.setTimeZone(TimeZone.getDefault());
     }
 
     private void loadEventSettings() {
@@ -309,7 +310,7 @@ public class EventActivity extends AppCompatActivityRest {
 
         recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
         recurrenceRange.setStartDate(startDate);
-        recurrencePattern.setFirstDayOfWeek(DayOfWeek.SUNDAY.name());
+        recurrencePattern.setFirstDayOfWeek(DaysOfWeekEnum.SUNDAY.name());
 
         switch (recurrence) {
             case DAILY: {
@@ -319,13 +320,13 @@ public class EventActivity extends AppCompatActivityRest {
             break;
             case EVERY_FRIDAY: {
                 recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
-                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setDaysOfWeek(new String[] { DaysOfWeekEnum.FRIDAY.name() });
                 recurrencePattern.setInterval(1);
             }
             break;
             case EVERY_WORKDAY: {
                 recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
-                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.MONDAY.name(), DayOfWeek.TUESDAY.name(), DayOfWeek.WEDNESDAY.name(), DayOfWeek.THURSDAY.name(), DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setDaysOfWeek(new String[] { DaysOfWeekEnum.MONDAY.name(), DaysOfWeekEnum.TUESDAY.name(), DaysOfWeekEnum.WEDNESDAY.name(), DaysOfWeekEnum.THURSDAY.name(), DaysOfWeekEnum.FRIDAY.name() });
                 recurrencePattern.setInterval(1);
             }
             break;
@@ -337,7 +338,7 @@ public class EventActivity extends AppCompatActivityRest {
             break;
             case EVERY_SECOND_FRIDAY: {
                 recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
-                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setDaysOfWeek(new String[] { DaysOfWeekEnum.FRIDAY.name() });
                 recurrencePattern.setInterval(2);
             }
             break;
@@ -362,7 +363,6 @@ public class EventActivity extends AppCompatActivityRest {
     }
 
     private void onAddAttendeesButtonClicked() {
-        event.getCreatedDateTime();
         startActivityForResult(new Intent(this, AttendeesActivity.class), 201);
     }
 
