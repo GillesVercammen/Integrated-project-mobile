@@ -38,7 +38,7 @@ public class AddContactActivity extends AppCompatActivity {
     private ViewGroup streetotherLayout, cityotherLayout, postalcodeotherLayout, stateotherLayout, countryorregionotherLayout;
     private EditText editStreetother, editCityother, editPostalcodeother, editStateother, editCountryorregionother;
 
-    private ImageView open_close_user, open_close_general, open_close_business, open_close_home, open_close_businessaddress, open_close_otheraddress, open_close_email, addMoreEmail;
+    private ImageView open_close_user, open_close_general, open_close_business, open_close_home, open_close_businessaddress, open_close_otheraddress, open_close_email, addMoreEmail, removeEmail;
 
     private boolean userOpen = true;
     private boolean generalOpen = false;
@@ -103,6 +103,7 @@ public class AddContactActivity extends AppCompatActivity {
         editPostalcodeother = (EditText) findViewById(R.id.editPostalcodeother);
         editStateother = (EditText) findViewById(R.id.editStateother);
         editCountryorregionother = (EditText) findViewById(R.id.editCountryorregionother);
+        removeEmail = (ImageView) findViewById(R.id.remove_email);
         
         setOnclickListeners();
 
@@ -112,7 +113,18 @@ public class AddContactActivity extends AppCompatActivity {
                 addEditText();
             }
         });
+        removeEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int idEditText = numberOfeditTexts ;
 
+                EditText et = (EditText) findViewById(idEditText);
+
+                // cheeky fix to "delete" editText
+                et.setId(0);
+                et.setVisibility(View.GONE);
+                numberOfeditTexts--;            }
+        });
     }
 
     @Override
@@ -138,17 +150,17 @@ public class AddContactActivity extends AppCompatActivity {
 
         // add edittext
         EditText et = new EditText(this);
-
+        // moet positief zijn
         et.setId(numberOfeditTexts + 1);
         ll.addView(et);
 
         numberOfeditTexts++;
 
         if (numberOfeditTexts > 0){
-            ImageView removeEmail = (ImageView) findViewById(R.id.remove_email);
+            removeEmail = (ImageView) findViewById(R.id.remove_email);
             removeEmail.setVisibility(View.VISIBLE);
         } else {
-            ImageView removeEmail = (ImageView) findViewById(R.id.remove_email);
+            removeEmail = (ImageView) findViewById(R.id.remove_email);
             removeEmail.setVisibility(View.GONE);
         }
     }
@@ -183,6 +195,11 @@ public class AddContactActivity extends AppCompatActivity {
                     emailaddressLayout.setVisibility(View.GONE);
                     addMoreEmail.setVisibility(View.GONE);
                     open_close_email.setImageResource(R.drawable.ic_add_black_24dp);
+                    for (int i = 1; i <= numberOfeditTexts; i++){
+                        EditText et = (EditText) findViewById(i);
+                        et.setVisibility(View.GONE);
+                        et.setId(0);
+                    }
                     emailOpen = false;
                 } else {
                     emailaddressLayout.setVisibility(View.VISIBLE);
