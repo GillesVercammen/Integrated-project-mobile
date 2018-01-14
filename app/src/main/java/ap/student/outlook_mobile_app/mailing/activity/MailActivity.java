@@ -1,9 +1,11 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.speech.RecognizerIntent;
@@ -67,6 +69,7 @@ import ap.student.outlook_mobile_app.mailing.adapter.MessagesAdapter;
 import ap.student.outlook_mobile_app.mailing.helpers.DividerItemDecoration;
 import ap.student.outlook_mobile_app.mailing.model.MailFolder;
 import ap.student.outlook_mobile_app.mailing.model.Message;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MailActivity extends AppCompatActivityRest implements SwipeRefreshLayout.OnRefreshListener, MessagesAdapter.MessageAdapterListener {
 
@@ -122,8 +125,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         // SET # OF CLICK ON NON_READ ITEMS
         readClicked = 0;
 
-     //   Bundle args = getIntent().getBundleExtra("BUNDLE");
-     //   ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
+        //  Bundle args = getIntent().getBundleExtra("BUNDLE");
+        //  ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
 
         // SET TOOLBAR
         user = Authentication.getAuthentication().getAuthResult().getUser();
@@ -148,7 +151,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 onNewMailButtonClicked();
 
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                       .setAction("Action", null).show();
+                        .setAction("Action", null).show();
 
             }
         });
@@ -559,12 +562,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                                     dialog.cancel();
                                 }
                             });
-                            if (mAdapter.getSelectedItemCount() > 1) {
-                                alertDialogBuilder.setMessage(R.string.alert_delete_message_multiple);
-                            } else {
-                                alertDialogBuilder.setMessage(R.string.alert_delete_message);
-                            }
-                            alertDialogBuilder.create().show();
+                    if (mAdapter.getSelectedItemCount() > 1) {
+                        alertDialogBuilder.setMessage(R.string.alert_delete_message_multiple);
+                    } else {
+                        alertDialogBuilder.setMessage(R.string.alert_delete_message);
+                    }
+                    alertDialogBuilder.create().show();
 
                     return true;
 
@@ -704,7 +707,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         ArrayList<IDrawerItem> drawerItems = new ArrayList<>();
 
         // SET DRAWERITEMS WITH DYNAMIC FOLDER, ONLY FOLDERS WITH TOTALMAILCOUNT > 0 ARE RECEIVED WITH INTENT
-       for(MailFolder folder : folders) {
+        for(MailFolder folder : folders) {
             PrimaryDrawerItem item = new PrimaryDrawerItem();
             if(folder.getUnreadItemCount() == 0){
                 item.withName(folder.getDisplayName())
@@ -763,6 +766,27 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     }
                 })
                 .build();
-                drawer.setSelection(0, false);
+        drawer.setSelection(0, false);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //set notification count to 0 when MailActivity is opened, remove the badge and remove the notification
+
+        SharedPreferences sharedpreferences = getSharedPreferences("count", Context.MODE_PRIVATE);
+
+        ShortcutBadger.applyCount(this, 0);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putInt("count", 0);
+        editor.apply();
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        notificationManager.cancelAll();
+
+    }
+
 }
