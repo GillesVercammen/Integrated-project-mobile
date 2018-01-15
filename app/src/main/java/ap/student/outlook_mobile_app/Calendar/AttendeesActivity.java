@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.contacts.activity.ContactsActivity;
-import ap.student.outlook_mobile_app.contacts.model.Contact;
+import ap.student.outlook_mobile_app.DAL.models.Contact;
 
 /**
  * Created by alek on 12.01.18.
@@ -18,6 +18,7 @@ import ap.student.outlook_mobile_app.contacts.model.Contact;
 
 public class AttendeesActivity extends ContactsActivity {
     private Gson gson;
+    private Contact contacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +28,22 @@ public class AttendeesActivity extends ContactsActivity {
         bottomNavigationItemView.setVisibility(View.GONE);
 
         gson = new Gson();
+
+        if (getIntent().getStringExtra("attendees") == null) {
+            contacts = new Contact();
+        } else {
+            contacts = gson.fromJson(getIntent().getStringExtra("attendees"), Contact.class);
+        }
+
+        for (Contact contact : contacts.getContacts()) {
+
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            setResult(201, new Intent().putExtra("contacts", "{}"));
+            setResult(201, new Intent().putExtra("contacts", gson.toJson(contacts)));
         }
         return super.onOptionsItemSelected(item);
     }
