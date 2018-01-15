@@ -135,5 +135,14 @@
     <string name="countryorregion">Country:</string>
     <string name="email">Email:</string>
     <string name="btnRemove">Remove</string>
+    <string name="add_error">Couldn\'t retrieve all the values</string>
+    <string name="date_wrong_format">Date is in wrong format</string>
+    <string name="invalidEmail">Email is invalid</string>
+    <string name="fill_name">Given name or surname is required</string>
+    <string name="email_invalid">Not a valid email</string>
+    <string name="wrong">Something went wrong</string>
+    <string name="alert_add_contact">Adding a new contact</string>
+    <string name="alert_add">Are you sure you want to add this contact?</string>
+
 
 </resources>

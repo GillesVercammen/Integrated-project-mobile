@@ -265,7 +265,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             speechbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.out.println("SPEECH DETECTED");
                     startVoiceInput();
                 }
             });

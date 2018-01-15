@@ -8,6 +8,7 @@
     tools:showIn="@layout/activity_add_contact">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -84,7 +85,8 @@
                     <EditText
                         android:id="@+id/editGivenName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -102,7 +104,8 @@
                     <EditText
                         android:id="@+id/editSurName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -120,7 +123,8 @@
                     <EditText
                         android:id="@+id/editMiddleName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -133,12 +137,13 @@
                         android:id="@+id/nickName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/middlename" />
+                        android:text="@string/nickname" />
 
                     <EditText
                         android:id="@+id/editNickName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -156,7 +161,8 @@
                     <EditText
                         android:id="@+id/editInitials"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -174,7 +180,8 @@
                     <EditText
                         android:id="@+id/editTitle"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -255,7 +262,8 @@
                     <EditText
                         android:id="@+id/editSpousename"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -314,12 +322,14 @@
                     <EditText
                         android:id="@+id/editEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <ImageView
                             android:id="@+id/add_more_email"
                             android:layout_width="wrap_content"
@@ -327,13 +337,14 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="20dp"
                             app:srcCompat="@drawable/ic_add_black_24dp" />
+
                         <ImageView
                             android:id="@+id/remove_email"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_remove_black_24dp"
-                            android:visibility="gone"/>
+                            android:visibility="gone"
+                            app:srcCompat="@drawable/ic_remove_black_24dp" />
 
                     </LinearLayout>
 
@@ -395,7 +406,8 @@
                     <EditText
                         android:id="@+id/editCompanyName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -414,7 +426,8 @@
                     <EditText
                         android:id="@+id/editDepartment"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -433,7 +446,8 @@
                     <EditText
                         android:id="@+id/editOfficeLocation"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -447,12 +461,13 @@
                         android:id="@+id/businesshomepage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/givenname" />
+                        android:text="@string/businesshomepage" />
 
                     <EditText
                         android:id="@+id/editBusinesshomepage"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -471,7 +486,8 @@
                     <EditText
                         android:id="@+id/editJobTitle"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -490,7 +506,8 @@
                     <EditText
                         android:id="@+id/editProfession"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -509,7 +526,8 @@
                     <EditText
                         android:id="@+id/editAssistantname"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -528,7 +546,8 @@
                     <EditText
                         android:id="@+id/editManager"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -590,7 +609,8 @@
                     <EditText
                         android:id="@+id/editStreethome"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -609,7 +629,8 @@
                     <EditText
                         android:id="@+id/editCityhome"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -628,7 +649,8 @@
                     <EditText
                         android:id="@+id/editPostalcodehome"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -647,7 +669,8 @@
                     <EditText
                         android:id="@+id/editStatehome"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -666,7 +689,8 @@
                     <EditText
                         android:id="@+id/editCountryorregionhome"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -729,7 +753,8 @@
                     <EditText
                         android:id="@+id/editStreetbusiness"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -748,7 +773,8 @@
                     <EditText
                         android:id="@+id/editCitybusiness"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -767,7 +793,8 @@
                     <EditText
                         android:id="@+id/editPostalcodebusiness"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -786,7 +813,8 @@
                     <EditText
                         android:id="@+id/editStatebusiness"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -805,7 +833,8 @@
                     <EditText
                         android:id="@+id/editCountryorregionbusiness"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -867,7 +896,8 @@
                     <EditText
                         android:id="@+id/editStreetother"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -886,7 +916,8 @@
                     <EditText
                         android:id="@+id/editCityother"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -905,7 +936,8 @@
                     <EditText
                         android:id="@+id/editPostalcodeother"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -924,7 +956,8 @@
                     <EditText
                         android:id="@+id/editStateother"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -943,7 +976,8 @@
                     <EditText
                         android:id="@+id/editCountryorregionother"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </LinearLayout>
 
             </LinearLayout>

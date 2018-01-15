@@ -39,7 +39,8 @@
             android:name=".mailing.activity.MailActivity"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustPan" />
+
         <activity
             android:name=".mailing.activity.NewMailActivity"
             android:screenOrientation="sensorPortrait"
@@ -59,9 +60,9 @@
             android:label="@string/title_activity_contacts"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".contacts.activity.ContactDetailActivity"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".contacts.activity.AddContactActivity"
             android:label="@string/title_activity_add_contact"

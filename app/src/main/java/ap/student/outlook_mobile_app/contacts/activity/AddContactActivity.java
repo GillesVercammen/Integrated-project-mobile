@@ -1,23 +1,49 @@
 package ap.student.outlook_mobile_app.contacts.activity;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
+import ap.student.outlook_mobile_app.mailing.activity.MailActivity;
+import ap.student.outlook_mobile_app.mailing.activity.ReadMailActivity;
 
-public class AddContactActivity extends AppCompatActivity {
-
-    private ViewGroup givenNameLayout, surNameLayout,middleNameLayout, nickNameLayout, initialsLayout, titleLayout;
+public class AddContactActivity extends AppCompatActivityRest {
+    private ViewGroup givenNameLayout, surNameLayout,middleNameLayout, nickNameLayout, initialsLayout, titleLayout, outerLayout;
     private EditText editGivenName, editSurName, editMiddleName, editNickName, editInitials, editTitle;
 
     private ViewGroup birthdayLayout, spousenameLayout;
@@ -48,8 +74,7 @@ public class AddContactActivity extends AppCompatActivity {
     private boolean otherOpen = false;
     private boolean emailOpen = false;
     public int numberOfeditTexts = 0;
-
-
+    private Calendar myCalendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +88,8 @@ public class AddContactActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        outerLayout = (LinearLayout) findViewById( R.id.outerLayout);
 
         editGivenName = (EditText) findViewById(R.id.editGivenName);
         editSurName = (EditText) findViewById(R.id.editSurName);
@@ -140,8 +167,49 @@ public class AddContactActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 break;
+            case R.id.action_save:
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddContactActivity.this);
+                alertDialogBuilder.setTitle(R.string.alert_add_contact)
+                        .setIcon(R.drawable.ic_delete_black_24dp)
+                        .setMessage(R.string.alert_add)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                if(!(editGivenName.getText().toString().equals("") && editSurName.getText().toString().equals(""))){
+                                    JSONObject jsonObject = new JSONObject();
+                                    JSONObject result;
+                                    try {
+                                        result = getAllInfo(jsonObject);
+                                        System.out.println(result);
+                                        new GraphAPI().postRequest(OutlookObjectCall.CONTACTS, AddContactActivity.this, result);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                        Toast.makeText(AddContactActivity.this, R.string.add_error, Toast.LENGTH_SHORT).show();
+                                    } catch (ParseException e) {
+                                        Toast.makeText(AddContactActivity.this, R.string.date_wrong_format, Toast.LENGTH_SHORT).show();
+                                    } catch (IllegalAccessException e) {
+                                        Toast.makeText(AddContactActivity.this, R.string.wrong, Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Toast.makeText(AddContactActivity.this, R.string.fill_name, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .create()
+                        .show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
+
     }
 
     private void addEditText(){
@@ -152,6 +220,7 @@ public class AddContactActivity extends AppCompatActivity {
         EditText et = new EditText(this);
         // moet positief zijn
         et.setId(numberOfeditTexts + 1);
+        et.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         ll.addView(et);
 
         numberOfeditTexts++;
@@ -357,6 +426,28 @@ public class AddContactActivity extends AppCompatActivity {
                     open_close_general.setImageResource(R.drawable.ic_add_black_24dp);
                     generalOpen = false;
                 } else {
+                    final DatePickerDialog.OnDateSetListener dateDialog = new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
+                            myCalendar.set(Calendar.YEAR, year);
+                            myCalendar.set(Calendar.MONTH, monthOfYear);
+                            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            updateLabel();
+                        }
+                    };
+
+                    editBirthday.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //create new styles in style xml to make spinner calendar!!!
+                            new DatePickerDialog(AddContactActivity.this, R.style.MySpinnerDatePickerStyle, dateDialog, myCalendar
+                                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                                    myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+
+                        }
+                    });
+
                     birthdayLayout.setVisibility(View.VISIBLE);
                     spousenameLayout.setVisibility(View.VISIBLE);
                     open_close_general.setImageResource(R.drawable.ic_remove_black_24dp);
@@ -406,5 +497,125 @@ public class AddContactActivity extends AppCompatActivity {
         toolbar.setTitleMarginStart(30);
     }
 
+    private void updateLabel() {
+        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
+        editBirthday.setText(sdf.format(myCalendar.getTime()));
+    }
+
+    private JSONObject getAllInfo(JSONObject jsonObject) throws JSONException, ParseException {
+
+        checkIfEditTextFilled(editGivenName, jsonObject, "givenName");
+        checkIfEditTextFilled(editSurName, jsonObject, "surname");
+        checkIfEditTextFilled(editMiddleName, jsonObject, "givenName");
+        checkIfEditTextFilled(editNickName, jsonObject, "nickName");
+        checkIfEditTextFilled(editInitials, jsonObject, "initials");
+        checkIfEditTextFilled(editTitle, jsonObject, "title");
+
+        checkIfEditTextFilled(editBirthday, jsonObject, "birthday");
+        checkIfEditTextFilled(editSpousename, jsonObject, "spouseName");
+
+        checkIfEditTextFilled(editEmail, jsonObject, "emailAddresses");
+
+        checkIfEditTextFilled(editCompanyName, jsonObject, "companyName");
+        checkIfEditTextFilled(editDepartment, jsonObject, "department");
+        checkIfEditTextFilled(editOfficeLocation, jsonObject, "officeLocation");
+        checkIfEditTextFilled(editBusinesshomepage, jsonObject, "businesshomepage");
+        checkIfEditTextFilled(editJobTitle, jsonObject, "jobTitle");
+        checkIfEditTextFilled(editProfession, jsonObject, "profession");
+        checkIfEditTextFilled(editAssistantname, jsonObject, "assistantName");
+        checkIfEditTextFilled(editManager, jsonObject, "manager");
+
+        JSONObject jsonObjectHome = new JSONObject();
+        checkIfEditTextAddressFilled(editStreethome, jsonObject, "homeAddress", jsonObjectHome, "street");
+        checkIfEditTextAddressFilled(editCityhome, jsonObject, "homeAddress", jsonObjectHome, "city");
+        checkIfEditTextAddressFilled(editPostalcodehome, jsonObject, "homeAddress", jsonObjectHome, "postalcode");
+        checkIfEditTextAddressFilled(editStatehome, jsonObject, "homeAddress", jsonObjectHome, "state");
+        checkIfEditTextAddressFilled(editCountryorregionhome, jsonObject, "homeAddress", jsonObjectHome, "countryOrRegion");
+
+        JSONObject jsonObjectBusiness = new JSONObject();
+        checkIfEditTextAddressFilled(editStreetbusiness, jsonObject, "businessAddress", jsonObjectBusiness, "street");
+        checkIfEditTextAddressFilled(editCityhome, jsonObject, "businessAddress", jsonObjectBusiness, "city");
+        checkIfEditTextAddressFilled(editStatehome, jsonObject, "businessAddress", jsonObjectBusiness, "state");
+        checkIfEditTextAddressFilled(editPostalcodebusiness, jsonObject, "businessAddress", jsonObjectBusiness, "postalcode");
+        checkIfEditTextAddressFilled(editCountryorregionbusiness, jsonObject, "businessAddress", jsonObjectBusiness, "countryOrRegion");
+
+        JSONObject jsonObjectOther = new JSONObject();
+        checkIfEditTextAddressFilled(editStreetother, jsonObject, "otherAddress", jsonObjectOther, "street");
+        checkIfEditTextAddressFilled(editCityother, jsonObject, "otherAddress", jsonObjectOther, "city");
+        checkIfEditTextAddressFilled(editStateother, jsonObject, "otherAddress", jsonObjectOther, "state");
+        checkIfEditTextAddressFilled(editPostalcodeother, jsonObject, "otherAddress", jsonObjectOther, "postalcode");
+        checkIfEditTextAddressFilled(editCountryorregionother, jsonObject, "otherAddress", jsonObjectOther, "countryOrRegion");
+
+        return jsonObject;
+    }
+
+    private void checkIfEditTextAddressFilled(EditText editText, JSONObject jsonObject, String jsonString, JSONObject jsonObjectAddress, String jsonStringAddress) throws JSONException {
+        if (!editText.getText().toString().equals("")){
+            jsonObjectAddress.put(jsonStringAddress, editText.getText().toString());
+            jsonObject.put(jsonString, jsonObjectAddress);
+        }
+    }
+    private void checkIfEditTextFilled(EditText editText, JSONObject jsonObject, String jsonString) throws JSONException, ParseException {
+        switch (editText.getId()){
+            case R.id.editBirthday:
+                if (!editText.getText().toString().equals("")){
+                    String date = setDate(editText.getText().toString());
+                    jsonObject.put(jsonString, date);
+                }
+                break;
+            case R.id.editEmail:
+                ArrayList<JSONObject> emailJsonArray = new ArrayList<>();
+                JSONObject emailJson = new JSONObject();
+                boolean isValidemail = false;
+
+                if (!editText.getText().toString().equals("") && isEmailValid(editText.getText().toString())){
+                    emailJson.put("name", editText.getText().toString());
+                    emailJson.put("address", editText.getText().toString());
+                    emailJsonArray.add(emailJson);
+
+                } else {
+                    if (!editText.getText().toString().equals("") && !isEmailValid(editText.getText().toString())) {
+                        Toast.makeText(AddContactActivity.this, R.string.invalidEmail, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if (numberOfeditTexts > 0) {
+                    for(int i = 1; i <= numberOfeditTexts; i ++){
+                        EditText et = (EditText) findViewById(i);
+                        if (!et.getText().toString().equals("") && isEmailValid(et.getText().toString())){
+                            JSONObject nextEmailJson = new JSONObject();
+                            nextEmailJson.put("name", et.getText().toString());
+                            nextEmailJson.put("address", et.getText().toString());
+                            emailJsonArray.add(nextEmailJson);
+                        } else {
+                            if(!et.getText().toString().equals("") && !isEmailValid(et.getText().toString())){
+                                Toast.makeText(AddContactActivity.this, R.string.invalidEmail, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+                    jsonObject.put("emailAddresses", emailJsonArray);
+
+                break;
+            default:
+                if(!editText.getText().toString().equals("")){
+                    jsonObject.put(jsonString, editText.getText().toString());
+                }
+        }
+    }
+
+  public String setDate(String stringDate) throws ParseException {
+      String JSON_FORMAT = "dd/MM/yyyy";
+      SimpleDateFormat formatter = new SimpleDateFormat(JSON_FORMAT);
+      Date date = formatter.parse(stringDate);
+      String TO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+      String TO_FORMAT_IS_12 = "dd MMM yyyy";
+      SimpleDateFormat outputFormat = new SimpleDateFormat(TO_FORMAT);
+      return outputFormat.format(date);
+    }
+
+    private boolean isEmailValid(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
 }
