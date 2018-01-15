@@ -1,9 +1,11 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.speech.RecognizerIntent;
@@ -67,6 +69,7 @@ import ap.student.outlook_mobile_app.mailing.adapter.MessagesAdapter;
 import ap.student.outlook_mobile_app.mailing.helpers.DividerItemDecoration;
 import ap.student.outlook_mobile_app.mailing.model.MailFolder;
 import ap.student.outlook_mobile_app.mailing.model.Message;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MailActivity extends AppCompatActivityRest implements SwipeRefreshLayout.OnRefreshListener, MessagesAdapter.MessageAdapterListener {
 
@@ -111,17 +114,19 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         if (getIntent().getSerializableExtra("FOLDER_INFO") == null){
             currentFolderName = getString(R.string.inbox);
             currentFolderId = getString(R.string.inbox).toLowerCase();
+            System.out.println("Folder ID here: " + currentFolderId);
         } else {
             MailFolder folderInfo = (MailFolder) getIntent().getSerializableExtra("FOLDER_INFO");
             currentFolderName = folderInfo.getDisplayName();
             currentFolderId = folderInfo.getId();
+            System.out.println("Folder ID here: " + folderInfo.getId());
         }
 
         // SET # OF CLICK ON NON_READ ITEMS
         readClicked = 0;
 
-     //   Bundle args = getIntent().getBundleExtra("BUNDLE");
-     //   ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
+        //  Bundle args = getIntent().getBundleExtra("BUNDLE");
+        //  ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
 
         // SET TOOLBAR
         user = Authentication.getAuthentication().getAuthResult().getUser();
@@ -146,7 +151,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 onNewMailButtonClicked();
 
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                       .setAction("Action", null).show();
+                        .setAction("Action", null).show();
 
             }
         });
@@ -371,7 +376,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                         noEmail.setVisibility(View.GONE);
                         for (Message message : messages) {
                             // RANDOM COLOR OF ICON
-                            message.setColor(getRandomMaterialColor("400"));
+                            System.out.println("First letter here!" + message.getFrom().getEmailAddress().getName().charAt(0));
+                            message.setColor(getColorForCharacter(message.getFrom().getEmailAddress().getName().charAt(0)));
                         }
                     } else {
                         noEmail.setVisibility(View.VISIBLE);
@@ -557,12 +563,12 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                                     dialog.cancel();
                                 }
                             });
-                            if (mAdapter.getSelectedItemCount() > 1) {
-                                alertDialogBuilder.setMessage(R.string.alert_delete_message_multiple);
-                            } else {
-                                alertDialogBuilder.setMessage(R.string.alert_delete_message);
-                            }
-                            alertDialogBuilder.create().show();
+                    if (mAdapter.getSelectedItemCount() > 1) {
+                        alertDialogBuilder.setMessage(R.string.alert_delete_message_multiple);
+                    } else {
+                        alertDialogBuilder.setMessage(R.string.alert_delete_message);
+                    }
+                    alertDialogBuilder.create().show();
 
                     return true;
 
@@ -622,15 +628,14 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
     }
 
-    // PICK A RANDOM COLOR TO COLOR THE ICON
-    private int getRandomMaterialColor(String typeColor) {
+    // Pick the color for a specific character
+    private int getColorForCharacter(Character c) {
         int returnColor = Color.GRAY;
-        int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getPackageName());
-
+        int arrayId = getResources().getIdentifier("mdcolor_400", "array", getPackageName());
+        int x = c - '0';
         if (arrayId != 0) {
             TypedArray colors = getResources().obtainTypedArray(arrayId);
-            int index = (int) (Math.random() * colors.length());
-            returnColor = colors.getColor(index, Color.GRAY);
+            returnColor = colors.getColor(x-17, Color.GRAY); //A = 17, so -17 so we benefit from the entire range
             colors.recycle();
         }
         return returnColor;
@@ -702,7 +707,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         ArrayList<IDrawerItem> drawerItems = new ArrayList<>();
 
         // SET DRAWERITEMS WITH DYNAMIC FOLDER, ONLY FOLDERS WITH TOTALMAILCOUNT > 0 ARE RECEIVED WITH INTENT
-       for(MailFolder folder : folders) {
+        for(MailFolder folder : folders) {
             PrimaryDrawerItem item = new PrimaryDrawerItem();
             if(folder.getUnreadItemCount() == 0){
                 item.withName(folder.getDisplayName())
@@ -761,6 +766,27 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     }
                 })
                 .build();
-                drawer.setSelection(0, false);
+        drawer.setSelection(0, false);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //set notification count to 0 when MailActivity is opened, remove the badge and remove the notification
+
+        SharedPreferences sharedpreferences = getSharedPreferences("count", Context.MODE_PRIVATE);
+
+        ShortcutBadger.applyCount(this, 0);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putInt("count", 0);
+        editor.apply();
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        notificationManager.cancelAll();
+
+    }
+
 }
