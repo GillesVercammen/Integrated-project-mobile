@@ -4,6 +4,11 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -68,7 +73,6 @@ public class EventActivity extends AppCompatActivityRest {
     private Spinner agendaSpinner;
     private Button sendReminderByMailButton;
     private EditText descriptionText;
-    private Button confirmButton;
     private Button setStartTimeButton;
     private Map<Integer, ShowAs> showAsMap;
     private Map<Integer, Recurrence> recurrenceMap;
@@ -99,7 +103,6 @@ public class EventActivity extends AppCompatActivityRest {
         setStartTimeButton = (Button) findViewById(R.id.eventSetStartTimeButton);
         setEndTimeButton = (Button) findViewById(R.id.evenSetEndTimeButton);
         addAttendeesButton = (Button) findViewById(R.id.eventAddAttendeesButton);
-        confirmButton = (Button) findViewById(R.id.eventConfirmButton);
         showAsSpinner = (Spinner) findViewById(R.id.eventDisplayAsSpinner);
         recurrenceSpinner = (Spinner) findViewById(R.id.eventRepeatSpinner);
         reminderSpinner = (Spinner) findViewById(R.id.eventRemindSpinner);
@@ -207,17 +210,12 @@ public class EventActivity extends AppCompatActivityRest {
             }
         });
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onConfirmButtonClicked();
-            }
-        });
-
+        String title = getString(R.string.event_title);
         event = null;
         id = null;
         String eventId = getIntent().getStringExtra("event");
         if (eventId != null && !eventId.isEmpty()) {
+            title = getString(R.string.event_edit_title);
             Event events = new Gson().fromJson(sharedPreferences.getString("Events", "{}"), Event.class);
             for (Event e : events.getEvents()) {
                 if (e.getId().equals(eventId)) {
@@ -229,8 +227,44 @@ public class EventActivity extends AppCompatActivityRest {
             }
         }
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setActionBarMail(title, toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
         microsoftDateFormat.setTimeZone(TimeZone.getDefault());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_event, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // SET ACTIONBAR
+    private void setActionBarMail(String title, Toolbar toolbar) {
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+        toolbar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
+        // THIS LINE REMOVES ANNOYING LEFT MARGIN
+        toolbar.setTitleMarginStart(30);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save : {
+                onConfirmButtonClicked();
+            }
+            break;
+            case android.R.id.home : {
+                finish();
+            }
+            break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadEventSettings() {

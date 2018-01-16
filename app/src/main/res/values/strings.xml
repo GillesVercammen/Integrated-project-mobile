@@ -52,6 +52,7 @@
     <string name="current_week_string">This week</string>
     <string name="current_day_string">Today</string>
     <string name="no_events_message">No events found for this date</string>
+    <string name="calendar_title">Calendar</string>
 
 
     <!--

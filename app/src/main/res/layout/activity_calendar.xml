@@ -6,7 +6,16 @@
     android:layout_height="match_parent"
     tools:context="ap.student.outlook_mobile_app.Calendar.CalendarActivity">
 
-    <include layout="@layout/actionbar" />
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:subtitleTextAppearance="@style/Toolbar.SubTitleText"
+        app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
     <TabHost
         android:id="@+id/tabHost"
@@ -19,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/action_bar">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"

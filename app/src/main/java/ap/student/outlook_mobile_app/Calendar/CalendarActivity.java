@@ -4,7 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -55,7 +59,6 @@ public class CalendarActivity extends AppCompatActivityRest {
     private TextView dayCalendarCurrentYearTextview;
     private TextView dayCalendarNoEventsTextview;
     private java.util.Calendar selectedTime;
-    private Button editDayButton;
 
     private ImageButton nextMonthButton;
     private ImageButton previousMonthButton;
@@ -104,6 +107,13 @@ public class CalendarActivity extends AppCompatActivityRest {
                         return true;
                     }
                 });
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        String title = getString(R.string.calendar_title);
+        setActionBarMail(title, toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         /**
          * Tabs setup
@@ -216,15 +226,7 @@ public class CalendarActivity extends AppCompatActivityRest {
          */
         event = null;
         selectedTime = java.util.Calendar.getInstance();
-        editDayButton = (Button) findViewById(R.id.createNewEventButton);
         hourFormat = new SimpleDateFormat("H.mm ", Locale.getDefault());
-
-        editDayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editDayButtonClicked();
-            }
-        });
 
         gson = new Gson();
 
@@ -239,6 +241,36 @@ public class CalendarActivity extends AppCompatActivityRest {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_event : {
+                editDayButtonClicked();
+            }
+            break;
+            case android.R.id.home : {
+                finish();
+            }
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_calendar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // SET ACTIONBAR
+    private void setActionBarMail(String title, Toolbar toolbar) {
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+        toolbar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
+        // THIS LINE REMOVES ANNOYING LEFT MARGIN
+        toolbar.setTitleMarginStart(30);
     }
 
     @Override
@@ -331,7 +363,6 @@ public class CalendarActivity extends AppCompatActivityRest {
         buildDayCalendar();
     }
 
-    //TODO : clean up this monster
     private void buildMonthCalendar() {
         cellSize = monthCalendar.getWidth() / 7;
 

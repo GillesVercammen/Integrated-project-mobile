@@ -47,8 +47,11 @@
             android:name=".mailing.activity.ReadMailActivity"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".Calendar.CalendarActivity" />
+
+        <activity
+            android:name=".Calendar.CalendarActivity"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Calendar.EventActivity" />
         <activity android:name=".Calendar.CustomRecurrenceActivity" />
         <activity android:name=".Calendar.AttendeesActivity" />

@@ -53,6 +53,9 @@
     <string name="november">November</string>
     <string name="december">December</string>
     <string name="eventAddAttendeesButton">Attendees</string>
+    <string name="event_title">Add event</string>
+    <string name="event_edit_title">Edit event</string>
+    <string name="action_save_event">Save event</string>
 
     <!--
         These need to be arranged as shown, fuck you android
