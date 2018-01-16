@@ -14,6 +14,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -63,7 +64,7 @@ import ap.student.outlook_mobile_app.mailing.helpers.DividerItemDecoration;
 import ap.student.outlook_mobile_app.mailing.model.MailFolder;
 import ap.student.outlook_mobile_app.mailing.model.Message;
 
-public class ContactsActivity extends AppCompatActivityRest implements ContactsAdapter.ContactsAdapterListener{
+public class ContactsActivity extends AppCompatActivityRest implements ContactsAdapter.ContactsAdapterListener, SwipeRefreshLayout.OnRefreshListener{
 
     private static final int REQ_CODE_SPEECH_INPUT = 100;
     private static final int AANTAL_CONTACTS = 350;
@@ -75,6 +76,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
     private List<Contact> contacts = new ArrayList<>();
     private ContactsAdapter mAdapter;
     private SearchView searchView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -127,12 +130,23 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         actionModeCallback = new ActionModeCallback();
 
-        getAllContacts();
+
+        swipeRefreshLayout.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        getAllContacts();
+                    }
+                }
+        );
+
 
 
     }
@@ -246,7 +260,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                 }
 
                 mAdapter.notifyDataSetChanged();
-                System.out.println("OK");
+                swipeRefreshLayout.setRefreshing(false);
             }
             break;
             case SENDMAIL: {
@@ -288,6 +302,11 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
             actionMode = startSupportActionMode(actionModeCallback);
         }
         toggleSelection(position);
+    }
+
+    @Override
+    public void onRefresh() {
+        getAllContacts();
     }
 
     private class ActionModeCallback implements ActionMode.Callback {
@@ -407,9 +426,11 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
         List<Integer> selectedItemPositions =
                 mAdapter.getSelectedItems();
+        System.out.println(selectedItemPositions);
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
-            Contact contact = contacts.get(i);
-           new GraphAPI().deleteRequest(OutlookObjectCall.CONTACTS,this, "/" + contact.getId());
+            Contact contact = contacts.get(selectedItemPositions.get(i));
+            System.out.println(contact.getDisplayName());
+            new GraphAPI().deleteRequest(OutlookObjectCall.CONTACTS,this, "/" + contact.getId());
             mAdapter.removeData(selectedItemPositions.get(i));
         }
         mAdapter.notifyDataSetChanged();

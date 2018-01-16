@@ -7,18 +7,6 @@
         android:id="@+id/action_edit"
         android:icon="@drawable/ic_edit_white_24dp"
         android:orderInCategory="100"
-        android:title="@string/action_edit"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/action_save"
-        android:icon="@drawable/ic_save_white_24dp"
-        android:orderInCategory="100"
         android:title="@string/action_save"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_cancel_edit"
-        android:icon="@drawable/ic_close_whitevector_24dp"
-        android:orderInCategory="100"
-        android:title="@string/action_cancel_edit"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

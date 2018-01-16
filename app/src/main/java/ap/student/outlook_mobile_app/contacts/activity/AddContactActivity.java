@@ -6,22 +6,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -39,18 +34,23 @@ import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
-import ap.student.outlook_mobile_app.mailing.activity.MailActivity;
-import ap.student.outlook_mobile_app.mailing.activity.ReadMailActivity;
 
 public class AddContactActivity extends AppCompatActivityRest {
     private ViewGroup givenNameLayout, surNameLayout,middleNameLayout, nickNameLayout, initialsLayout, titleLayout, outerLayout;
     private EditText editGivenName, editSurName, editMiddleName, editNickName, editInitials, editTitle;
 
-    private ViewGroup birthdayLayout, spousenameLayout;
-    private EditText editBirthday, editSpousename;
+    private ViewGroup birthdayLayout, spousenameLayout, mobilephoneLayout;
+    private EditText editBirthday, editSpousename, editMobilephone;
 
     private ViewGroup emailaddressLayout;
     private EditText editEmail;
+
+    private ViewGroup homephoneLayout;
+    private EditText editHomephone;
+
+    private ViewGroup businessphoneLayout;
+    private EditText editBusinessphone;
+
 
     private ViewGroup companyNameLayout, departmentLayout, officeLocationLayout, businesshomepageLayout, jobTitleLayout, professionLayout, assistantnameLayout, managerLayout;
     private EditText editCompanyName, editDepartment, editOfficeLocation, editBusinesshomepage, editJobTitle, editProfession, editAssistantname, editManager;
@@ -64,7 +64,8 @@ public class AddContactActivity extends AppCompatActivityRest {
     private ViewGroup streetotherLayout, cityotherLayout, postalcodeotherLayout, stateotherLayout, countryorregionotherLayout;
     private EditText editStreetother, editCityother, editPostalcodeother, editStateother, editCountryorregionother;
 
-    private ImageView open_close_user, open_close_general, open_close_business, open_close_home, open_close_businessaddress, open_close_otheraddress, open_close_email, addMoreEmail, removeEmail;
+    private ImageView open_close_user, open_close_general, open_close_business, open_close_home, open_close_businessaddress, open_close_otheraddress, open_close_email, addMoreEmail, removeEmail,
+            addMoreHomephone, removeHomephone, addMoreBusinessphone, removeBusinessphone, open_close_homephones, open_close_businessphones;
 
     private boolean userOpen = true;
     private boolean generalOpen = false;
@@ -73,7 +74,12 @@ public class AddContactActivity extends AppCompatActivityRest {
     private boolean businessAddressOpen = false;
     private boolean otherOpen = false;
     private boolean emailOpen = false;
+    private boolean homePhoneOpen = false;
+    private boolean businessPhoneOpen = false;
     public int numberOfeditTexts = 0;
+    public int numberOfeditTextsHomePhone = 0;
+    public int numberOfEditTextsBusinessPhone = 0;
+
     private Calendar myCalendar = Calendar.getInstance();
 
     @Override
@@ -101,8 +107,13 @@ public class AddContactActivity extends AppCompatActivityRest {
 
         editBirthday = (EditText) findViewById(R.id.editBirthday);
         editSpousename = (EditText) findViewById(R.id.editSpousename);
+        editMobilephone =(EditText) findViewById(R.id.editMobilephone);
 
         editEmail = (EditText) findViewById(R.id.editEmail);
+
+        editHomephone = (EditText) findViewById(R.id.editHomephone);
+
+        editBusinessphone = (EditText) findViewById(R.id.editBusinessphone);
 
         editCompanyName = (EditText) findViewById(R.id.editCompanyName);
         editDepartment = (EditText) findViewById(R.id.editDepartment);
@@ -131,6 +142,8 @@ public class AddContactActivity extends AppCompatActivityRest {
         editStateother = (EditText) findViewById(R.id.editStateother);
         editCountryorregionother = (EditText) findViewById(R.id.editCountryorregionother);
         removeEmail = (ImageView) findViewById(R.id.remove_email);
+        removeHomephone = (ImageView) findViewById(R.id.remove_homephone);
+        removeBusinessphone = (ImageView) findViewById(R.id.remove_businessphone);
         
         setOnclickListeners();
 
@@ -140,6 +153,21 @@ public class AddContactActivity extends AppCompatActivityRest {
                 addEditText();
             }
         });
+
+        addMoreHomephone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addEditTextHomePhones();
+            }
+        });
+
+        addMoreBusinessphone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addEditTextHBusinessPhones();
+            }
+        });
+
         removeEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,7 +178,32 @@ public class AddContactActivity extends AppCompatActivityRest {
                 // cheeky fix to "delete" editText
                 et.setId(0);
                 et.setVisibility(View.GONE);
-                numberOfeditTexts--;            }
+                numberOfeditTexts--;
+            }
+        });
+
+        removeHomephone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int idEditText = numberOfeditTextsHomePhone;
+                EditText et = (EditText)findViewById(idEditText);
+
+                et.setId(0);
+                et.setVisibility(View.GONE);
+                numberOfeditTextsHomePhone--;
+            }
+        });
+
+        removeBusinessphone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int idEditText = numberOfEditTextsBusinessPhone;
+                EditText et = (EditText) findViewById(idEditText);
+
+                et.setId(0);
+                et.setVisibility(View.GONE);
+                numberOfEditTextsBusinessPhone--;
+            }
         });
     }
 
@@ -182,6 +235,8 @@ public class AddContactActivity extends AppCompatActivityRest {
                                         result = getAllInfo(jsonObject);
                                         System.out.println(result);
                                         new GraphAPI().postRequest(OutlookObjectCall.CONTACTS, AddContactActivity.this, result);
+                                        Intent intent = new Intent(AddContactActivity.this, ContactsActivity.class);
+                                        startActivity(intent);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                         Toast.makeText(AddContactActivity.this, R.string.add_error, Toast.LENGTH_SHORT).show();
@@ -234,6 +289,60 @@ public class AddContactActivity extends AppCompatActivityRest {
         }
     }
 
+    private void addEditTextHomePhones(){
+        //MAX 2 NUMMERS!!!
+        if (numberOfeditTextsHomePhone < 1) {
+            LinearLayout ll = (LinearLayout)
+                    findViewById(R.id.homephonesLayout);
+
+            // add edittext
+            EditText et = new EditText(this);
+            // moet positief zijn
+            et.setId(numberOfeditTextsHomePhone + 1);
+            et.setInputType(InputType.TYPE_CLASS_PHONE);
+            ll.addView(et);
+
+            numberOfeditTextsHomePhone++;
+
+            if (numberOfeditTextsHomePhone > 0) {
+                removeHomephone = (ImageView) findViewById(R.id.remove_homephone);
+                removeHomephone.setVisibility(View.VISIBLE);
+            } else {
+                removeHomephone = (ImageView) findViewById(R.id.remove_homephone);
+                removeHomephone.setVisibility(View.GONE);
+            }
+        } else {
+            Toast.makeText(this, R.string.max2, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void addEditTextHBusinessPhones(){
+        if (numberOfEditTextsBusinessPhone < 1  ) {
+            LinearLayout ll = (LinearLayout)
+                    findViewById(R.id.businessphonesLayout);
+
+            // add edittext
+            EditText et = new EditText(this);
+            // moet positief zijn
+            et.setId(numberOfEditTextsBusinessPhone + 1);
+            et.setInputType(InputType.TYPE_CLASS_PHONE);
+            ll.addView(et);
+
+            numberOfEditTextsBusinessPhone++;
+
+            if (numberOfEditTextsBusinessPhone > 0){
+                removeBusinessphone = (ImageView) findViewById(R.id.remove_businessphone);
+                removeBusinessphone.setVisibility(View.VISIBLE);
+            } else {
+                removeBusinessphone = (ImageView) findViewById(R.id.remove_businessphone);
+                removeBusinessphone.setVisibility(View.GONE);
+            }
+        } else {
+            Toast.makeText(this, R.string.max2, Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     private void setOnclickListeners() {
         open_close_user = (ImageView) findViewById(R.id.open_close_user);
         open_close_general = (ImageView) findViewById(R.id.open_close_general);
@@ -242,10 +351,14 @@ public class AddContactActivity extends AppCompatActivityRest {
         open_close_businessaddress = (ImageView) findViewById(R.id.open_close_businessaddress);
         open_close_otheraddress = (ImageView) findViewById(R.id.open_close_otheraddress);
         open_close_email = (ImageView) findViewById(R.id.open_close_email);
+        open_close_homephones = (ImageView) findViewById(R.id.open_close_homephone);
+        open_close_businessphones = (ImageView) findViewById(R.id.open_close_businessphone);
 
         userClicklistener();
         generalClicklistener();
         emailClickListener();
+        homephonesClickListener();
+        businessphonesClickListener();
         businessClicklistener();
         homeClicklistener();
         businessaddressClicklistener();
@@ -275,6 +388,61 @@ public class AddContactActivity extends AppCompatActivityRest {
                     addMoreEmail.setVisibility(View.VISIBLE);
                     open_close_email.setImageResource(R.drawable.ic_remove_black_24dp);
                     emailOpen = true;
+                }
+            }
+        });
+    }
+
+    private void homephonesClickListener() {
+        homephoneLayout = (ViewGroup) findViewById(R.id.homephoneLayout);
+        addMoreHomephone = (ImageView) findViewById(R.id.add_more_homephone);
+
+        open_close_homephones.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(homePhoneOpen) {
+                    homephoneLayout.setVisibility(View.GONE);
+                    addMoreHomephone.setVisibility(View.GONE);
+                    open_close_homephones.setImageResource(R.drawable.ic_add_black_24dp);
+                    for(int i = 1; i <= numberOfeditTextsHomePhone; i++){
+                        EditText et = (EditText) findViewById(i);
+                        et.setVisibility(View.GONE);
+                        et.setId(0);
+                    }
+                    homePhoneOpen = false;
+                } else {
+                    homephoneLayout.setVisibility(View.VISIBLE);
+                    addMoreEmail.setVisibility(View.VISIBLE);
+                    open_close_homephones.setImageResource(R.drawable.ic_remove_black_24dp);
+                    homePhoneOpen = true;
+                }
+            }
+        });
+    }
+
+
+    private void businessphonesClickListener() {
+        businessphoneLayout = (ViewGroup) findViewById(R.id.businessphoneLayout);
+        addMoreBusinessphone = (ImageView) findViewById(R.id.add_more_businessephone);
+
+        open_close_businessphones.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(businessPhoneOpen) {
+                    businessphoneLayout.setVisibility(View.GONE);
+                    addMoreBusinessphone.setVisibility(View.GONE);
+                    open_close_businessphones.setImageResource(R.drawable.ic_add_black_24dp);
+                    for(int i = 1; i <= numberOfEditTextsBusinessPhone; i++){
+                        EditText et = (EditText) findViewById(i);
+                        et.setVisibility(View.GONE);
+                        et.setId(0);
+                    }
+                    businessPhoneOpen = false;
+                } else {
+                    businessphoneLayout.setVisibility(View.VISIBLE);
+                    addMoreBusinessphone.setVisibility(View.VISIBLE);
+                    open_close_businessphones.setImageResource(R.drawable.ic_remove_black_24dp);
+                    businessPhoneOpen = true;
                 }
             }
         });
@@ -416,6 +584,7 @@ public class AddContactActivity extends AppCompatActivityRest {
     private void generalClicklistener() {
         birthdayLayout = (ViewGroup) findViewById(R.id.birthdayLayout);
         spousenameLayout = (ViewGroup) findViewById(R.id.spousenameLayout);
+        mobilephoneLayout = (ViewGroup) findViewById(R.id.mobilephoneLayout);
 
         open_close_general.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -423,6 +592,7 @@ public class AddContactActivity extends AppCompatActivityRest {
                 if (generalOpen){
                     birthdayLayout.setVisibility(View.GONE);
                     spousenameLayout.setVisibility(View.GONE);
+                    mobilephoneLayout.setVisibility(View.GONE);
                     open_close_general.setImageResource(R.drawable.ic_add_black_24dp);
                     generalOpen = false;
                 } else {
@@ -449,6 +619,7 @@ public class AddContactActivity extends AppCompatActivityRest {
                     });
 
                     birthdayLayout.setVisibility(View.VISIBLE);
+                    mobilephoneLayout.setVisibility(View.VISIBLE);
                     spousenameLayout.setVisibility(View.VISIBLE);
                     open_close_general.setImageResource(R.drawable.ic_remove_black_24dp);
                     generalOpen = true;
@@ -514,9 +685,14 @@ public class AddContactActivity extends AppCompatActivityRest {
         checkIfEditTextFilled(editTitle, jsonObject, "title");
 
         checkIfEditTextFilled(editBirthday, jsonObject, "birthday");
+        checkIfEditTextFilled(editMobilephone, jsonObject, "mobilePhone");
         checkIfEditTextFilled(editSpousename, jsonObject, "spouseName");
 
         checkIfEditTextFilled(editEmail, jsonObject, "emailAddresses");
+
+        checkIfEditTextFilled(editHomephone, jsonObject, "homePhones");
+
+        checkIfEditTextFilled(editBusinessphone, jsonObject, "businessPhones");
 
         checkIfEditTextFilled(editCompanyName, jsonObject, "companyName");
         checkIfEditTextFilled(editDepartment, jsonObject, "department");
@@ -557,6 +733,7 @@ public class AddContactActivity extends AppCompatActivityRest {
             jsonObject.put(jsonString, jsonObjectAddress);
         }
     }
+
     private void checkIfEditTextFilled(EditText editText, JSONObject jsonObject, String jsonString) throws JSONException, ParseException {
         switch (editText.getId()){
             case R.id.editBirthday:
@@ -566,14 +743,13 @@ public class AddContactActivity extends AppCompatActivityRest {
                 }
                 break;
             case R.id.editEmail:
-                ArrayList<JSONObject> emailJsonArray = new ArrayList<>();
+                JSONArray emailJsonArray = new JSONArray();
                 JSONObject emailJson = new JSONObject();
-                boolean isValidemail = false;
 
                 if (!editText.getText().toString().equals("") && isEmailValid(editText.getText().toString())){
                     emailJson.put("name", editText.getText().toString());
                     emailJson.put("address", editText.getText().toString());
-                    emailJsonArray.add(emailJson);
+                    emailJsonArray.put(emailJson);
 
                 } else {
                     if (!editText.getText().toString().equals("") && !isEmailValid(editText.getText().toString())) {
@@ -587,7 +763,7 @@ public class AddContactActivity extends AppCompatActivityRest {
                             JSONObject nextEmailJson = new JSONObject();
                             nextEmailJson.put("name", et.getText().toString());
                             nextEmailJson.put("address", et.getText().toString());
-                            emailJsonArray.add(nextEmailJson);
+                            emailJsonArray.put(nextEmailJson);
                         } else {
                             if(!et.getText().toString().equals("") && !isEmailValid(et.getText().toString())){
                                 Toast.makeText(AddContactActivity.this, R.string.invalidEmail, Toast.LENGTH_SHORT).show();
@@ -595,8 +771,79 @@ public class AddContactActivity extends AppCompatActivityRest {
                         }
                     }
                 }
-                    jsonObject.put("emailAddresses", emailJsonArray);
+                System.out.println(emailJsonArray);
+                if (numberOfeditTexts == 0){
+                    if (!editText.getText().toString().equals("") && isEmailValid(editText.getText().toString())){
+                        jsonObject.put("emailAddresses", emailJsonArray);
+                    }
+                } else {
+                    if (!editText.getText().toString().equals("") && isEmailValid(editText.getText().toString())){
+                        jsonObject.put("emailAddresses", emailJsonArray);
+                    }
+                }
 
+                break;
+            case R.id.editHomephone:
+                ArrayList<String> homePhoneNumbers = new ArrayList<>();
+                if (!editText.getText().toString().equals("")){
+                    homePhoneNumbers.add(editText.getText().toString());
+                } else {
+                    if (!editText.getText().toString().equals("") ) {
+                        Toast.makeText(AddContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if (numberOfeditTextsHomePhone > 0) {
+                    for(int i = 1; i <= numberOfeditTextsHomePhone; i ++){
+                        EditText et = (EditText) findViewById(i);
+                        if (!et.getText().toString().equals("")){
+                            homePhoneNumbers.add(et.getText().toString());
+                        } else {
+                            if(!et.getText().toString().equals("")){
+                                Toast.makeText(AddContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+                if (numberOfeditTextsHomePhone == 0){
+                    if (!editText.getText().toString().equals("")){
+                        jsonObject.put("homePhones", new JSONArray(homePhoneNumbers));
+                    }
+                } else {
+                    if (!editText.getText().toString().equals("")){
+                        jsonObject.put("homePhones", new JSONArray(homePhoneNumbers));
+                    }
+                }
+                break;
+            case R.id.editBusinessphone:
+                ArrayList<String> businessPhoneNumbers = new ArrayList<>();
+                if (!editText.getText().toString().equals("")){
+                    businessPhoneNumbers.add(editText.getText().toString());
+                } else {
+                    if (!editText.getText().toString().equals("")) {
+                        Toast.makeText(AddContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if (numberOfEditTextsBusinessPhone > 0) {
+                    for(int i = 1; i <= numberOfEditTextsBusinessPhone; i ++){
+                        EditText et = (EditText) findViewById(i);
+                        if (!et.getText().toString().equals("")){
+                            businessPhoneNumbers.add(et.getText().toString());
+                        } else {
+                            if(!et.getText().toString().equals("")){
+                                Toast.makeText(AddContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+                if (numberOfEditTextsBusinessPhone == 0){
+                    if (!editText.getText().toString().equals("")){
+                        jsonObject.put("homePhones", new JSONArray(businessPhoneNumbers));
+                    }
+                } else {
+                    if (!editText.getText().toString().equals("")){
+                        jsonObject.put("homePhones", new JSONArray(businessPhoneNumbers));
+                    }
+                }
                 break;
             default:
                 if(!editText.getText().toString().equals("")){
@@ -605,7 +852,7 @@ public class AddContactActivity extends AppCompatActivityRest {
         }
     }
 
-  public String setDate(String stringDate) throws ParseException {
+    public String setDate(String stringDate) throws ParseException {
       String JSON_FORMAT = "dd/MM/yyyy";
       SimpleDateFormat formatter = new SimpleDateFormat(JSON_FORMAT);
       Date date = formatter.parse(stringDate);

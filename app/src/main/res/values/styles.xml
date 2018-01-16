@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -34,6 +35,7 @@
     <style name="Toolbar.SubTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
         <item name="android:textSize">12sp</item>
     </style>
+
 
     <style name="MySpinnerDatePickerStyle" parent="android:Theme.Material.Dialog">
         <item name="android:datePickerStyle">@style/MySpinnerDatePicker</item>

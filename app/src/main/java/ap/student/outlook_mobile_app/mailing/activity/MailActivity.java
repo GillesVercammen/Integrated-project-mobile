@@ -593,7 +593,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         List<Integer> selectedItemPositions =
                 mAdapter.getSelectedItems();
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
-            Message message = messages.get(i);
+            Message message = messages.get(selectedItemPositions.get(i));
             new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this, "/" + message.getId());
 
             mAdapter.removeData(selectedItemPositions.get(i));

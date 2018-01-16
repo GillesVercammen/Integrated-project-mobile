@@ -40,17 +40,16 @@
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
-
         <activity
             android:name=".mailing.activity.NewMailActivity"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".mailing.activity.ReadMailActivity"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".Calendar.CalendarActivity" />
         <activity android:name=".Calendar.EventActivity" />
@@ -60,9 +59,7 @@
             android:label="@string/title_activity_contacts"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".contacts.activity.ContactDetailActivity"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".contacts.activity.AddContactActivity"
             android:label="@string/title_activity_add_contact"
@@ -74,6 +71,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".contacts.activity.ContactDetailActivity"
+            android:label="@string/title_activity_contact_detail"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
