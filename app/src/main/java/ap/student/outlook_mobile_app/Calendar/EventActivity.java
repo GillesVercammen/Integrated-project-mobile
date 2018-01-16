@@ -43,6 +43,7 @@ import ap.student.outlook_mobile_app.DAL.MicrosoftDateFormat;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
+import ap.student.outlook_mobile_app.DAL.models.Attendee;
 import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.DateTimeTimeZone;
@@ -85,6 +86,7 @@ public class EventActivity extends AppCompatActivityRest {
     private Map<Integer, Calendar> calendarMap;
     private Button addAttendeesButton;
     private EmailAddress organiser;
+    private Attendee attendees;
 
     private String id;
     private Event event;
@@ -255,7 +257,7 @@ public class EventActivity extends AppCompatActivityRest {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_save : {
+            case R.id.action_save_event : {
                 onConfirmButtonClicked();
             }
             break;

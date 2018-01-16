@@ -8,11 +8,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TableLayout;
@@ -41,6 +40,9 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.contacts.activity.ContactsActivity;
 import ap.student.outlook_mobile_app.mailing.activity.MailActivity;
+
+import static android.view.ViewGroup.LayoutParams.FILL_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class CalendarActivity extends AppCompatActivityRest {
     private Calendar calendar;
@@ -91,12 +93,9 @@ public class CalendarActivity extends AppCompatActivityRest {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_email:
-                                Intent intent = new Intent(CalendarActivity.this, MailActivity.class);
-                                startActivity(intent);
                                 finish();
                                 break;
                             case R.id.action_calendar:
-                                
                                 break;
                             case R.id.action_contacts:
                                 Intent intent3 = new Intent(CalendarActivity.this, ContactsActivity.class);
@@ -342,9 +341,13 @@ public class CalendarActivity extends AppCompatActivityRest {
     }
 
     private void monthCalendarChildClicked(int id) {
+        if (lastId == id) {
+            goToDay();
+            return;
+        }
         MonthCalendarCell calendarCell = monthCalendarCellMap.get(lastId);
         if (calendarCell.isHasEvent()) {
-            calendarCell.getTextView().setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            calendarCell.getTextView().setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
         }
         else {
             calendarCell.getTextView().setBackgroundColor(getResources().getColor(R.color.colorBackgroundLight));
@@ -408,6 +411,15 @@ public class CalendarActivity extends AppCompatActivityRest {
                     }
                 });
 
+                textView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        monthCalendarChildClicked(textView.getId());
+                        goToDay();
+                        return false;
+                    }
+                });
+
                 if (index.get(java.util.Calendar.DAY_OF_YEAR) == java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR)) {
                     textView.setTextColor(getResources().getColor(R.color.black));
                 }
@@ -427,7 +439,7 @@ public class CalendarActivity extends AppCompatActivityRest {
                     lastId = textView.getId();
                 }
                 else if (hasEvent) {
-                    textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    textView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
                     hasEvent = true;
                 }
 
@@ -488,19 +500,23 @@ public class CalendarActivity extends AppCompatActivityRest {
             Event[] events = getEvents(startDate);
 
             if (events != null) {
-                for (Event event : events) {
+                for (final Event event : events) {
                     stringBuilder = new StringBuilder();
                     stringBuilder.append(hourFormat.format(event.getStart().getDateTime().getTime())).append(event.getSubject());
 
                     TextView textView = new TextView(this);
                     textView.setText(stringBuilder.toString());
                     textView.setTextAppearance(this, R.style.TextAppearance_AppCompat_Subhead);
-                    textView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    textView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                    TableRow.LayoutParams params = new TableRow.LayoutParams(FILL_PARENT, WRAP_CONTENT);
+                    params.setMargins(4, 4, 4, 4);
+                    textView.setLayoutParams(params);
+                    textView.setPadding(4, 4, 4, 4);
 
                     textView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            eventClicked(event.getId());
                         }
                     });
 
@@ -538,14 +554,28 @@ public class CalendarActivity extends AppCompatActivityRest {
                     header.setText(hourFormat.format(event.getStart().getDateTime().getTime()).concat(" - ")
                             .concat(hourFormat.format(event.getEnd().getDateTime().getTime())));
                 }
-                header.setTextAppearance(this, R.style.TextAppearance_AppCompat_Headline);
+                header.setTextAppearance(this, R.style.TextAppearance_AppCompat);
+                header.setPadding(8, 8,8,8);
+                header.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+                TextView content = new TextView(this);
+                content.setText(event.getSubject().concat("\r\n".concat(event.getLocation().getDisplayName().concat(" ").concat("\r\n").concat(event.getOrganizer().getEmailAddress().getName()))));
+                content.setTextAppearance(this, R.style.TextAppearance_AppCompat);
+                content.setPadding(8, 8, 8, 8);
+
                 row.addView(header);
+                row.addView(content);
                 row.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         eventClicked(event.getId());
                     }
                 });
+
+                row.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                TableLayout.LayoutParams params = new TableLayout.LayoutParams(FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setMargins(4, 4, 4, 4);
+                row.setLayoutParams(params);
                 dayCalendar.addView(row);
             }
         } else {
@@ -571,5 +601,9 @@ public class CalendarActivity extends AppCompatActivityRest {
 
     private void eventClicked(String id) {
         startActivity(new Intent(this, EventActivity.class).putExtra("event", id).putExtra("date", monthCalendarCellMap.get(lastId).getDate().toString()).putExtra("calendars", gson.toJson(calendar)).putExtra("time", gson.toJson(selectedTime)));
+    }
+
+    private void goToDay() {
+        tabhost.setCurrentTab(2);
     }
 }
