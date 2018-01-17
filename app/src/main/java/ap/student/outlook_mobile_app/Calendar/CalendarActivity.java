@@ -97,7 +97,8 @@ public class CalendarActivity extends AppCompatActivityRest {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_email:
-                                finish();
+                                Intent intent1 = new Intent(CalendarActivity.this, MailActivity.class);
+                                startActivity(intent1);
                                 break;
                             case R.id.action_calendar:
                                 break;

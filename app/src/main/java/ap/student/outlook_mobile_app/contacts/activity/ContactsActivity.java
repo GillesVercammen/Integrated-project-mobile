@@ -72,9 +72,9 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
     private EditText searchField;
     private RecyclerView recyclerView;
     private ActionModeCallback actionModeCallback;
-    private ActionMode actionMode;
-    private List<Contact> contacts = new ArrayList<>();
-    private ContactsAdapter mAdapter;
+    protected ActionMode actionMode;
+    protected List<Contact> contacts = new ArrayList<>();
+    protected ContactsAdapter mAdapter;
     private SearchView searchView;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -428,7 +428,6 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                 mAdapter.getSelectedItems();
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
             Contact contact = contacts.get(selectedItemPositions.get(i));
-            System.out.println(contact.getDisplayName());
             new GraphAPI().deleteRequest(OutlookObjectCall.CONTACTS,this, "/" + contact.getId());
             mAdapter.removeData(selectedItemPositions.get(i));
         }
