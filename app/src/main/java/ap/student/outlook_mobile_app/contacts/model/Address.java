@@ -7,7 +7,6 @@ public class Address implements Serializable {
     private String city;
     private String state;
     private String countryOrRegion;
-
     private String postalCode;
 
     public String getStreet() {

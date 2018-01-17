@@ -3,9 +3,9 @@ package ap.student.outlook_mobile_app.contacts.activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
@@ -34,8 +34,12 @@ import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
+import ap.student.outlook_mobile_app.contacts.model.Address;
+import ap.student.outlook_mobile_app.contacts.model.Contact;
+import ap.student.outlook_mobile_app.mailing.model.EmailAddress;
 
-public class AddContactActivity extends AppCompatActivityRest {
+public class EditContactActivity extends AppCompatActivityRest {
+
     private ViewGroup givenNameLayout, surNameLayout,middleNameLayout, nickNameLayout, initialsLayout, titleLayout, outerLayout;
     private EditText editGivenName, editSurName, editMiddleName, editNickName, editInitials, editTitle;
 
@@ -83,17 +87,22 @@ public class AddContactActivity extends AppCompatActivityRest {
     public int numberOfeditTexts = 0;
     public int numberOfeditTextsHomePhone = 0;
     public int numberOfEditTextsBusinessPhone = 0;
-
+    private Contact contact;
     private Calendar myCalendar = Calendar.getInstance();
+
+    @Override
+    public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_contact);
+        setContentView(R.layout.activity_edit_contact);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        String toolbarTitle = getString(R.string.add_contact);
+        String toolbarTitle = getString(R.string.edit_contact);
         setActionBarMail(toolbarTitle, toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -152,7 +161,10 @@ public class AddContactActivity extends AppCompatActivityRest {
         removeHomephone = (ImageView) findViewById(R.id.remove_homephone);
         removeBusinessphone = (ImageView) findViewById(R.id.remove_businessphone);
 
-        
+
+        contact = (Contact) getIntent().getSerializableExtra("CONTACT");
+
+        setAllInfo();
         setOnclickListeners();
 
         addMoreEmail.setOnClickListener(new View.OnClickListener() {
@@ -182,11 +194,14 @@ public class AddContactActivity extends AppCompatActivityRest {
                 int idEditText = numberOfeditTexts ;
 
                 EditText et = (EditText) findViewById(R.string.emailEditText + idEditText);
+                if (et.getText().toString().equals("")){
+                    et.setId(0);
+                    et.setVisibility(View.GONE);
+                    numberOfeditTexts--;
+                } else {
+                    Toast.makeText(EditContactActivity.this, R.string.delete_email_first, Toast.LENGTH_SHORT).show();
+                }
 
-                // cheeky fix to "delete" editText
-                et.setId(0);
-                et.setVisibility(View.GONE);
-                numberOfeditTexts--;
             }
         });
 
@@ -196,9 +211,14 @@ public class AddContactActivity extends AppCompatActivityRest {
                 int idEditText = numberOfeditTextsHomePhone;
                 EditText et = (EditText)findViewById(R.string.homephoneEditText + idEditText);
 
-                et.setId(0);
-                et.setVisibility(View.GONE);
-                numberOfeditTextsHomePhone--;
+                if(et.getText().toString().equals("")){
+                    et.setId(0);
+                    et.setVisibility(View.GONE);
+                    numberOfeditTextsHomePhone--;
+                } else {
+                    Toast.makeText(EditContactActivity.this, R.string.delete_phone_first, Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -208,17 +228,202 @@ public class AddContactActivity extends AppCompatActivityRest {
                 int idEditText = numberOfEditTextsBusinessPhone;
                 EditText et = (EditText) findViewById(R.string.businessphoneEditText + idEditText);
 
-                et.setId(0);
-                et.setVisibility(View.GONE);
-                numberOfEditTextsBusinessPhone--;
+                if(et.getText().toString().equals("")){
+                    et.setId(0);
+                    et.setVisibility(View.GONE);
+                    numberOfEditTextsBusinessPhone--;
+                } else {
+                    Toast.makeText(EditContactActivity.this, R.string.delete_phone_first, Toast.LENGTH_SHORT).show();
+                }
             }
         });
+    }
+
+    private void setAllInfo() {
+        checkIfInfoExist(contact.getGivenName(), editGivenName);
+        checkIfInfoExist(contact.getSurname(), editSurName);
+        checkIfInfoExist(contact.getMiddleName(), editMiddleName);
+        checkIfInfoExist(contact.getNickName(), editNickName);
+        checkIfInfoExist(contact.getInitials(), editInitials);
+        checkIfInfoExist(contact.getTitle(), editTitle);
+        checkIfInfoExist(contact.getBirthday(), editBirthday);
+        checkIfInfoExist(contact.getMobilePhone(), editMobilephone);
+        checkIfInfoExist(contact.getSpouseName(), editSpousename);
+        if (contact.getEmailAddresses().size() > 0) {
+            checkIfEmailsExist(contact.getEmailAddresses());
+        }
+        if(contact.getHomePhones().size() > 0) {
+            checkIfHomePhoneExist(contact.getHomePhones());
+        }
+        if(contact.getBusinessPhones().size() > 0) {
+            checkIfBusinessPhoneExist(contact.getBusinessPhones());
+        }
+        checkIfInfoExist(contact.getCompanyName(), editCompanyName);
+        checkIfInfoExist(contact.getDepartment(), editDepartment);
+        checkIfInfoExist(contact.getOfficeLocation(), editOfficeLocation);
+        checkIfInfoExist(contact.getBusinessHomePage(), editBusinesshomepage);
+        checkIfInfoExist(contact.getJobTitle(), editJobTitle);
+        checkIfInfoExist(contact.getProfession(), editProfession);
+        checkIfInfoExist(contact.getAssistantName(), editAssistantname);
+        checkIfInfoExist(contact.getManager(), editManager);
+        if (contact.getHomeAddress() != null){
+             checkIfHomeAddressExist(contact.getHomeAddress());
+         }
+        if (contact.getBusinessAddress() != null){
+            checkIfHBusinessAddressExist(contact.getBusinessAddress());
+        }
+        if (contact.getOtherAddress() != null){
+            checkIfOtherAddressExist(contact.getOtherAddress());
+        }
+        checkIfInfoExist(contact.getPersonalNotes(), editPersonalnote);
+    }
+
+    private void checkIfHomeAddressExist(Address address) {
+        if (address.getStreet() != null && !address.getStreet().equals("") ){
+            editStreethome.setText(address.getStreet());
+        }
+        if (address.getPostalCode() != null && !address.getPostalCode().equals("")){
+            editPostalcodehome.setText(address.getPostalCode());
+        }
+        if (address.getCity() != null && !address.getCity().equals("")){
+            editCityhome.setText(address.getCity());
+        }
+        if (address.getState() != null && !address.getState().equals("")){
+            editStatehome.setText(address.getState());
+        }
+        if (address.getCountryOrRegion() != null && !address.getCountryOrRegion().equals("")){
+            editCountryorregionhome.setText(address.getCountryOrRegion());
+        }
+    }
+
+    private void checkIfHBusinessAddressExist(Address address) {
+        if (address.getStreet() != null && !address.getStreet().equals("") ){
+            editStreetbusiness.setText(address.getStreet());
+        }
+        if (address.getPostalCode() != null && !address.getPostalCode().equals("")){
+            editPostalcodebusiness.setText(address.getPostalCode());
+        }
+        if (address.getCity() != null && !address.getCity().equals("")){
+            editCitybusiness.setText(address.getCity());
+        }
+        if (address.getState() != null && !address.getState().equals("")){
+            editStatebusiness.setText(address.getState());
+        }
+        if (address.getCountryOrRegion() != null && !address.getCountryOrRegion().equals("")){
+            editCountryorregionbusiness.setText(address.getCountryOrRegion());
+        }
+    }
+
+    private void checkIfOtherAddressExist(Address address) {
+        if (address.getStreet() != null && !address.getStreet().equals("") ){
+            editStreetother.setText(address.getStreet());
+        }
+        if (address.getPostalCode() != null && !address.getPostalCode().equals("")){
+            editPostalcodeother.setText(address.getPostalCode());
+        }
+        if (address.getCity() != null && !address.getCity().equals("")){
+            editCityother.setText(address.getCity());
+        }
+        if (address.getState() != null && !address.getState().equals("")){
+            editStateother.setText(address.getState());
+        }
+        if (address.getCountryOrRegion() != null && !address.getCountryOrRegion().equals("")){
+            editCountryorregionother.setText(address.getCountryOrRegion());
+        }
+    }
+
+    private void checkIfHomePhoneExist(ArrayList<String> phones){
+        int counter = 0;
+        for (String phone : phones){
+            counter++;
+            if (counter == 1) {
+                editHomephone.setText(phone);
+            } else {
+                addEditTextHomePhones();
+                EditText et = findViewById(R.string.homephoneEditText + (counter - 1));
+                et.setVisibility(View.GONE);
+                et.setText(phone);
+            }
+        }
+    }
+
+    private void checkIfBusinessPhoneExist(ArrayList<String> phones){
+        int counter = 0;
+        for (String phone : phones){
+            counter++;
+            if (counter == 1) {
+                editBusinessphone.setText(phone);
+            } else {
+                addEditTextHBusinessPhones();
+                EditText et = findViewById(R.string.businessphoneEditText + (counter - 1));
+                et.setVisibility(View.GONE);
+                et.setText(phone);
+            }
+        }
+    }
+
+    private void checkIfEmailsExist(ArrayList<EmailAddress> emailAddresses){
+        int counter = 0;
+        for (EmailAddress emailAddress : emailAddresses){
+            counter++;
+            if (counter == 1) {
+                editEmail.setText(emailAddress.getAddress());
+            } else {
+                addEditText();
+                EditText et = findViewById(R.string.emailEditText + (counter - 1));
+                et.setVisibility(View.GONE);
+                et.setText(emailAddress.getAddress());
+            }
+        }
+    }
+    private void checkIfInfoExist(String contactinfo, EditText editText) {
+        if (contactinfo != null && !contactinfo.isEmpty() && !contactinfo.equals("") && !contactinfo.equals("[]")){
+            if (!(editText.getId() == R.id.editBirthday)) {
+                editText.setText(contactinfo);
+            } else {
+                try {
+                    String newInfo = setDate(contactinfo);
+                    editText.setText(newInfo);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public String setDate(String stringDate) throws ParseException {
+        String JSON_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+        SimpleDateFormat formatter = new SimpleDateFormat(JSON_FORMAT);
+        Date date = formatter.parse(stringDate);
+        String TO_FORMAT = "dd/MM/yyyy";
+        String TO_FORMAT_IS_12 = "dd MMM yyyy";
+        SimpleDateFormat outputFormat = new SimpleDateFormat(TO_FORMAT);
+        return outputFormat.format(date);
+    }
+
+    public String getDate(String stringDate) throws ParseException {
+        System.out.println(stringDate);
+        String JSON_FORMAT = "dd/MM/yyyy";
+        SimpleDateFormat formatter = new SimpleDateFormat(JSON_FORMAT);
+        Date date = formatter.parse(stringDate);
+        String TO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+        String TO_FORMAT_IS_12 = "dd MMM yyyy";
+        SimpleDateFormat outputFormat = new SimpleDateFormat(TO_FORMAT);
+        return outputFormat.format(date);
+    }
+
+
+    private void setActionBarMail(String title, Toolbar toolbar) {
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+        // THIS LINE REMOVES ANNOYING LEFT MARGIN
+        toolbar.setTitleMarginStart(30);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //INFLATE THE MENU, ADDS ITEMS TO THE BAR IF PRESENT
-        getMenuInflater().inflate(R.menu.menu_add_contact, menu);
+        getMenuInflater().inflate(R.menu.menu_edit_contact, menu);
         return true;
     }
 
@@ -229,7 +434,7 @@ public class AddContactActivity extends AppCompatActivityRest {
                 finish();
                 break;
             case R.id.action_save:
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddContactActivity.this);
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EditContactActivity.this);
                 alertDialogBuilder.setTitle(R.string.alert_add_contact)
                         .setIcon(R.drawable.ic_delete_black_24dp)
                         .setMessage(R.string.alert_edit)
@@ -241,19 +446,15 @@ public class AddContactActivity extends AppCompatActivityRest {
                                     JSONObject result;
                                     try {
                                         result = getAllInfo(jsonObject);
-                                        System.out.println(result);
-                                        new GraphAPI().postRequest(OutlookObjectCall.CONTACTS, AddContactActivity.this, result);
-                                        finish();
-                                    } catch (JSONException e) {
+                                        new GraphAPI().patchRequest(OutlookObjectCall.CONTACTS, EditContactActivity.this, result, "/" + contact.getId());
+                                        Intent intent = new Intent(EditContactActivity.this, ContactsActivity.class);
+                                        startActivity(intent);
+                                    } catch (IllegalAccessException | ParseException | JSONException e) {
+                                        Toast.makeText(EditContactActivity.this, R.string.error_edit_contact, Toast.LENGTH_SHORT).show();
                                         e.printStackTrace();
-                                        Toast.makeText(AddContactActivity.this, R.string.add_error, Toast.LENGTH_SHORT).show();
-                                    } catch (ParseException e) {
-                                        Toast.makeText(AddContactActivity.this, R.string.date_wrong_format, Toast.LENGTH_SHORT).show();
-                                    } catch (IllegalAccessException e) {
-                                        Toast.makeText(AddContactActivity.this, R.string.wrong, Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
-                                    Toast.makeText(AddContactActivity.this, R.string.fill_name, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(EditContactActivity.this, R.string.fill_name, Toast.LENGTH_SHORT).show();
                                 }
                             }
                         })
@@ -267,11 +468,6 @@ public class AddContactActivity extends AppCompatActivityRest {
                         .show();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void processResponse(OutlookObjectCall outlookObjectCall, JSONObject response) {
-
     }
 
     private void addEditText(){
@@ -331,7 +527,7 @@ public class AddContactActivity extends AppCompatActivityRest {
             // add edittext
             EditText et = new EditText(this);
             // moet positief zijn
-            et.setId(R.string.businessphoneEditText  + (numberOfEditTextsBusinessPhone + 1));
+            et.setId(R.string.businessphoneEditText +(numberOfEditTextsBusinessPhone + 1));
             et.setInputType(InputType.TYPE_CLASS_PHONE);
             ll.addView(et);
 
@@ -391,7 +587,7 @@ public class AddContactActivity extends AppCompatActivityRest {
                     for (int i = 1; i <= numberOfeditTexts; i++){
                         EditText et = (EditText) findViewById(R.string.emailEditText + i);
                         et.setVisibility(View.GONE);
-                      //  et.setId(0);
+                       // et.setId(0);
                     }
                     emailOpen = false;
                 } else {
@@ -474,7 +670,7 @@ public class AddContactActivity extends AppCompatActivityRest {
                     for(int i = 1; i <= numberOfEditTextsBusinessPhone; i++){
                         EditText et = (EditText) findViewById(R.string.businessphoneEditText + i);
                         et.setVisibility(View.GONE);
-                       // et.setId(0);
+                     //   et.setId(0);
                     }
                     businessPhoneOpen = false;
                 } else {
@@ -654,12 +850,16 @@ public class AddContactActivity extends AppCompatActivityRest {
                     editBirthday.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
                             //create new styles in style xml to make spinner calendar!!!
-                            new DatePickerDialog(AddContactActivity.this, R.style.MySpinnerDatePickerStyle, dateDialog, myCalendar
-                                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                                    myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
+                            try {
+                                String date = setDate(contact.getBirthday());
+                                String[] dates = date.split("/");
+                                new DatePickerDialog(EditContactActivity.this, R.style.MySpinnerDatePickerStyle, dateDialog, myCalendar
+                                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
 
@@ -668,9 +868,16 @@ public class AddContactActivity extends AppCompatActivityRest {
                     spousenameLayout.setVisibility(View.VISIBLE);
                     open_close_general.setImageResource(R.drawable.ic_remove_black_24dp);
                     generalOpen = true;
+                    }
                 }
-            }
-        });
+            });
+    }
+
+    private void updateLabel() {
+        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        editBirthday.setText(sdf.format(myCalendar.getTime()));
     }
 
     private void userClicklistener() {
@@ -706,25 +913,11 @@ public class AddContactActivity extends AppCompatActivityRest {
         });
     }
 
-    private void setActionBarMail(String title, Toolbar toolbar) {
-        toolbar.setTitle(title);
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
-        // THIS LINE REMOVES ANNOYING LEFT MARGIN
-        toolbar.setTitleMarginStart(30);
-    }
-
-    private void updateLabel() {
-        String myFormat = "dd/MM/yyyy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-
-        editBirthday.setText(sdf.format(myCalendar.getTime()));
-    }
-
     private JSONObject getAllInfo(JSONObject jsonObject) throws JSONException, ParseException {
 
         checkIfEditTextFilled(editGivenName, jsonObject, "givenName");
         checkIfEditTextFilled(editSurName, jsonObject, "surname");
-        checkIfEditTextFilled(editMiddleName, jsonObject, "middleName");
+        checkIfEditTextFilled(editMiddleName, jsonObject, "givenName");
         checkIfEditTextFilled(editNickName, jsonObject, "nickName");
         checkIfEditTextFilled(editInitials, jsonObject, "initials");
         checkIfEditTextFilled(editTitle, jsonObject, "title");
@@ -770,7 +963,6 @@ public class AddContactActivity extends AppCompatActivityRest {
         checkIfEditTextAddressFilled(editCountryorregionother, jsonObject, "otherAddress", jsonObjectOther, "countryOrRegion");
 
         checkIfEditTextFilled(editPersonalnote, jsonObject, "personalNotes");
-
         return jsonObject;
     }
 
@@ -785,7 +977,7 @@ public class AddContactActivity extends AppCompatActivityRest {
         switch (editText.getId()){
             case R.id.editBirthday:
                 if (!editText.getText().toString().equals("")){
-                    String date = setDate(editText.getText().toString());
+                    String date = getDate(editText.getText().toString());
                     jsonObject.put(jsonString, date);
                 }
                 break;
@@ -800,11 +992,11 @@ public class AddContactActivity extends AppCompatActivityRest {
 
                 } else {
                     if (!editText.getText().toString().equals("") && !isEmailValid(editText.getText().toString())) {
-                        Toast.makeText(AddContactActivity.this, R.string.invalidEmail, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditContactActivity.this, R.string.invalidEmail, Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (numberOfeditTexts > 0) {
-                    for(int i = 1; i <= numberOfeditTexts; i++){
+                    for(int i = 1; i <= numberOfeditTexts; i ++){
                         EditText et = (EditText) findViewById(R.string.emailEditText + i);
                         if (!et.getText().toString().equals("") && isEmailValid(et.getText().toString())){
                             JSONObject nextEmailJson = new JSONObject();
@@ -813,18 +1005,18 @@ public class AddContactActivity extends AppCompatActivityRest {
                             emailJsonArray.put(nextEmailJson);
                         } else {
                             if(!et.getText().toString().equals("") && !isEmailValid(et.getText().toString())){
-                                Toast.makeText(AddContactActivity.this, R.string.invalidEmail, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EditContactActivity.this, R.string.invalidEmail, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
                 }
                 if (numberOfeditTexts == 0){
                     if (!editText.getText().toString().equals("") && isEmailValid(editText.getText().toString())){
-                        jsonObject.put(jsonString, emailJsonArray);
+                        jsonObject.put("emailAddresses", emailJsonArray);
                     }
                 } else {
                     if (!editText.getText().toString().equals("") && isEmailValid(editText.getText().toString())){
-                        jsonObject.put(jsonString, emailJsonArray);
+                        jsonObject.put("emailAddresses", emailJsonArray);
                     }
                 }
 
@@ -835,7 +1027,7 @@ public class AddContactActivity extends AppCompatActivityRest {
                     homePhoneNumbers.add(editText.getText().toString());
                 } else {
                     if (!editText.getText().toString().equals("") ) {
-                        Toast.makeText(AddContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (numberOfeditTextsHomePhone > 0) {
@@ -845,18 +1037,18 @@ public class AddContactActivity extends AppCompatActivityRest {
                             homePhoneNumbers.add(et.getText().toString());
                         } else {
                             if(!et.getText().toString().equals("")){
-                                Toast.makeText(AddContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EditContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
                 }
                 if (numberOfeditTextsHomePhone == 0){
                     if (!editText.getText().toString().equals("")){
-                        jsonObject.put(jsonString, new JSONArray(homePhoneNumbers));
+                        jsonObject.put("homePhones", new JSONArray(homePhoneNumbers));
                     }
                 } else {
                     if (!editText.getText().toString().equals("")){
-                        jsonObject.put(jsonString, new JSONArray(homePhoneNumbers));
+                        jsonObject.put("homePhones", new JSONArray(homePhoneNumbers));
                     }
                 }
                 break;
@@ -866,7 +1058,7 @@ public class AddContactActivity extends AppCompatActivityRest {
                     businessPhoneNumbers.add(editText.getText().toString());
                 } else {
                     if (!editText.getText().toString().equals("")) {
-                        Toast.makeText(AddContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (numberOfEditTextsBusinessPhone > 0) {
@@ -876,18 +1068,18 @@ public class AddContactActivity extends AppCompatActivityRest {
                             businessPhoneNumbers.add(et.getText().toString());
                         } else {
                             if(!et.getText().toString().equals("")){
-                                Toast.makeText(AddContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EditContactActivity.this, R.string.invalidPhone, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
                 }
                 if (numberOfEditTextsBusinessPhone == 0){
                     if (!editText.getText().toString().equals("")){
-                        jsonObject.put(jsonString, new JSONArray(businessPhoneNumbers));
+                        jsonObject.put("homePhones", new JSONArray(businessPhoneNumbers));
                     }
                 } else {
                     if (!editText.getText().toString().equals("")){
-                        jsonObject.put(jsonString, new JSONArray(businessPhoneNumbers));
+                        jsonObject.put("homePhones", new JSONArray(businessPhoneNumbers));
                     }
                 }
                 break;
@@ -896,17 +1088,6 @@ public class AddContactActivity extends AppCompatActivityRest {
                     jsonObject.put(jsonString, editText.getText().toString());
                 }
         }
-    }
-
-    public String setDate(String stringDate) throws ParseException {
-        System.out.println(stringDate);
-      String JSON_FORMAT = "dd/MM/yyyy";
-      SimpleDateFormat formatter = new SimpleDateFormat(JSON_FORMAT);
-      Date date = formatter.parse(stringDate);
-      String TO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-      String TO_FORMAT_IS_12 = "dd MMM yyyy";
-      SimpleDateFormat outputFormat = new SimpleDateFormat(TO_FORMAT);
-      return outputFormat.format(date);
     }
 
     private boolean isEmailValid(CharSequence email) {
