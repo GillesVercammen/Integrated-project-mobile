@@ -198,7 +198,11 @@ public class EventActivity extends AppCompatActivityRest {
                 if (b) {
                     endTimeTextview.setVisibility(View.GONE);
                     setEndTimeButton.setVisibility(View.GONE);
+                    startTimeTextview.setVisibility(View.GONE);
+                    setStartTimeButton.setVisibility(View.GONE);
                 } else {
+                    startTimeTextview.setVisibility(View.VISIBLE);
+                    setStartTimeButton.setVisibility(View.VISIBLE);
                     endTimeTextview.setVisibility(View.VISIBLE);
                     setEndTimeButton.setVisibility(View.VISIBLE);
                 }
@@ -416,7 +420,7 @@ public class EventActivity extends AppCompatActivityRest {
         if (isAllDayCheckBox.isChecked()) {
             event.setAllDay(isAllDayCheckBox.isChecked());
             java.util.Calendar time = java.util.Calendar.getInstance();
-            time.set(startTime.get(java.util.Calendar.YEAR), startTime.get(java.util.Calendar.MONTH), startTime.get(java.util.Calendar.DAY_OF_MONTH), 0, 0);
+            time.set(startTime.get(java.util.Calendar.YEAR), startTime.get(java.util.Calendar.MONTH), startTime.get(java.util.Calendar.DAY_OF_MONTH), 0, 0, 0);
             event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
             time.add(java.util.Calendar.DAY_OF_YEAR, 1);
             event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));

@@ -24,6 +24,9 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -293,6 +296,23 @@ public class CalendarActivity extends AppCompatActivityRest {
             break;
             case READEVENTS: {
                 event = gson.fromJson(response.toString(), Event.class);
+
+                if (event != null) {
+                    List<Event> eventList = Arrays.asList(event.getEvents());
+                    Collections.sort(eventList, new Comparator<Event>() {
+                        @Override
+                        public int compare(Event event, Event event1) {
+                            if (event.getStart().getDateTime().getTime().before(event1.getStart().getDateTime().getTime())) {
+                                return -1;
+                            } else if (event.getStart().getDateTime().getTime().after(event1.getStart().getDateTime().getTime())) {
+                                return 1;
+                            }
+                            return 0;
+                        }
+                    });
+                    event.setEvents(eventList.toArray(new Event[eventList.size()]));
+                }
+
                 buildMonthCalendar();
                 buildWeekCalendar();
                 buildDayCalendar();
@@ -465,7 +485,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         weekCalendarCurrentYearTextview.setText(Integer.toString(selectedTime.get(java.util.Calendar.YEAR)));
         java.util.Calendar startDate = java.util.Calendar.getInstance();
         startDate.setTime(selectedTime.getTime());
-        startDate.add(java.util.Calendar.DAY_OF_YEAR, -selectedTime.get(java.util.Calendar.DAY_OF_WEEK));
+        startDate.add(java.util.Calendar.DAY_OF_YEAR, (-selectedTime.get(java.util.Calendar.DAY_OF_WEEK)+1));
         java.util.Calendar endDate = java.util.Calendar.getInstance();
         endDate.setTime(startDate.getTime());
         endDate.add(java.util.Calendar.DAY_OF_YEAR, 6);
@@ -536,11 +556,12 @@ public class CalendarActivity extends AppCompatActivityRest {
         if (dayOfWeek == 7) dayOfWeek = 0;
 
         dayCalendarTextview.setText(new StringBuilder()
-                .append(getResources().getString(DaysOfTheWeekEnum.values()[dayOfWeek].value()))
+                .append(getResources().getString(DaysOfTheWeekEnum.values()[--dayOfWeek].value()))
                 .append(' ').append(selectedTime.get(java.util.Calendar.DAY_OF_MONTH)).append(' ')
                 .append(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.get(java.util.Calendar.MONTH)].value())).toString());
 
         Event[] events = getEvents(selectedTime);
+
         if (events != null) {
             dayCalendarNoEventsTextview.setVisibility(View.GONE);
             dayCalendar.setVisibility(View.VISIBLE);

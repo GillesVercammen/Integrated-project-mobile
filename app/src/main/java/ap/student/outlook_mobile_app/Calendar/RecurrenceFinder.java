@@ -1,10 +1,10 @@
 package ap.student.outlook_mobile_app.Calendar;
 
-import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.DaysOfTheWeekEnum;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
 import ap.student.outlook_mobile_app.DAL.models.Event;
@@ -41,11 +41,11 @@ public class RecurrenceFinder {
                 case WEEKLY: {
                     List<String> daysofweek = Arrays.asList(event.getRecurrence().getPattern().getDaysOfWeek());
                     if (daysofweek.size() == 5) {
-                        if (!daysofweek.contains(DayOfWeek.SATURDAY) && !daysofweek.contains(DayOfWeek.SUNDAY)) {
+                        if (!daysofweek.contains(DaysOfTheWeekEnum.SATURDAY) && !daysofweek.contains(DaysOfTheWeekEnum.SUNDAY)) {
                             recurrence = Recurrence.EVERY_WORKDAY;
                         }
                     } else if (daysofweek.size() == 1) {
-                        if (daysofweek.contains(DayOfWeek.FRIDAY)) {
+                        if (daysofweek.contains(DaysOfTheWeekEnum.FRIDAY)) {
                             if (event.getRecurrence().getPattern().getInterval() == 1) {
                                 recurrence = Recurrence.EVERY_FRIDAY;
                             } else if (event.getRecurrence().getPattern().getInterval() == 2) {

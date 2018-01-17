@@ -63,8 +63,9 @@
     <ScrollView
         android:id="@+id/dayScrollview"
         android:layout_width="match_parent"
-        android:layout_height="5000dp"
+        android:layout_height="250dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="@dimen/material_drawer_account_header_height"
         android:background="@color/colorBackgroundLight"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"

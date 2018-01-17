@@ -35,8 +35,10 @@ public class AttendeesActivity extends ContactsActivity {
             contacts = gson.fromJson(getIntent().getStringExtra("attendees"), Contact.class);
         }
 
-        for (Contact contact : contacts.getContacts()) {
+        if (contacts.getContacts() != null) {
+            for (Contact contact : contacts.getContacts()) {
 
+            }
         }
     }
 

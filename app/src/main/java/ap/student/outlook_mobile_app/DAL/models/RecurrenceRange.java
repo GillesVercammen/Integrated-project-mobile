@@ -34,7 +34,7 @@ public class RecurrenceRange {
     }
 
     public void setEndDate(Calendar endDate) {
-        this.endDate = microsoftDateFormat.format(endDate.getTime());
+        this.endDate = microsoftDateFormat.format(endDate.getTime()).substring(0, 10);
     }
 
     public int getNumberOfOccurrences() {
@@ -64,7 +64,7 @@ public class RecurrenceRange {
     }
 
     public void setStartDate(java.util.Calendar startDate) {
-        this.startDate = microsoftDateFormat.format(startDate.getTime());
+        this.startDate = microsoftDateFormat.format(startDate.getTime()).substring(0, 10);
     }
 
     public String getType() {
