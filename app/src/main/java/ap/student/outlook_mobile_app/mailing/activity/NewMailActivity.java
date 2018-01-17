@@ -1,7 +1,12 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +47,7 @@ import ap.student.outlook_mobile_app.R;
 public class NewMailActivity extends AppCompatActivityRest {
 
     private static final String TAG = "NewMailActivity";
+    private Uri URI = null;
     private AutoCompleteTextView recipientTextField;
     private AutoCompleteTextView ccTextField;
     private AutoCompleteTextView bccTextField;
@@ -56,6 +62,8 @@ public class NewMailActivity extends AppCompatActivityRest {
     private boolean hasOpenedMenu;
     public SendMailType mailTypeEnum = SendMailType.SEND;
     public Body body;
+    int columnIndex;
+    String attachmentFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +170,22 @@ public class NewMailActivity extends AppCompatActivityRest {
                 recipientTextField.setText(emailaddress);
         }
 
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == 101 && resultCode == RESULT_OK) {
+            Uri selectedImage = data.getData();
+            System.out.println(data.getData());
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            attachmentFile = cursor.getString(columnIndex); //attachmentFile is null, columnIndex is 0
+            Log.e("Attachment Path:", attachmentFile);
+            URI = Uri.parse("file://" + attachmentFile);
+            cursor.close();
+        }
     }
 
     @Override
@@ -288,6 +312,22 @@ public class NewMailActivity extends AppCompatActivityRest {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == R.id.add_attachment) {
+
+            Toast.makeText(getApplicationContext(), R.string.add_attachment, Toast.LENGTH_SHORT).show();
+
+            //do stuff
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.putExtra("return-data", true);
+            startActivityForResult(Intent.createChooser(intent, "Complete action using"), 101);
+
+
+            return true;
+
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.send_mail) {
