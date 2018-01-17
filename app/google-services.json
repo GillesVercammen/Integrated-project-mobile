@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "371442591215",
+    "firebase_url": "https://integrated-project-mobile.firebaseio.com",
+    "project_id": "integrated-project-mobile",
+    "storage_bucket": "integrated-project-mobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371442591215:android:6e4c825735df60b6",
+        "android_client_info": {
+          "package_name": "ap.student.outlook_mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "371442591215-u2h118llcgf477du6fmfnf9n5l8b3iap.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ap.student.outlook_mobile_app",
+            "certificate_hash": "2180c17a0593969ee4258db857ef4fdf5d332da0"
+          }
+        },
+        {
+          "client_id": "371442591215-tl442355dl9ccpnnudgk45gi8au5ovht.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBvywaai1hN0YAWKVbiVBv3j40RUSfCGA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "371442591215-tl442355dl9ccpnnudgk45gi8au5ovht.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

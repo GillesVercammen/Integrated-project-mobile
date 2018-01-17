@@ -105,7 +105,10 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         }
 
         // displaying the first letter of From in icon text
-        holder.iconText.setText(String.valueOf(holder.contactname.getText()).substring(0, 1).toUpperCase());
+        if (!String.valueOf(holder.contactname.getText()).equals(""))
+        {
+            holder.iconText.setText(String.valueOf(holder.contactname.getText()).substring(0, 1).toUpperCase());
+        }
 
         // change the row state to activated
         holder.itemView.setActivated(selectedItems.get(position, false));
