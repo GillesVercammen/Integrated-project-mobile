@@ -1,18 +1,17 @@
 package ap.student.outlook_mobile_app.contacts.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -21,17 +20,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
+import ap.student.outlook_mobile_app.DAL.enums.SendMailType;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 import ap.student.outlook_mobile_app.contacts.model.Address;
 import ap.student.outlook_mobile_app.contacts.model.Contact;
+import ap.student.outlook_mobile_app.mailing.activity.NewMailActivity;
 
 public class ContactDetailActivity extends AppCompatActivityRest {
 
     private Contact contact;
-    private TextView displayName, nickName, title, birthday, homepage, homephone, businessphone, mobilephone, email, street, city, postalcode, state, country;
-    private ViewGroup headerLayout, homephoneLayout, mobilephoneLayout, businessphoneLayout, emailLayout, addressLayout;
+    private TextView displayName, nickName, title, birthday, homepage, homephone, businessphone, mobilephone, email, street, city, postalcode, state, country,
+                    companyname, profession, jobtitle, officelocation, department, manager, assistantname, personalnote;
+    private ViewGroup headerLayout, homephoneLayout, mobilephoneLayout, businessphoneLayout, emailLayout, addressLayout, businessinfoLayout, personalnoteLayout, buttonLayout;
     private Button homeButton, businessButton, otherButton;
+    private ImageView homephoneButton, mobilephoneButton, businessphoneButton, emailButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,14 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         city = (TextView)findViewById(R.id.bottomMiddleText5);
         state = (TextView)findViewById(R.id.downText5);
         country = (TextView)findViewById(R.id.lastBottomText);
+        companyname = (TextView)findViewById(R.id.companyname);
+        profession = (TextView)findViewById(R.id.profession);
+        jobtitle = (TextView)findViewById(R.id.jobtitle);
+        officelocation = (TextView)findViewById(R.id.officelocation);
+        department = (TextView)findViewById(R.id.department);
+        manager = (TextView)findViewById(R.id.manager);
+        assistantname = (TextView)findViewById(R.id.assistantname);
+        personalnote = (TextView)findViewById(R.id.personalNoteDetail);
 
         homeButton = (Button)findViewById(R.id.Home);
         businessButton = (Button)findViewById(R.id.Business);
@@ -72,6 +83,14 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         businessphoneLayout = (ViewGroup) findViewById(R.id.businessphoneLayout);
         emailLayout = (ViewGroup) findViewById(R.id.emailLayout);
         addressLayout = (ViewGroup) findViewById(R.id.addressLayout);
+        businessinfoLayout = (ViewGroup) findViewById(R.id.businessinfoLayout);
+        personalnoteLayout= (ViewGroup) findViewById(R.id.personalNoteLayoutDetail);
+        buttonLayout = (ViewGroup)findViewById(R.id.buttonLayout);
+
+        homephoneButton = (ImageView) findViewById(R.id.lastImage);
+        mobilephoneButton = (ImageView) findViewById(R.id.lastImage2);
+        businessphoneButton = (ImageView) findViewById(R.id.lastImage3);
+        emailButton = (ImageView) findViewById(R.id.lastImage4);
 
 
         checkIfInfoExist(contact.getDisplayName(), displayName, headerLayout);
@@ -79,6 +98,8 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         checkIfInfoExist(contact.getTitle(), title, headerLayout);
         checkIfInfoExist(contact.getBirthday(), birthday, headerLayout);
         checkIfInfoExist(contact.getBusinessHomePage(), homepage, headerLayout);
+        checkIfInfoExist(contact.getPersonalNotes(), personalnote, personalnoteLayout);
+
         if (contact.getHomePhones().size() > 0){
             checkIfInfoExist(contact.getHomePhones().get(0), homephone, homephoneLayout);
         } else {
@@ -104,6 +125,7 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                businessinfoLayout.setVisibility(View.GONE);
                 homeButton.setTextColor(getResources().getColor(R.color.md_blue_grey_300));
                 otherButton.setTextColor(getResources().getColor(R.color.white));
                 businessButton.setTextColor(getResources().getColor(R.color.white));
@@ -118,6 +140,7 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         businessButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                businessinfoLayout.setVisibility(View.VISIBLE);
                 otherButton.setTextColor(getResources().getColor(R.color.white));
                 homeButton.setTextColor(getResources().getColor(R.color.white));
                 businessButton.setTextColor(getResources().getColor(R.color.md_blue_grey_300));
@@ -126,12 +149,21 @@ public class ContactDetailActivity extends AppCompatActivityRest {
                 } else {
                     addressLayout.setVisibility(View.GONE);
                 }
+               checkIfInfoExist(contact.getCompanyName(), companyname, businessinfoLayout);
+                checkIfInfoExist(contact.getProfession(), profession, businessinfoLayout);
+                checkIfInfoExist(contact.getJobTitle(), jobtitle, businessinfoLayout);
+                checkIfInfoExist(contact.getOfficeLocation(), officelocation, businessinfoLayout);
+                checkIfInfoExist(contact.getDepartment(), department, businessinfoLayout);
+                checkIfInfoExist(contact.getManager(), manager, businessinfoLayout);
+                checkIfInfoExist(contact.getAssistantName(), assistantname, businessinfoLayout);
+
             }
         });
 
         otherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                businessinfoLayout.setVisibility(View.GONE);
                 businessButton.setTextColor(getResources().getColor(R.color.white));
                 homeButton.setTextColor(getResources().getColor(R.color.white));
                 otherButton.setTextColor(getResources().getColor(R.color.md_blue_grey_300));
@@ -140,41 +172,135 @@ public class ContactDetailActivity extends AppCompatActivityRest {
                 } else {
                     addressLayout.setVisibility(View.GONE);
                 }
+
             }
         });
 
+        homephoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + contact.getHomePhones().get(0)));
+                startActivity(intent);
+            }
+        });
+        mobilephoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + contact.getMobilePhone()));
+                startActivity(intent);
+            }
+        });
+        businessphoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + contact.getBusinessPhones().get(0)));
+                startActivity(intent);
+            }
+        });
+
+        emailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sendMailIntent = new Intent(ContactDetailActivity.this, NewMailActivity.class);
+                sendMailIntent.putExtra("mailType", SendMailType.NORMALSEND.value());
+                sendMailIntent.putExtra("TO", contact.getEmailAddresses().get(0).getAddress());
+                startActivity(sendMailIntent);
+            }
+        });
+
+        fixTabBar();
+
     }
 
+    private void fixTabBar(){
+        boolean home = isEmptyAddress(contact.getHomeAddress(), homeButton);
+        boolean business = isEmptyAddress(contact.getBusinessAddress(), businessButton);
+        boolean other = isEmptyAddress(contact.getOtherAddress(), otherButton);
+        if (home && business && other){
+            buttonLayout.setVisibility(View.GONE);
+        }
+
+    }
+
+    private boolean isEmptyAddress(Address address, final Button button) {
+        int dirtyCount = 0;
+        if (!(address.getStreet() != null && !address.getStreet().equals("")) ){
+            dirtyCount++;
+        }
+        if (!(address.getPostalCode() != null && !address.getPostalCode().equals(""))){
+            dirtyCount++;
+        }
+        if (!(address.getCity() != null && !address.getCity().equals(""))){
+            dirtyCount++;
+        }
+        if (!(address.getState() != null && !address.getState().equals(""))){
+            dirtyCount++;
+        }
+        if (!(address.getCountryOrRegion() != null && !address.getCountryOrRegion().equals(""))){
+           dirtyCount++;
+        }
+        if (dirtyCount == 5) {
+            button.setClickable(false);
+            button.setAlpha(.5f);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(ContactDetailActivity.this, R.string.no_address, Toast.LENGTH_SHORT).show();
+                }
+            });
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+
     private void checkIfAddressExist(Address address, ViewGroup layout) {
+        layout.setVisibility(View.VISIBLE);
+        int dirtyCount = 0;
         if (address.getStreet() != null && !address.getStreet().equals("") ){
+            street.setVisibility(View.VISIBLE);
             street.setText("");
             street.setText(address.getStreet());
         } else {
+            dirtyCount++;
             street.setVisibility(View.GONE);
         }
         if (address.getPostalCode() != null && !address.getPostalCode().equals("")){
+            postalcode.setVisibility(View.VISIBLE);
             postalcode.setText("");
             postalcode.setText(address.getPostalCode() + ", ");
         } else {
+            dirtyCount++;
             postalcode.setVisibility(View.GONE);
         }
         if (address.getCity() != null && !address.getCity().equals("")){
+            city.setVisibility(View.VISIBLE);
             city.setText("");
             city.setText(address.getCity());
         } else {
+            dirtyCount++;
             city.setVisibility(View.GONE);
         }
         if (address.getState() != null && !address.getState().equals("")){
+            state.setVisibility(View.VISIBLE);
             state.setText("");
             state.setText(address.getState());
         } else {
+            dirtyCount++;
             state.setVisibility(View.GONE);
         }
         if (address.getCountryOrRegion() != null && !address.getCountryOrRegion().equals("")){
+            country.setVisibility(View.VISIBLE);
             country.setText("");
             country.setText(address.getCountryOrRegion());
         } else {
+            dirtyCount++;
             country.setVisibility(View.GONE);
+        }
+        if (dirtyCount == 5) {
+            layout.setVisibility(View.GONE);
         }
 
     }
@@ -200,7 +326,9 @@ public class ContactDetailActivity extends AppCompatActivityRest {
                 finish();
                 break;
             case R.id.action_edit:
-                System.out.println("helloo xD");
+               Intent intent = new Intent(ContactDetailActivity.this, EditContactActivity.class);
+               intent.putExtra("CONTACT", contact);
+               startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -126,12 +126,11 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         switch (mailTypeEnum) {
             case REPLY:
-
                 System.out.println("In reply case!");
                 try {
                     new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReply");
                 } catch (IllegalAccessException e) {
-                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.email_wrong, Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
                 break;
@@ -142,7 +141,7 @@ public class NewMailActivity extends AppCompatActivityRest {
                 try {
                     new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReplyAll");
                 } catch (IllegalAccessException e) {
-                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.email_wrong, Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
                 break;
@@ -153,10 +152,14 @@ public class NewMailActivity extends AppCompatActivityRest {
                 try {
                     new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createForward");
                 } catch (IllegalAccessException e) {
-                    Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.email_wrong, Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
                 break;
+
+            case NORMALSEND:
+                String emailaddress = getIntent().getStringExtra("TO");
+                recipientTextField.setText(emailaddress);
         }
 
     }
@@ -183,7 +186,7 @@ public class NewMailActivity extends AppCompatActivityRest {
 
                 //IF RESPONSE IS EMPTY SHOW: NO CONTACTS FOUND
                 if (contacts.isEmpty()){
-                    Toast.makeText(getApplicationContext(), "No contacts found!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.no_contacts_found, Toast.LENGTH_SHORT).show();
                 }
 
                 int counter = 0;
@@ -289,7 +292,7 @@ public class NewMailActivity extends AppCompatActivityRest {
         //noinspection SimplifiableIfStatement
         if (id == R.id.send_mail) {
 
-            Toast.makeText(getApplicationContext(), "Sending mail...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.sending_mail, Toast.LENGTH_SHORT).show();
             try {
                 sendMail();
             } catch (JSONException e) {
@@ -366,9 +369,9 @@ public class NewMailActivity extends AppCompatActivityRest {
         //do our call
         try {
             new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, jsonMessage);
-            Toast.makeText(getApplicationContext(), "Mail sent!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.mail_sent, Toast.LENGTH_SHORT).show();
         } catch (IllegalAccessException e) {
-            Toast.makeText(getApplicationContext(), "Something went wrong! Please review your e-mail.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.email_wrong, Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

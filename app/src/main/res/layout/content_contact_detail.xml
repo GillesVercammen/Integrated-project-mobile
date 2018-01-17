@@ -49,6 +49,7 @@
             android:paddingBottom="1dp"
             android:singleLine="true"
             android:textColor="@color/white"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageView3"
             app:layout_constraintTop_toBottomOf="@+id/displayName" />
@@ -60,6 +61,7 @@
             android:paddingBottom="1dp"
             android:singleLine="true"
             android:textColor="@color/white"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageView3"
             app:layout_constraintTop_toBottomOf="@+id/title" />
@@ -71,6 +73,7 @@
             android:paddingBottom="1dp"
             android:singleLine="true"
             android:textColor="@color/white"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageView3"
             app:layout_constraintTop_toBottomOf="@+id/nickName" />
@@ -80,6 +83,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageView3"
             app:layout_constraintTop_toBottomOf="@+id/birthday" />
@@ -429,7 +433,8 @@
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/businessinfoLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/imageView6"
@@ -608,9 +613,9 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
+                android:id="@+id/buttonLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:background="@color/colorPrimary">
 
                 <Button
@@ -642,6 +647,30 @@
                     android:textColor="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/Business" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/personalNoteLayoutDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:id="@+id/imageView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="20dp"
+                    app:srcCompat="@drawable/ic_note_black_24dp" />
+
+                <TextView
+                    android:id="@+id/personalNoteDetail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:singleLine="false"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/imageView7" />
             </android.support.constraint.ConstraintLayout>
 
         </LinearLayout>

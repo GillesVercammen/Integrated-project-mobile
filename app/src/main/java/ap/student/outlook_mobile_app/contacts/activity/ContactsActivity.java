@@ -426,7 +426,6 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
         List<Integer> selectedItemPositions =
                 mAdapter.getSelectedItems();
-        System.out.println(selectedItemPositions);
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
             Contact contact = contacts.get(selectedItemPositions.get(i));
             System.out.println(contact.getDisplayName());

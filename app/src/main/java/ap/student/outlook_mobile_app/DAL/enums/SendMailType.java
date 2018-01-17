@@ -8,7 +8,8 @@ public enum SendMailType {
     SEND("send"),
     FORWARD("forward"),
     REPLY("reply"),
-    REPLYALL("replyAll");
+    REPLYALL("replyAll"),
+    NORMALSEND("normalSend");
     private String value;
 
     SendMailType(String emailType) {
