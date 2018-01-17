@@ -245,7 +245,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                         noContacts.setVisibility(View.GONE);
                         for (Contact contact : contacts) {
                             // RANDOM COLOR OF ICON
-                            contact.setColor(getRandomMaterialColor("400"));
+                            contact.setColor(getColorForCharacter(contact.getDisplayName().charAt(0)));
                         }
                     } else {
                         noContacts.setVisibility(View.VISIBLE);
@@ -254,11 +254,9 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                     Collections.sort(contacts);
                     mAdapter = new ContactsAdapter(this, contacts,this);
                     recyclerView.setAdapter(mAdapter);
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 mAdapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -396,14 +394,13 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
 
     // PICK A RANDOM COLOR TO COLOR THE ICON
-    private int getRandomMaterialColor(String typeColor) {
+    private int getColorForCharacter(Character c) {
         int returnColor = Color.GRAY;
-        int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getPackageName());
-
+        int arrayId = getResources().getIdentifier("mdcolor_400", "array", getPackageName());
+        int x = c - '0';
         if (arrayId != 0) {
             TypedArray colors = getResources().obtainTypedArray(arrayId);
-            int index = (int) (Math.random() * colors.length());
-            returnColor = colors.getColor(index, Color.GRAY);
+            returnColor = colors.getColor(Math.abs(x-17), Color.GRAY); //A = 17, so -17 so we benefit from the entire range
             colors.recycle();
         }
         return returnColor;
@@ -428,7 +425,6 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                 mAdapter.getSelectedItems();
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
             Contact contact = contacts.get(selectedItemPositions.get(i));
-            System.out.println(contact.getDisplayName());
             new GraphAPI().deleteRequest(OutlookObjectCall.CONTACTS,this, "/" + contact.getId());
             mAdapter.removeData(selectedItemPositions.get(i));
         }
