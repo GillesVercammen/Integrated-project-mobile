@@ -630,7 +630,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         int x = c - '0';
         if (arrayId != 0) {
             TypedArray colors = getResources().obtainTypedArray(arrayId);
-            returnColor = colors.getColor(x-17, Color.GRAY); //A = 17, so -17 so we benefit from the entire range
+            returnColor = colors.getColor(Math.abs(x-17), Color.GRAY); //A = 17, so -17 so we benefit from the entire range
             colors.recycle();
         }
         return returnColor;
