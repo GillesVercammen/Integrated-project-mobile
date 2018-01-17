@@ -72,9 +72,9 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
     private EditText searchField;
     private RecyclerView recyclerView;
     private ActionModeCallback actionModeCallback;
-    private ActionMode actionMode;
-    private List<Contact> contacts = new ArrayList<>();
-    private ContactsAdapter mAdapter;
+    protected ActionMode actionMode;
+    protected List<Contact> contacts = new ArrayList<>();
+    protected ContactsAdapter mAdapter;
     private SearchView searchView;
     private SwipeRefreshLayout swipeRefreshLayout;
 

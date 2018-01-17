@@ -55,192 +55,210 @@
         android:layout_marginTop="8dp"
         android:text="@string/current_week_string"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toTopOf="@+id/weekCalendarHeaders"
+        app:layout_constraintBottom_toTopOf="@+id/scrollview"
         app:layout_constraintEnd_toStartOf="@+id/nextWeekButton"
         app:layout_constraintStart_toEndOf="@+id/previousWeekButton"
         app:layout_constraintTop_toBottomOf="@id/currentYearWeekTextView" />
 
-    <TableLayout
-        android:id="@+id/weekCalendarHeaders"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/currentWeekTextView">
 
-        <TableRow
-            android:id="@+id/sundayRowHeader"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right|center_vertical">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/weekTableHeaderSunday"
+            <TableLayout
+                android:id="@+id/weekCalendarHeaders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="@string/sunday"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        </TableRow>
 
-        <TableRow
-            android:id="@+id/mondayRowHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right|center_vertical">
+                <TableRow
+                    android:id="@+id/sundayRowHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|center_vertical">
 
-            <TextView
-                android:id="@+id/weekTableHeaderMonday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="@string/monday"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                    <TextView
+                        android:id="@+id/weekTableHeaderSunday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/sunday"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        </TableRow>
+                </TableRow>
 
-        <TableRow
-            android:id="@+id/tuesdayRowHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right|center_vertical">
+                <TableRow
+                    android:id="@+id/mondayRowHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|center_vertical">
 
-            <TextView
-                android:id="@+id/weekTableHeaderTuesday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="@string/tuesday"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                    <TextView
+                        android:id="@+id/weekTableHeaderMonday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/monday"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        </TableRow>
+                </TableRow>
 
-        <TableRow
-            android:id="@+id/wednesdayRowHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right|center_vertical">
+                <TableRow
+                    android:id="@+id/tuesdayRowHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|center_vertical">
 
-            <TextView
-                android:id="@+id/weekTableHeaderWednesday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="@string/wednesday"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                    <TextView
+                        android:id="@+id/weekTableHeaderTuesday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/tuesday"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        </TableRow>
+                </TableRow>
 
-        <TableRow
-            android:id="@+id/thursdayRowHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right|center_vertical">
+                <TableRow
+                    android:id="@+id/wednesdayRowHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|center_vertical">
 
-            <TextView
-                android:id="@+id/weekTableHeaderThursday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="@string/thursday"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                    <TextView
+                        android:id="@+id/weekTableHeaderWednesday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/wednesday"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        </TableRow>
+                </TableRow>
 
-        <TableRow
-            android:id="@+id/fridayRowHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right|center_vertical">
+                <TableRow
+                    android:id="@+id/thursdayRowHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|center_vertical">
 
-            <TextView
-                android:id="@+id/weekTableHeaderFriday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="@string/friday"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                    <TextView
+                        android:id="@+id/weekTableHeaderThursday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/thursday"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        </TableRow>
+                </TableRow>
 
-        <TableRow
-            android:id="@+id/saturdayRowHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right|center_vertical">
+                <TableRow
+                    android:id="@+id/fridayRowHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|center_vertical">
 
-            <TextView
-                android:id="@+id/weekTableHeaderSaturday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="@string/saturday"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                    <TextView
+                        android:id="@+id/weekTableHeaderFriday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/friday"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        </TableRow>
+                </TableRow>
 
-    </TableLayout>
+                <TableRow
+                    android:id="@+id/saturdayRowHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|center_vertical">
 
-    <HorizontalScrollView
-        android:id="@+id/horizontalScrollView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/weekCalendarHeaders"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/weekCalendarHeaders"
-        app:layout_constraintTop_toTopOf="@id/weekCalendarHeaders">
+                    <TextView
+                        android:id="@+id/weekTableHeaderSaturday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/saturday"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        <TableLayout
-            android:id="@+id/weekCalendarBody"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+                </TableRow>
 
-            <TableRow
-                android:id="@+id/sundayRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center_vertical" />
+            </TableLayout>
 
-            <TableRow
-                android:id="@+id/mondayRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center_vertical" />
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/weekCalendarHeaders"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TableRow
-                android:id="@+id/tuesdayRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center_vertical" />
+                <TableLayout
+                    android:id="@+id/weekCalendarBody"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
 
-            <TableRow
-                android:id="@+id/wednesdayRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center_vertical" />
+                    <TableRow
+                        android:id="@+id/sundayRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical" />
 
-            <TableRow
-                android:id="@+id/thursdayRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center_vertical" />
+                    <TableRow
+                        android:id="@+id/mondayRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical" />
 
-            <TableRow
-                android:id="@+id/fridayRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center_vertical" />
+                    <TableRow
+                        android:id="@+id/tuesdayRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical" />
 
-            <TableRow
-                android:id="@+id/saturdayRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center_vertical" />
-        </TableLayout>
+                    <TableRow
+                        android:id="@+id/wednesdayRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical" />
 
-    </HorizontalScrollView>
+                    <TableRow
+                        android:id="@+id/thursdayRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical" />
+
+                    <TableRow
+                        android:id="@+id/fridayRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical" />
+
+                    <TableRow
+                        android:id="@+id/saturdayRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical" />
+                </TableLayout>
+
+            </HorizontalScrollView>
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
