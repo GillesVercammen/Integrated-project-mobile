@@ -4,6 +4,7 @@
     <string name="event_details_header">Details</string>
     <string name="event_title_textview">Add a title for the event.</string>
     <string name="event_location_textview">Add a location or space.</string>
+    <string name="event_description_textview">Add a description.</string>
     <string name="event_begin_header">Begin</string>
     <string name="event_end_header">End</string>
     <string name="event_set_start_time_button">Set start time</string>

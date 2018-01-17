@@ -87,6 +87,7 @@ public class EventActivity extends AppCompatActivityRest {
     private Button addAttendeesButton;
     private EmailAddress organiser;
     private Attendee attendees;
+    private MenuItem delete;
 
     private String id;
     private Event event;
@@ -192,23 +193,6 @@ public class EventActivity extends AppCompatActivityRest {
             }
         });
 
-        isAllDayCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    endTimeTextview.setVisibility(View.GONE);
-                    setEndTimeButton.setVisibility(View.GONE);
-                    startTimeTextview.setVisibility(View.GONE);
-                    setStartTimeButton.setVisibility(View.GONE);
-                } else {
-                    startTimeTextview.setVisibility(View.VISIBLE);
-                    setStartTimeButton.setVisibility(View.VISIBLE);
-                    endTimeTextview.setVisibility(View.VISIBLE);
-                    setEndTimeButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
         addAttendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -246,6 +230,9 @@ public class EventActivity extends AppCompatActivityRest {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_event, menu);
+        if (id == null) {
+            menu.findItem(R.id.action_delete).setEnabled(false).setVisible(false);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -263,6 +250,10 @@ public class EventActivity extends AppCompatActivityRest {
         switch (item.getItemId()) {
             case R.id.action_save_event : {
                 onConfirmButtonClicked();
+            }
+            break;
+            case R.id.action_delete : {
+                deleteEvent();
             }
             break;
             case android.R.id.home : {
@@ -342,7 +333,7 @@ public class EventActivity extends AppCompatActivityRest {
         startActivityForResult(new Intent(this, CustomRecurrenceActivity.class), 200);
     }
 
-    private PatternedRecurrence setRecurrence(Recurrence recurrence, java.util.Calendar startDate) {
+    private PatternedRecurrence setRecurrence(Recurrence recurrence, java.util.Calendar startDate, java.util.Calendar endDate) {
         PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
         RecurrencePattern recurrencePattern = new RecurrencePattern();
         RecurrenceRange recurrenceRange = new RecurrenceRange();
@@ -350,6 +341,7 @@ public class EventActivity extends AppCompatActivityRest {
 
         recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
         recurrenceRange.setStartDate(startDate);
+        recurrenceRange.setEndDate(endDate);
         recurrencePattern.setFirstDayOfWeek(DaysOfWeekEnum.SUNDAY.name());
 
         switch (recurrence) {
@@ -390,6 +382,10 @@ public class EventActivity extends AppCompatActivityRest {
             }
             break;
             case MORE: {
+                RecurrenceRange range = customRecurrence.getRange();
+                range.setStartDate(startDate);
+                range.setEndDate(endDate);
+                customRecurrence.setRange(range);
                 return customRecurrence;
             }
             default:
@@ -414,7 +410,7 @@ public class EventActivity extends AppCompatActivityRest {
         event.setLocation(new Location(locationTextInput.getText().toString()));
 
         if (!recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()).equals(Recurrence.NEVER)) {
-            event.setRecurrence(setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), startTime));
+            event.setRecurrence(setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), startTime, endTime));
         }
 
         if (isAllDayCheckBox.isChecked()) {
@@ -471,6 +467,8 @@ public class EventActivity extends AppCompatActivityRest {
 
         if (!isAllDayCheckBox.isChecked()) {
             timePicker.show();
+        } else {
+            onTimePicked(0, 0);
         }
     }
 
@@ -540,6 +538,18 @@ public class EventActivity extends AppCompatActivityRest {
                 }
             }
         }
+    }
+
+    private void deleteEvent() {
+        try {
+            new GraphAPI().deleteRequest(OutlookObjectCall.READEVENTS, this, "/" + id);
+            Thread.sleep(10);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        finish();
     }
 
     private void hideSoftKeyboard() {

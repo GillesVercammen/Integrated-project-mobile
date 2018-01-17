@@ -552,11 +552,11 @@ public class CalendarActivity extends AppCompatActivityRest {
 
         dayCalendar.removeAllViews();
 
-        int dayOfWeek = selectedTime.get(java.util.Calendar.DAY_OF_WEEK);
-        if (dayOfWeek == 7) dayOfWeek = 0;
+        int dayOfWeek = selectedTime.get(java.util.Calendar.DAY_OF_WEEK) -1;
+        if (dayOfWeek == -1) dayOfWeek = 6;
 
         dayCalendarTextview.setText(new StringBuilder()
-                .append(getResources().getString(DaysOfTheWeekEnum.values()[--dayOfWeek].value()))
+                .append(getResources().getString(DaysOfTheWeekEnum.values()[dayOfWeek].value()))
                 .append(' ').append(selectedTime.get(java.util.Calendar.DAY_OF_MONTH)).append(' ')
                 .append(getResources().getString(MonthsInTheYearEnum.values()[selectedTime.get(java.util.Calendar.MONTH)].value())).toString());
 
