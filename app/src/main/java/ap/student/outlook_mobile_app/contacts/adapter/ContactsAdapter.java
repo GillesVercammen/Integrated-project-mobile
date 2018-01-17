@@ -201,6 +201,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         return contactListFiltered.size();
     }
 
+    public Contact getItemAtPosition(int position)
+    {
+        return contactListFiltered.get(position);
+    }
+
     public void toggleSelection(int pos) {
         currentSelectedIndex = pos;
         if (selectedItems.get(pos, false)) {

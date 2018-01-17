@@ -41,9 +41,11 @@ public class GraphAPI {
             body.put("key", "value");
         } catch (JSONException e) {
             Log.d(TAG, "Failed to put parameters: " + e.toString());
+
         }
         return body;
     }
+
 
     private void sendRequest(int method, final OutlookObjectCall objectCall, JSONObject body, final AppCompatActivityRest context, String parameters, final List<String[]> additionalHeaders) throws IllegalAccessException {
         Log.d(TAG, "Starting volley request to graph");

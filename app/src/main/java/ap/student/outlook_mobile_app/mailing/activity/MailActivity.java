@@ -137,7 +137,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
         // SET DRAWER (HAMBURGER MENU)
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this);
+            new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this, "?$top=20");
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             Toast.makeText(MailActivity.this, R.string.folder_error, Toast.LENGTH_SHORT).show();
@@ -149,10 +149,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             @Override
             public void onClick(View view) {
                 onNewMailButtonClicked();
-
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
             }
         });
 
@@ -270,7 +266,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             speechbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.out.println("SPEECH DETECTED");
                     startVoiceInput();
                 }
             });
@@ -600,7 +595,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         List<Integer> selectedItemPositions =
                 mAdapter.getSelectedItems();
         for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
-            Message message = messages.get(i);
+            Message message = messages.get(selectedItemPositions.get(i));
             new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL,this, "/" + message.getId());
 
             mAdapter.removeData(selectedItemPositions.get(i));
@@ -727,6 +722,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.colorPrimary)
+                .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
                         new ProfileDrawerItem().withName(name).withEmail(email).withIcon(R.drawable.ic_person_white_24dp)
                 )
