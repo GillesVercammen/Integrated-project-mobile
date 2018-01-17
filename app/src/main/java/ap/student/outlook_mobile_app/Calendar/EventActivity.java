@@ -1,10 +1,14 @@
 package ap.student.outlook_mobile_app.Calendar;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -12,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -23,27 +28,26 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.DaysOfWeekEnum;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ReminderMinutesBeforeStart;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.ShowAs;
+import ap.student.outlook_mobile_app.DAL.MicrosoftDateFormat;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
+import ap.student.outlook_mobile_app.DAL.models.Attendee;
 import ap.student.outlook_mobile_app.DAL.models.Body;
 import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.DateTimeTimeZone;
+import ap.student.outlook_mobile_app.DAL.models.EmailAddress;
 import ap.student.outlook_mobile_app.DAL.models.Event;
 import ap.student.outlook_mobile_app.DAL.models.Location;
 import ap.student.outlook_mobile_app.DAL.models.PatternedRecurrence;
@@ -53,8 +57,8 @@ import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
 
 public class EventActivity extends AppCompatActivityRest {
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private java.util.Calendar startTime;
+    private java.util.Calendar endTime;
     private EditText titleTextInput;
     private EditText locationTextInput;
     private Button setEndTimeButton;
@@ -62,7 +66,7 @@ public class EventActivity extends AppCompatActivityRest {
     private CheckBox isPrivateCheckBox;
     private TextView startTimeTextview;
     private TextView endTimeTextview;
-    private DateTimeFormatter dateTimeFormatter;
+    private SimpleDateFormat dateTimeFormatter;
     private AutoCompleteTextView timeZonePicker;
     private Spinner showAsSpinner;
     private Spinner recurrenceSpinner;
@@ -70,7 +74,6 @@ public class EventActivity extends AppCompatActivityRest {
     private Spinner agendaSpinner;
     private Button sendReminderByMailButton;
     private EditText descriptionText;
-    private Button confirmButton;
     private Button setStartTimeButton;
     private Map<Integer, ShowAs> showAsMap;
     private Map<Integer, Recurrence> recurrenceMap;
@@ -81,6 +84,14 @@ public class EventActivity extends AppCompatActivityRest {
     private PatternedRecurrence customRecurrence;
     private Calendar calendar;
     private Map<Integer, Calendar> calendarMap;
+    private Button addAttendeesButton;
+    private EmailAddress organiser;
+    private Attendee attendees;
+    private MenuItem delete;
+
+    private String id;
+    private Event event;
+    private SimpleDateFormat microsoftDateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +105,7 @@ public class EventActivity extends AppCompatActivityRest {
 
         setStartTimeButton = (Button) findViewById(R.id.eventSetStartTimeButton);
         setEndTimeButton = (Button) findViewById(R.id.evenSetEndTimeButton);
-        confirmButton = (Button) findViewById(R.id.eventConfirmButton);
+        addAttendeesButton = (Button) findViewById(R.id.eventAddAttendeesButton);
         showAsSpinner = (Spinner) findViewById(R.id.eventDisplayAsSpinner);
         recurrenceSpinner = (Spinner) findViewById(R.id.eventRepeatSpinner);
         reminderSpinner = (Spinner) findViewById(R.id.eventRemindSpinner);
@@ -105,14 +116,23 @@ public class EventActivity extends AppCompatActivityRest {
         isAllDayCheckBox = (CheckBox) findViewById(R.id.eventAllDayCheckbox);
         isPrivateCheckBox = (CheckBox) findViewById(R.id.eventPrivateCheckbox);
 
-        dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm");
-        startTime = LocalDateTime.parse(getIntent().getStringExtra("dateTime"));
-        endTime = startTime.plusMinutes(30);
+        dateTimeFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+        startTime = java.util.Calendar.getInstance();
+        if (getIntent().getStringExtra("time") != null) {
+            startTime.setTime(new Gson().fromJson(getIntent().getStringExtra("time"), java.util.Calendar.class).getTime());
+        }
+        startTime.set(java.util.Calendar.HOUR, 8);
+        startTime.set(java.util.Calendar.MINUTE, 30);
+        startTime.set(java.util.Calendar.SECOND, 0);
+
+        endTime = java.util.Calendar.getInstance();
+        endTime.setTime(startTime.getTime());
+        endTime.add(java.util.Calendar.MINUTE, 30);
 
         startTimeTextview = (TextView) findViewById(R.id.eventStartDateText);
-        startTimeTextview.setText(startTime.format(dateTimeFormatter));
+        startTimeTextview.setText(dateTimeFormatter.format(startTime.getTime()));
         endTimeTextview = (TextView) findViewById(R.id.eventEndDateText);
-        endTimeTextview.setText(endTime.format(dateTimeFormatter));
+        endTimeTextview.setText(dateTimeFormatter.format(endTime.getTime()));
 
         timeZonePicker = (AutoCompleteTextView) findViewById(R.id.eventTimezoneAutocomplete);
 
@@ -133,14 +153,14 @@ public class EventActivity extends AppCompatActivityRest {
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 onDatePicked(year, ++month, dayOfMonth);
             }
-        }, startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth());
+        }, startTime.get(java.util.Calendar.YEAR), startTime.get(java.util.Calendar.MONTH), startTime.get(java.util.Calendar.DAY_OF_MONTH));
 
         timePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 onTimePicked(hourOfDay, minute);
             }
-        }, startTime.getHour(), startTime.getMinute(), true);
+        }, startTime.get(java.util.Calendar.HOUR), startTime.get(java.util.Calendar.MINUTE), true);
 
         setStartTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,19 +193,147 @@ public class EventActivity extends AppCompatActivityRest {
             }
         });
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
+        addAttendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                onConfirmButtonClicked();
+            public void onClick(View view) {
+                onAddAttendeesButtonClicked();
             }
         });
+
+        String title = getString(R.string.event_title);
+        event = null;
+        id = null;
+        String eventId = getIntent().getStringExtra("event");
+        if (eventId != null && !eventId.isEmpty()) {
+            title = getString(R.string.event_edit_title);
+            Event events = new Gson().fromJson(sharedPreferences.getString("Events", "{}"), Event.class);
+            for (Event e : events.getEvents()) {
+                if (e.getId().equals(eventId)) {
+                    event = e;
+                    id = e.getId();
+                    loadEventSettings();
+                    break;
+                }
+            }
+        }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setActionBarMail(title, toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
+        microsoftDateFormat.setTimeZone(TimeZone.getDefault());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_event, menu);
+        if (id == null) {
+            menu.findItem(R.id.action_delete).setEnabled(false).setVisible(false);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // SET ACTIONBAR
+    private void setActionBarMail(String title, Toolbar toolbar) {
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+        toolbar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
+        // THIS LINE REMOVES ANNOYING LEFT MARGIN
+        toolbar.setTitleMarginStart(30);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save_event : {
+                onConfirmButtonClicked();
+            }
+            break;
+            case R.id.action_delete : {
+                deleteEvent();
+            }
+            break;
+            case android.R.id.home : {
+                finish();
+            }
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void loadEventSettings() {
+        titleTextInput.setText(event.getSubject());
+
+        String description = event.getBody().getContent();
+
+        if (description.length() > 2) {
+            descriptionText.setText(description.split("<body>")[1].split("</body>")[0].replaceAll("<br>", "").substring(2));
+        }
+        locationTextInput.setText(event.getLocation().getDisplayName());
+
+        Recurrence recurrence = new RecurrenceFinder().findRecurrenceFromPatternedRecurrence(event);
+        int index = 0;
+        while (index <  recurrenceMap.size()) {
+            if (recurrenceMap.get(index).equals(recurrence)) {
+                break;
+            }
+            index++;
+        }
+        if (index >= recurrenceMap.size()) {
+            index = 0;
+        }
+        recurrenceSpinner.setSelection(index);
+
+        startTime.setTime(event.getStart().getDateTime().getTime());
+        endTime.setTime(event.getEnd().getDateTime().getTime());
+        startTimeTextview.setText(dateTimeFormatter.format(event.getStart().getDateTime().getTime()));
+
+        if (event.isAllDay()) {
+            isAllDayCheckBox.setChecked(event.isAllDay());
+            endTime.setTime(startTime.getTime());
+            endTime.set(java.util.Calendar.MINUTE, 30);
+        } else {
+            endTimeTextview.setText(dateTimeFormatter.format(event.getEnd().getDateTime().getTime()));
+        }
+        if (event.getSensitivity().equals("private")) {
+            isPrivateCheckBox.setChecked(true);
+        }
+
+        // TODO : agenda is fucked
+
+        index = 0;
+        for (ReminderMinutesBeforeStart r : reminderMap.values()) {
+            if (r.getValue() == event.getReminderMinutesBeforeStart()) {
+                break;
+            }
+            index ++;
+        }
+        if (index >= reminderMap.size()) {
+            index = 0;
+        }
+        reminderSpinner.setSelection(index);
+
+        index = 0;
+        for (ShowAs s : showAsMap.values()) {
+            if (s.action().equals(event.getShowAs())) {
+                break;
+            }
+            index++;
+        }
+        if (index >= showAsMap.size()) {
+            index = 0;
+        }
+        showAsSpinner.setSelection(index);
     }
 
     private void onMoreSelected() {
         startActivityForResult(new Intent(this, CustomRecurrenceActivity.class), 200);
     }
 
-    private PatternedRecurrence setRecurrence(Recurrence recurrence, LocalDate startDate) {
+    private PatternedRecurrence setRecurrence(Recurrence recurrence, java.util.Calendar startDate, java.util.Calendar endDate) {
         PatternedRecurrence patternedRecurrence = new PatternedRecurrence();
         RecurrencePattern recurrencePattern = new RecurrencePattern();
         RecurrenceRange recurrenceRange = new RecurrenceRange();
@@ -193,7 +341,8 @@ public class EventActivity extends AppCompatActivityRest {
 
         recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
         recurrenceRange.setStartDate(startDate);
-        recurrencePattern.setFirstDayOfWeek(DayOfWeek.SUNDAY.name());
+        recurrenceRange.setEndDate(endDate);
+        recurrencePattern.setFirstDayOfWeek(DaysOfWeekEnum.SUNDAY.name());
 
         switch (recurrence) {
             case DAILY: {
@@ -203,36 +352,40 @@ public class EventActivity extends AppCompatActivityRest {
             break;
             case EVERY_FRIDAY: {
                 recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
-                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setDaysOfWeek(new String[] { DaysOfWeekEnum.FRIDAY.name() });
                 recurrencePattern.setInterval(1);
             }
             break;
             case EVERY_WORKDAY: {
                 recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
-                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.MONDAY.name(), DayOfWeek.TUESDAY.name(), DayOfWeek.WEDNESDAY.name(), DayOfWeek.THURSDAY.name(), DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setDaysOfWeek(new String[] { DaysOfWeekEnum.MONDAY.name(), DaysOfWeekEnum.TUESDAY.name(), DaysOfWeekEnum.WEDNESDAY.name(), DaysOfWeekEnum.THURSDAY.name(), DaysOfWeekEnum.FRIDAY.name() });
                 recurrencePattern.setInterval(1);
             }
             break;
             case EACH_MONTH_TODAY: {
                 recurrencePattern.setType(RecurrencePatternType.ABSOLUTEMONTHLY.value());
-                recurrencePattern.setDayOfMonth(startDate.getDayOfMonth());
+                recurrencePattern.setDayOfMonth(startDate.get(java.util.Calendar.DAY_OF_MONTH));
                 recurrencePattern.setInterval(1);
             }
             break;
             case EVERY_SECOND_FRIDAY: {
                 recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
-                recurrencePattern.setDaysOfWeek(new String[] { DayOfWeek.FRIDAY.name() });
+                recurrencePattern.setDaysOfWeek(new String[] { DaysOfWeekEnum.FRIDAY.name() });
                 recurrencePattern.setInterval(2);
             }
             break;
             case EVERY_YEAR: {
                 recurrencePattern.setType(RecurrencePatternType.ABSOLUTEYEARLY.value());
-                recurrencePattern.setMonth(startDate.getMonthValue());
-                recurrencePattern.setDayOfMonth(startDate.getDayOfMonth());
+                recurrencePattern.setMonth(startDate.get(java.util.Calendar.MONTH));
+                recurrencePattern.setDayOfMonth(startDate.get(java.util.Calendar.DAY_OF_MONTH));
                 recurrencePattern.setInterval(1);
             }
             break;
             case MORE: {
+                RecurrenceRange range = customRecurrence.getRange();
+                range.setStartDate(startDate);
+                range.setEndDate(endDate);
+                customRecurrence.setRange(range);
                 return customRecurrence;
             }
             default:
@@ -245,24 +398,31 @@ public class EventActivity extends AppCompatActivityRest {
         return patternedRecurrence;
     }
 
+    private void onAddAttendeesButtonClicked() {
+        startActivityForResult(new Intent(this, AttendeesActivity.class), 201);
+    }
+
     private void onConfirmButtonClicked() {
         Event event = new Event();
+        event.setId(id);
         event.setSubject(titleTextInput.getText().toString());
-        event.setBody(new Body(descriptionText.getText().toString(), "HTML"));
+        event.setBody(new Body(descriptionText.getText().toString().replaceAll("\\n", "<br/>"), "HTML"));
         event.setLocation(new Location(locationTextInput.getText().toString()));
 
         if (!recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()).equals(Recurrence.NEVER)) {
-            event.setRecurrence(setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), LocalDate.of(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth())));
+            event.setRecurrence(setRecurrence(recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition()), startTime, endTime));
         }
 
         if (isAllDayCheckBox.isChecked()) {
             event.setAllDay(isAllDayCheckBox.isChecked());
-            LocalDateTime time = LocalDateTime.of(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth(), 0, 0);
-            event.setStart(new DateTimeTimeZone(time.toString(), TimeZone.getDefault().getDisplayName()));
-            event.setEnd(new DateTimeTimeZone(time.plusDays(1).toString(), TimeZone.getDefault().getDisplayName()));
+            java.util.Calendar time = java.util.Calendar.getInstance();
+            time.set(startTime.get(java.util.Calendar.YEAR), startTime.get(java.util.Calendar.MONTH), startTime.get(java.util.Calendar.DAY_OF_MONTH), 0, 0, 0);
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
+            time.add(java.util.Calendar.DAY_OF_YEAR, 1);
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
         } else {
-            event.setStart(new DateTimeTimeZone(startTime.toString(), TimeZone.getDefault().getDisplayName()));
-            event.setEnd(new DateTimeTimeZone(endTime.toString(), TimeZone.getDefault().getDisplayName()));
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(startTime.getTime()), TimeZone.getDefault().getDisplayName()));
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(endTime.getTime()), TimeZone.getDefault().getDisplayName()));
         }
 
         if (isPrivateCheckBox.isChecked()) { event.setSensitivity("private"); }
@@ -282,9 +442,15 @@ public class EventActivity extends AppCompatActivityRest {
         String calendar = calendarMap.get(agendaSpinner.getSelectedItemPosition()).getId();
 
         try {
-            JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
+            Gson gson = new Gson();
+            String array = gson.toJson(event);
+            JSONObject jsonObject = new JSONObject(array);
             //new GraphAPI().postRequest(OutlookObjectCall.POSTEVENT,this, jsonObject);
-            new GraphAPI().postRequest(OutlookObjectCall.POSTCALENDAR, this, jsonObject, "/".concat(calendar).concat(OutlookObjectCall.POSTEVENT.action()));
+            if (id == null) {
+                new GraphAPI().postRequest(OutlookObjectCall.POSTCALENDAR, this, jsonObject, "/".concat(calendar).concat(OutlookObjectCall.POSTEVENT.action()));
+            } else {
+                new GraphAPI().patchRequest(OutlookObjectCall.POSTEVENT, this, jsonObject, "/".concat(id));
+            }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -294,23 +460,27 @@ public class EventActivity extends AppCompatActivityRest {
 
     private void onDatePicked(int yearPicked, int monthPicked, int dayOfMonthPicked) {
         if (isStartTime) {
-            startTime = LocalDateTime.of(yearPicked, monthPicked, dayOfMonthPicked, startTime.getHour(), startTime.getMinute());
+            startTime.set(yearPicked, --monthPicked, dayOfMonthPicked);
         } else {
-            endTime = LocalDateTime.of(yearPicked, monthPicked, dayOfMonthPicked, endTime.getHour(), endTime.getMinute());
+            endTime.set(yearPicked, --monthPicked, dayOfMonthPicked);
         }
 
         if (!isAllDayCheckBox.isChecked()) {
             timePicker.show();
+        } else {
+            onTimePicked(0, 0);
         }
     }
 
     private void onTimePicked(int hourPicked, int minutePicked) {
         if (isStartTime) {
-            startTime = LocalDateTime.of(startTime.getYear(), startTime.getMonth(), startTime.getDayOfMonth(),hourPicked, minutePicked);
-            startTimeTextview.setText(startTime.format(dateTimeFormatter));
+            startTime.set(java.util.Calendar.HOUR, hourPicked);
+            startTime.set(java.util.Calendar.MINUTE, minutePicked);
+            startTimeTextview.setText(dateTimeFormatter.format(startTime.getTime()));
         } else {
-            endTime = LocalDateTime.of(endTime.getYear(), endTime.getMonth(), endTime.getDayOfMonth(), hourPicked, minutePicked);
-            endTimeTextview.setText(endTime.format(dateTimeFormatter));
+            endTime.set(java.util.Calendar.HOUR, hourPicked);
+            endTime.set(java.util.Calendar.MINUTE, minutePicked);
+            endTimeTextview.setText(dateTimeFormatter.format(endTime.getTime()));
         }
     }
 
@@ -355,17 +525,31 @@ public class EventActivity extends AppCompatActivityRest {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 200) {
-            switch (resultCode) {
-                case Activity.RESULT_OK: {
+        switch (requestCode) {
+            case 200 : {
+                if (resultCode == RESULT_OK) {
                     customRecurrence = new Gson().fromJson(data.getStringExtra("PatternedRecurrence"), PatternedRecurrence.class);
                 }
-                break;
-                case Activity.RESULT_CANCELED: {
-
+            }
+            break;
+            case 201 : {
+                if (resultCode == RESULT_OK) {
+                    System.out.println("Yolo");
                 }
             }
         }
+    }
+
+    private void deleteEvent() {
+        try {
+            new GraphAPI().deleteRequest(OutlookObjectCall.READEVENTS, this, "/" + id);
+            Thread.sleep(10);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        finish();
     }
 
     private void hideSoftKeyboard() {

@@ -4,6 +4,7 @@
     <string name="event_details_header">Details</string>
     <string name="event_title_textview">Add a title for the event.</string>
     <string name="event_location_textview">Add a location or space.</string>
+    <string name="event_description_textview">Add a description.</string>
     <string name="event_begin_header">Begin</string>
     <string name="event_end_header">End</string>
     <string name="event_set_start_time_button">Set start time</string>
@@ -40,6 +41,22 @@
     <string name="specified_recurrence_yearly_day">At</string>
     <string name="specified_recurrence_yearly_week_before">At the</string>
     <string name="specified_recurrence_yearly_week_middle">Of</string>
+    <string name="january">January</string>
+    <string name="february">February</string>
+    <string name="march">March</string>
+    <string name="april">April</string>
+    <string name="may">May</string>
+    <string name="june">June</string>
+    <string name="july">July</string>
+    <string name="august">August</string>
+    <string name="september">September</string>
+    <string name="october">October</string>
+    <string name="november">November</string>
+    <string name="december">December</string>
+    <string name="eventAddAttendeesButton">Attendees</string>
+    <string name="event_title">Add event</string>
+    <string name="event_edit_title">Edit event</string>
+    <string name="action_save_event">Save event</string>
 
     <!--
         These need to be arranged as shown, fuck you android

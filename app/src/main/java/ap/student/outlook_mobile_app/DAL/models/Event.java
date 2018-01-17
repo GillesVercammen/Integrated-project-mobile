@@ -1,12 +1,11 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
-import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
-import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
-import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
+import ap.student.outlook_mobile_app.DAL.MicrosoftDateFormat;
 
 /**
  * Created by alek on 11/30/17.
@@ -46,6 +45,12 @@ public class Event {
     private String type;
     private String webLink;
     private Location location;
+
+    private transient SimpleDateFormat microsoftDateFormat;
+
+    public Event() {
+        microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
+    }
 
     public void setCreatedDateTime(String createdDateTime) {
         this.createdDateTime = createdDateTime;
@@ -119,8 +124,18 @@ public class Event {
         this.changeKey = changeKey;
     }
 
-    public ZonedDateTime getCreatedDateTime() {
+    /*public ZonedDateTime getCreatedDateTime() {
         return ZonedDateTime.parse(createdDateTime);
+    }*/
+
+    public Date getCreatedDateTime() {
+        Date date = new Date();
+        try {
+            date = microsoftDateFormat.parse(createdDateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
     public void setCreatedDateTime(ZonedDateTime createdDateTime) {
@@ -199,8 +214,14 @@ public class Event {
         isReminderOn = reminderOn;
     }
 
-    public ZonedDateTime getLastModifiedDateTime() {
-        return ZonedDateTime.parse(lastModifiedDateTime);
+    public Date getLastModifiedDateTime() {
+        Date date = new Date();
+        try {
+            date = microsoftDateFormat.parse(createdDateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
     public void setLastModifiedDateTime(ZonedDateTime lastModifiedDateTime) {
@@ -231,8 +252,14 @@ public class Event {
         this.originalEndTimeZone = originalEndTimeZone;
     }
 
-    public ZonedDateTime getDateTimeOffset() {
-        return ZonedDateTime.parse(dateTimeOffset);
+    public Date getDateTimeOffset() {
+        Date date = new Date();
+        try {
+            date = microsoftDateFormat.parse(dateTimeOffset);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
     public void setDateTimeOffset(ZonedDateTime dateTimeOffset) {

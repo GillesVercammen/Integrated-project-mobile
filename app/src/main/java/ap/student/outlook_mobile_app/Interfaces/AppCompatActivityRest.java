@@ -26,7 +26,10 @@ import ap.student.outlook_mobile_app.R;
  */
 
 public abstract class AppCompatActivityRest extends AppCompatActivity implements IActivity {
-    protected Toolbar actionBar = null;
+    protected static final String USER = "User";
+    protected static final String MAILFOLDERS = "MAILFOLDERS";
+
+    //protected Toolbar actionBar = null;
     protected SharedPreferences sharedPreferences;
     protected SharedPreferences.Editor editor;
     protected ConnectivityManagerFactory connectivityManager;
@@ -40,13 +43,13 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedPreferences.edit();
 
-        actionBar = (Toolbar) findViewById(R.id.action_bar);
+        /*actionBar = (Toolbar) findViewById(R.id.action_bar);
         if (actionBar != null) {
             setSupportActionBar(actionBar);
-        }
+        }*/
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
@@ -57,7 +60,7 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
      * Basically a router method
      * @param item
      * @return
-     */
+     *//*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean closeActivity = false;
@@ -65,7 +68,7 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         switch (item.getItemId()) {
             /*case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
-                return true;*/
+                return true;*//*
 
             case R.id.action_logout: {
                 closeActivity = actionLogout();
@@ -83,7 +86,7 @@ public abstract class AppCompatActivityRest extends AppCompatActivity implements
         }
 
         return true;
-    }
+    }*/
 
     protected boolean actionLogout() {
         new UserAuth(this).logout();

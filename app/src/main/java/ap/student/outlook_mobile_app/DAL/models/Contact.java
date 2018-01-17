@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Contact {
 
+    private Contact[] value;
     private String id;
     private String displayName;
     private List<EmailAddress> emailAddresses;
@@ -19,6 +20,14 @@ public class Contact {
         this.id = id;
         this.displayName = displayName;
         this.emailAddresses = emailAddresses;
+    }
+
+    public Contact[] getContacts() {
+        return value;
+    }
+
+    public void setContacts(Contact[] value) {
+        this.value = value;
     }
 
     public String getId() {

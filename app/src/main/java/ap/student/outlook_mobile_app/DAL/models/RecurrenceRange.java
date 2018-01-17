@@ -1,6 +1,10 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
-import java.time.LocalDate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import ap.student.outlook_mobile_app.DAL.MicrosoftDateFormat;
 
 /**
  * Created by alek on 12/1/17.
@@ -13,12 +17,24 @@ public class RecurrenceRange {
     private String startDate;
     private String type;
 
-    public LocalDate getEndDate() {
-        return LocalDate.parse(endDate);
+    private transient SimpleDateFormat microsoftDateFormat;
+
+    public RecurrenceRange() {
+        microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate.toString();
+    public java.util.Calendar getEndDate() {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        try {
+            calendar.setTime(microsoftDateFormat.parse(endDate.replaceAll("T", " ").substring(0, 10)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return calendar;
+    }
+
+    public void setEndDate(Calendar endDate) {
+        this.endDate = microsoftDateFormat.format(endDate.getTime()).substring(0, 10);
     }
 
     public int getNumberOfOccurrences() {
@@ -37,12 +53,18 @@ public class RecurrenceRange {
         this.recurrenceTimeZone = recurrenceTimeZone;
     }
 
-    public LocalDate getStartDate() {
-        return LocalDate.parse(startDate);
+    public java.util.Calendar getStartDate() {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        try {
+            calendar.setTime(microsoftDateFormat.parse(startDate.replaceAll("T", " ").substring(0, 10)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return calendar;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate.toString();
+    public void setStartDate(java.util.Calendar startDate) {
+        this.startDate = microsoftDateFormat.format(startDate.getTime()).substring(0, 10);
     }
 
     public String getType() {

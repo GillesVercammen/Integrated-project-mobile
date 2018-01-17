@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivityRest {
 
         startActivity(new Intent(this, MailActivity.class));
         this.finish();
-        editor.putString("User", new Gson().toJson(Authentication.getAuthentication().getAuthResult().getUser()));
+        editor.putString(USER, new Gson().toJson(Authentication.getAuthentication().getAuthResult().getUser()));
         editor.commit();
     }
 

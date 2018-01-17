@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:mContext="ap.student.outlook_mobile_app.Calendar.CalendarActivity">
+    <item
+        android:id="@+id/action_event"
+        android:icon="@drawable/ic_event_white_24dp"
+        android:orderInCategory="100"
+        android:title="@string/month_create_event_button"
+        app:showAsAction="always" />
+</menu>

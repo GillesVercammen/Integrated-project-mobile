@@ -2,35 +2,30 @@ package ap.student.outlook_mobile_app.Calendar;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.CounterEnum;
-import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.DaysOfWeekEnum;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.MonthsInTheYearEnum;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.SpecifiedRecurrence;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrencePatternType;
 import ap.student.outlook_mobile_app.DAL.enums.RecurrenceRangeType;
@@ -59,8 +54,8 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
     private Spinner yearlyWeekDaysOfTheWeekSpinner;
     private Spinner yearlyWeekMonthsSpinner;
     private Map<Integer, CounterEnum> counterEnumMap;
-    private Map<Integer, DayOfWeek> dayOfWeekMap;
-    private Map<Integer, Month> monthMap;
+    private Map<Integer, DaysOfWeekEnum> dayOfWeekMap;
+    private Map<Integer, MonthsInTheYearEnum> monthMap;
 
     private TextView specifiedDayInterval;
     private CheckBox mondayCheckbox;
@@ -186,14 +181,14 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
         counterSpinner.setAdapter(counterAdapter);
         yearlyWeekCounterSpinner.setAdapter(counterAdapter);
 
-        for (DayOfWeek day : DayOfWeek.values()) {
+        for (DaysOfWeekEnum day : DaysOfWeekEnum.values()) {
             dayOfWeekMap.put(dayOfWeekMap.size(), day);
         }
         ArrayAdapter<String> weekDayAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Arrays.asList(getResources().getStringArray(R.array.DaysOfTheWeekArray)));
         daysOfTheWeekSpinner.setAdapter(weekDayAdapter);
         yearlyWeekDaysOfTheWeekSpinner.setAdapter(weekDayAdapter);
 
-        for (Month month : Month.values()) {
+        for (MonthsInTheYearEnum month : MonthsInTheYearEnum.values()) {
             monthMap.put(monthMap.size(), month);
         }
         ArrayAdapter<String> monthAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Arrays.asList(getResources().getStringArray(R.array.MonthsInTheYearArray)));
@@ -207,39 +202,51 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
         RecurrenceRange recurrenceRange = new RecurrenceRange();
 
         recurrenceRange.setType(RecurrenceRangeType.NOEND.value());
-        recurrenceRange.setStartDate(LocalDate.now());
-        recurrencePattern.setFirstDayOfWeek(DayOfWeek.SUNDAY.name());
+        recurrenceRange.setStartDate(Calendar.getInstance());
+        recurrencePattern.setFirstDayOfWeek(DaysOfWeekEnum.SUNDAY.name());
 
         SpecifiedRecurrence recurrence = recurrenceMap.get(recurrenceSpinner.getSelectedItemPosition());
 
         switch (recurrence) {
             case DAILY: {
+                if (specifiedDayInterval.getText().length() == 0) {
+                    break;
+                }
                 recurrencePattern.setInterval(Integer.parseInt(specifiedDayInterval.getText().toString()));
                 recurrencePattern.setType(RecurrencePatternType.DAILY.value());
             }
             break;
             case WEEKLY: {
                 List<String> daysOfTheWeek = new ArrayList<>();
-                if (mondayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.MONDAY.name());
-                if (tuesdayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.TUESDAY.name());
-                if (wednesdayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.WEDNESDAY.name());
-                if (thursdayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.THURSDAY.name());
-                if (fridayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.FRIDAY.name());
-                if (saturdayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.SATURDAY.name());
-                if (sundayCheckbox.isChecked()) daysOfTheWeek.add(DayOfWeek.SUNDAY.name());
+                if (mondayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.MONDAY.name());
+                if (tuesdayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.TUESDAY.name());
+                if (wednesdayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.WEDNESDAY.name());
+                if (thursdayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.THURSDAY.name());
+                if (fridayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.FRIDAY.name());
+                if (saturdayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.SATURDAY.name());
+                if (sundayCheckbox.isChecked()) daysOfTheWeek.add(DaysOfWeekEnum.SUNDAY.name());
 
+                if (daysOfTheWeek.size() == 0 || specifiedWeekInterval.getText().length() == 0) {
+                    break;
+                }
                 recurrencePattern.setDaysOfWeek(daysOfTheWeek.toArray(new String[]{}));
                 recurrencePattern.setInterval(Integer.parseInt(specifiedWeekInterval.getText().toString()));
                 recurrencePattern.setType(RecurrencePatternType.WEEKLY.value());
             }
             break;
             case MONTHLY_DAY: {
+                if (specifiedMonthlyDayInput.getText().length() == 0 || specifiedMonthlyDayInterval.getText().length() == 0) {
+                    break;
+                }
                 recurrencePattern.setType(RecurrencePatternType.ABSOLUTEMONTHLY.value());
                 recurrencePattern.setDayOfMonth(Integer.parseInt(specifiedMonthlyDayInput.getText().toString()));
                 recurrencePattern.setInterval(Integer.parseInt(specifiedMonthlyDayInterval.getText().toString()));
             }
             break;
             case MONTHLY_WEEK: {
+                if (specifiedMonthlyInterval.getText().length() == 0) {
+                    break;
+                }
                 recurrencePattern.setType(RecurrencePatternType.RELATIVEMONTHLY.value());
                 recurrencePattern.setInterval(Integer.parseInt(specifiedMonthlyInterval.getText().toString()));
                 recurrencePattern.setIndex(counterEnumMap.get(counterSpinner.getSelectedItemPosition()).value());
@@ -247,8 +254,11 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
             }
             break;
             case YEARLY_DAY: {
+                if (specifiedYearlyDayDayInput.getText().length() == 0) {
+                    break;
+                }
                 recurrencePattern.setType(RecurrencePatternType.ABSOLUTEYEARLY.value());
-                recurrencePattern.setMonth(monthMap.get(monthsSpinner.getSelectedItemPosition()).getValue());
+                recurrencePattern.setMonth(monthMap.get(monthsSpinner.getSelectedItemPosition()).value());
                 recurrencePattern.setDayOfMonth(Integer.parseInt(specifiedYearlyDayDayInput.getText().toString()));
                 recurrencePattern.setInterval(1);
             }
@@ -257,7 +267,7 @@ public class CustomRecurrenceActivity extends AppCompatActivity {
                 recurrencePattern.setType(RecurrencePatternType.RELATIVEYEARLY.value());
                 recurrencePattern.setIndex(counterEnumMap.get(yearlyWeekCounterSpinner.getSelectedItemPosition()).value());
                 recurrencePattern.setDaysOfWeek(new String[] { dayOfWeekMap.get(yearlyWeekDaysOfTheWeekSpinner.getSelectedItemPosition()).name() });
-                recurrencePattern.setMonth(monthMap.get(yearlyWeekMonthsSpinner.getSelectedItemPosition()).getValue());
+                recurrencePattern.setMonth(monthMap.get(yearlyWeekMonthsSpinner.getSelectedItemPosition()).value());
                 recurrencePattern.setInterval(1);
             }
             break;

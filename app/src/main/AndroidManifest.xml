@@ -55,6 +55,7 @@
         <activity android:name=".Calendar.CalendarActivity" />
         <activity android:name=".Calendar.EventActivity" />
         <activity android:name=".Calendar.CustomRecurrenceActivity" />
+        <activity android:name=".Calendar.AttendeesActivity" />
         <activity
             android:name=".contacts.activity.ContactsActivity"
             android:label="@string/title_activity_contacts"
@@ -92,7 +93,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
-        
+>>>>>>>>> Temporary merge branch 2
     </application>
 
 </manifest>
