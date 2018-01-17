@@ -35,17 +35,19 @@ public class RecurrenceFinder {
 
             switch (patternType) {
                 case DAILY: {
-                    recurrence = Recurrence.DAILY;
+                    if (event.getRecurrence().getPattern().getInterval() == 1) {
+                        recurrence = Recurrence.DAILY;
+                    }
                 }
                 break;
                 case WEEKLY: {
                     List<String> daysofweek = Arrays.asList(event.getRecurrence().getPattern().getDaysOfWeek());
                     if (daysofweek.size() == 5) {
-                        if (!daysofweek.contains(DaysOfTheWeekEnum.SATURDAY) && !daysofweek.contains(DaysOfTheWeekEnum.SUNDAY)) {
+                        if (!daysofweek.contains(DaysOfTheWeekEnum.SATURDAY.name().toLowerCase()) && !daysofweek.contains(DaysOfTheWeekEnum.SUNDAY.name().toLowerCase())) {
                             recurrence = Recurrence.EVERY_WORKDAY;
                         }
                     } else if (daysofweek.size() == 1) {
-                        if (daysofweek.contains(DaysOfTheWeekEnum.FRIDAY)) {
+                        if (daysofweek.contains(DaysOfTheWeekEnum.FRIDAY.name().toLowerCase())) {
                             if (event.getRecurrence().getPattern().getInterval() == 1) {
                                 recurrence = Recurrence.EVERY_FRIDAY;
                             } else if (event.getRecurrence().getPattern().getInterval() == 2) {

@@ -36,6 +36,7 @@ import ap.student.outlook_mobile_app.BLL.GraphAPI;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.DaysOfTheWeekEnum;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.MonthCalendarCell;
 import ap.student.outlook_mobile_app.Calendar.CalendarElements.MonthsInTheYearEnum;
+import ap.student.outlook_mobile_app.Calendar.CalendarElements.Recurrence;
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.models.Calendar;
 import ap.student.outlook_mobile_app.DAL.models.Event;

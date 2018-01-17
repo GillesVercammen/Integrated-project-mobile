@@ -276,8 +276,8 @@ public class EventActivity extends AppCompatActivityRest {
 
         Recurrence recurrence = new RecurrenceFinder().findRecurrenceFromPatternedRecurrence(event);
         int index = 0;
-        for (Recurrence recurrence1 : recurrenceMap.values()) {
-            if (recurrence1 == recurrence) {
+        while (index <  recurrenceMap.size()) {
+            if (recurrenceMap.get(index).equals(recurrence)) {
                 break;
             }
             index++;

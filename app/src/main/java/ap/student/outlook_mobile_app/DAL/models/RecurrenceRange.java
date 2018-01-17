@@ -26,7 +26,7 @@ public class RecurrenceRange {
     public java.util.Calendar getEndDate() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         try {
-            calendar.setTime(microsoftDateFormat.parse(endDate.replaceAll("T", " ").substring(0, 19)));
+            calendar.setTime(microsoftDateFormat.parse(endDate.replaceAll("T", " ").substring(0, 10)));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -56,7 +56,7 @@ public class RecurrenceRange {
     public java.util.Calendar getStartDate() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         try {
-            calendar.setTime(microsoftDateFormat.parse(startDate.replaceAll("T", " ").substring(0, 19)));
+            calendar.setTime(microsoftDateFormat.parse(startDate.replaceAll("T", " ").substring(0, 10)));
         } catch (ParseException e) {
             e.printStackTrace();
         }
