@@ -6,10 +6,14 @@ import android.support.design.widget.BottomNavigationView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.models.Attendee;
@@ -49,7 +53,7 @@ public class AttendeesActivity extends ContactsActivity {
                 ap.student.outlook_mobile_app.DAL.models.EmailAddress[] emailAddresses = gson.fromJson(addresses, ap.student.outlook_mobile_app.DAL.models.EmailAddress[].class);
                 for (ap.student.outlook_mobile_app.DAL.models.EmailAddress emailAddress : emailAddresses) {
                     for (int i = 0; i < contacts.size(); i++) {
-                        if (contacts.get(i).getEmailAddresses().get(0).getName().equals(emailAddress.getName())) {
+                        if (contacts.get(i).getEmailAddresses().size() != 0 && contacts.get(i).getEmailAddresses().get(0).getName().equals(emailAddress.getName())) {
                             onIconClicked(i);
                         }
                     }
@@ -61,16 +65,21 @@ public class AttendeesActivity extends ContactsActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            EmailAddress[] emailAddress = new EmailAddress[mAdapter.getSelectedItems().size()];
-            int i = 0;
-            for (int select : mAdapter.getSelectedItems()) {
-                emailAddress[i] = contacts.get(select).getEmailAddresses().get(0);
-                i++;
-                System.out.println(contacts);
-            }
-            String json = gson.toJson(emailAddress);
-            System.out.println(json);
+            List<EmailAddress> emailAddressList = new ArrayList<EmailAddress>();
+            boolean badContacts = false;
 
+            for (int select : mAdapter.getSelectedItems()) {
+                if (contacts.get(select).getEmailAddresses().size() != 0) {
+                    emailAddressList.add(contacts.get(select).getEmailAddresses().get(0));
+                } else {
+                    badContacts = true;
+                }
+            }
+            if (badContacts) {
+                Toast.makeText(this, "One or more selected contacts don't have email addresses attached to them. They will be ignored.", Toast.LENGTH_LONG).show();
+            }
+
+            String json = gson.toJson(emailAddressList.toArray(new EmailAddress[]{}));
             setResult(RESULT_OK, new Intent().putExtra("attendees", json));
         }
         return super.onOptionsItemSelected(item);
