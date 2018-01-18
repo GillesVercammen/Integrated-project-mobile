@@ -161,6 +161,12 @@
                 android:inputType="textMultiLine"
                 android:hint="@string/event_description_textview"/>
 
+            <TextView
+                android:id="@+id/attendeesTextview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/attendees_textview" />
+
             <Button
                 android:id="@+id/eventAddAttendeesButton"
                 android:layout_width="match_parent"

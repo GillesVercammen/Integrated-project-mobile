@@ -3,6 +3,7 @@ package ap.student.outlook_mobile_app.Calendar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -31,6 +32,12 @@ public class AttendeesActivity extends ContactsActivity {
         bottomNavigationItemView.setVisibility(View.GONE);
 
         gson = new Gson();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportActionBar().setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_check_white_24dp));
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

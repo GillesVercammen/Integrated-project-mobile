@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -88,6 +89,7 @@ public class EventActivity extends AppCompatActivityRest {
     private EmailAddress organiser;
     private Attendee[] attendees;
     private MenuItem delete;
+    private TextView attendeesTextview;
 
     private String id;
     private Event event;
@@ -116,6 +118,8 @@ public class EventActivity extends AppCompatActivityRest {
         locationTextInput = (EditText) findViewById(R.id.locationTextInput);
         isAllDayCheckBox = (CheckBox) findViewById(R.id.eventAllDayCheckbox);
         isPrivateCheckBox = (CheckBox) findViewById(R.id.eventPrivateCheckbox);
+
+        attendeesTextview = (TextView) findViewById(R.id.attendeesTextview);
 
         dateTimeFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
         startTime = java.util.Calendar.getInstance();
@@ -217,6 +221,9 @@ public class EventActivity extends AppCompatActivityRest {
                 }
             }
         }
+
+        String text = attendees.length + " ".concat(getResources().getString(R.string.attendees_textview));
+        attendeesTextview.setText(text);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setActionBarMail(title, toolbar);
@@ -410,6 +417,12 @@ public class EventActivity extends AppCompatActivityRest {
     }
 
     private void onConfirmButtonClicked() {
+        if (startTime.getTime().after(endTime.getTime())) {
+            Toast.makeText(this, "The startime must be before the endtime, automatically changing the endtime.", Toast.LENGTH_SHORT).show();
+            endTime.setTime(startTime.getTime());
+            endTime.add(java.util.Calendar.HOUR, 1);
+        }
+
         Event event = new Event();
         event.setId(id);
         event.setSubject(titleTextInput.getText().toString());
@@ -424,12 +437,12 @@ public class EventActivity extends AppCompatActivityRest {
             event.setAllDay(isAllDayCheckBox.isChecked());
             java.util.Calendar time = java.util.Calendar.getInstance();
             time.set(startTime.get(java.util.Calendar.YEAR), startTime.get(java.util.Calendar.MONTH), startTime.get(java.util.Calendar.DAY_OF_MONTH), 0, 0, 0);
-            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getID()));
             time.add(java.util.Calendar.DAY_OF_YEAR, 1);
-            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getID()));
         } else {
-            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(startTime.getTime()), TimeZone.getDefault().getDisplayName()));
-            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(endTime.getTime()), TimeZone.getDefault().getDisplayName()));
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(startTime.getTime()), TimeZone.getDefault().getID()));
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(endTime.getTime()), TimeZone.getDefault().getID()));
         }
 
         if (isPrivateCheckBox.isChecked()) { event.setSensitivity("private"); }
@@ -489,6 +502,9 @@ public class EventActivity extends AppCompatActivityRest {
             endTime.set(java.util.Calendar.HOUR, hourPicked);
             endTime.set(java.util.Calendar.MINUTE, minutePicked);
             endTimeTextview.setText(dateTimeFormatter.format(endTime.getTime()));
+        }
+        if (endTime.getTime().before(startTime.getTime())) {
+            Toast.makeText(this, "The current starttime is set after the endtime. While this does not compute you can confirm, but it won't end when you set.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -550,6 +566,8 @@ public class EventActivity extends AppCompatActivityRest {
                         attendees[i] = attendee;
                     }
                     this.attendees = attendees;
+                    String text = attendees.length + " ".concat(getResources().getString(R.string.attendees_textview));
+                    attendeesTextview.setText(text);
                 }
             }
         }
