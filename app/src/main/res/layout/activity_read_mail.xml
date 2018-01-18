@@ -11,16 +11,18 @@
         android:id="@+id/barlayout_read"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_read"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
             app:contentInsetLeft="0dp"
             app:contentInsetStart="0dp"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
             app:subtitleTextAppearance="@style/Toolbar.SubTitleText"
             app:titleTextAppearance="@style/Toolbar.TitleText">
 
@@ -28,267 +30,275 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/drawer"
+    <ScrollView
+        android:id="@+id/scrollView3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barlayout_read">
 
-        <ImageView
-            android:id="@+id/maximize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:paddingBottom="5dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_add_black_24dp" />
-
-        <ImageView
-            android:id="@+id/minimize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:paddingBottom="5dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_remove_black_24dp" />
-
-        <TextView
-            android:id="@+id/from"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:paddingLeft="@dimen/margin_read"
-            android:text="@string/from"
-            android:textColor="@color/from"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/minimize" />
-
-        <TextView
-            android:id="@+id/from_content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/fab_margin"
-            android:paddingLeft="6dp"
-            android:textAlignment="textStart"
-            android:textColor="@color/from"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/from"
-            app:layout_constraintTop_toBottomOf="@+id/minimize" />
-
-        <TextView
-            android:id="@+id/from_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_read"
-            android:minWidth="100dp"
-            android:paddingLeft="@dimen/margin_read"
-            android:text="@string/from_email"
-            android:textColor="@color/from"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/from" />
-
-        <TextView
-            android:id="@+id/from_email_content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_read"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:paddingEnd="@dimen/fab_margin"
-            android:paddingLeft="6dp"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:textAlignment="textStart"
-            android:textColor="@color/from"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/from_email"
-            app:layout_constraintTop_toBottomOf="@+id/from_content" />
-
-        <TextView
-            android:id="@+id/recepient"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_read"
-            android:minWidth="100dp"
-            android:paddingLeft="@dimen/margin_read"
-            android:text="@string/to"
-            android:textColor="@color/from"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/from_email" />
-
-        <TextView
-            android:id="@+id/recepient_content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_read"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:paddingEnd="@dimen/fab_margin"
-            android:paddingLeft="6dp"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:textAlignment="textStart"
-            android:textColor="@color/from"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/recepient"
-            app:layout_constraintTop_toBottomOf="@+id/from_email_content" />
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_read"
-            android:minWidth="100dp"
-            android:paddingLeft="@dimen/margin_read"
-            android:text="@string/date"
-            android:textColor="@color/from"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recepient" />
-
-        <TextView
-            android:id="@+id/date_content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_read"
-            android:paddingEnd="@dimen/fab_margin"
-            android:paddingLeft="6dp"
-            android:textAlignment="textStart"
-            android:textColor="@color/from"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/date"
-            app:layout_constraintTop_toBottomOf="@+id/recepient_content" />
-
-        <TextView
-            android:id="@+id/subject"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_read"
-            android:minWidth="100dp"
-            android:paddingLeft="@dimen/margin_read"
-            android:text="@string/subject"
-            android:textColor="@color/from"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/date" />
-
-        <TextView
-            android:id="@+id/subject_content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_read"
-            android:paddingEnd="@dimen/fab_margin"
-            android:paddingLeft="6dp"
-            android:textAlignment="textStart"
-            android:textColor="@color/from"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/subject"
-            app:layout_constraintTop_toBottomOf="@+id/date_content" />
-
-        <WebView
-            android:id="@+id/body_content"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="28dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subject_content">
-        </WebView>
-
-        <ImageView
-            android:id="@+id/bg_temp"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:clickable="true"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@color/black2" />
-
-        <ImageView
-            android:id="@+id/attachment_download"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            app:layout_constraintBottom_toTopOf="@+id/body_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subject_content"
-            app:srcCompat="@drawable/ic_attach_file_blackvector_24dp" />
-
-        <ListView
-            android:id="@+id/folderlist"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/corners"
-            android:padding="4dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></ListView>
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/close_folder_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@id/folderlist"
-            app:layout_constraintTop_toTopOf="@+id/folderlist"
-            app:srcCompat="@drawable/ic_close_black_24dp" />
 
-        <ListView
-            android:id="@+id/attachmentlist"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/corners"
-            android:padding="4dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></ListView>
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/drawer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/close_attachment_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@id/attachmentlist"
-            app:layout_constraintTop_toTopOf="@+id/attachmentlist"
-            app:srcCompat="@drawable/ic_close_black_24dp" />
+                <TextView
+                    android:id="@+id/from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:minWidth="100dp"
+                    android:paddingLeft="@dimen/margin_read"
+                    android:text="@string/from"
+                    android:textColor="@color/from"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+                <TextView
+                    android:id="@+id/from_content"
+                    android:layout_width="0dp"
+                    android:layout_height="19dp"
+                    android:layout_marginTop="8dp"
+                    android:paddingEnd="@dimen/fab_margin"
+                    android:paddingLeft="6dp"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/from"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@id/from"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/from_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_read"
+                    android:minWidth="100dp"
+                    android:paddingLeft="@dimen/margin_read"
+                    android:text="@string/from_email"
+                    android:textColor="@color/from"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/from" />
+
+                <TextView
+                    android:id="@+id/from_email_content"
+                    android:layout_width="0dp"
+                    android:layout_height="19dp"
+                    android:layout_marginTop="10dp"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:paddingEnd="@dimen/fab_margin"
+                    android:paddingLeft="6dp"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/from"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@id/from_email"
+                    app:layout_constraintTop_toBottomOf="@+id/from_content" />
+
+                <TextView
+                    android:id="@+id/recepient"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_read"
+                    android:minWidth="100dp"
+                    android:paddingLeft="@dimen/margin_read"
+                    android:text="@string/to"
+                    android:textColor="@color/from"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/from_email" />
+
+                <TextView
+                    android:id="@+id/recepient_content"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:paddingEnd="@dimen/fab_margin"
+                    android:paddingLeft="6dp"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/from"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@id/recepient"
+                    app:layout_constraintTop_toBottomOf="@+id/from_email_content" />
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_read"
+                    android:minWidth="100dp"
+                    android:paddingLeft="@dimen/margin_read"
+                    android:text="@string/date"
+                    android:textColor="@color/from"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/recepient" />
+
+                <TextView
+                    android:id="@+id/date_content"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingEnd="@dimen/fab_margin"
+                    android:paddingLeft="6dp"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/from"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@id/date"
+                    app:layout_constraintTop_toBottomOf="@+id/recepient_content" />
+
+                <TextView
+                    android:id="@+id/subject"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_read"
+                    android:minWidth="100dp"
+                    android:paddingLeft="@dimen/margin_read"
+                    android:text="@string/subject"
+                    android:textColor="@color/from"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/date" />
+
+                <TextView
+                    android:id="@+id/subject_content"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="10dp"
+                    android:paddingEnd="@dimen/fab_margin"
+                    android:paddingLeft="6dp"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/from"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toStartOf="@+id/attachment_download"
+                    app:layout_constraintStart_toEndOf="@id/subject"
+                    app:layout_constraintTop_toBottomOf="@+id/date_content" />
+
+                <ImageView
+                    android:id="@+id/bg_temp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:clickable="true"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@color/black2" />
+
+                <ImageView
+                    android:id="@+id/attachment_download"
+                    android:layout_width="29dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/subject_content"
+                    app:layout_constraintTop_toBottomOf="@+id/date_content"
+                    app:srcCompat="@drawable/ic_attach_file_blackvector_24dp" />
+
+                <ListView
+                    android:id="@+id/folderlist"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/corners"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"></ListView>
+
+                <ImageView
+                    android:id="@+id/close_folder_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="@id/folderlist"
+                    app:layout_constraintTop_toTopOf="@+id/folderlist"
+                    app:srcCompat="@drawable/ic_close_black_24dp" />
+
+                <ListView
+                    android:id="@+id/attachmentlist"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/corners"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"></ListView>
+
+                <ImageView
+                    android:id="@+id/close_attachment_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="@id/attachmentlist"
+                    app:layout_constraintTop_toTopOf="@+id/attachmentlist"
+                    app:srcCompat="@drawable/ic_close_black_24dp" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <WebView
+                android:id="@+id/body_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout"></WebView>
+
+        </android.support.constraint.ConstraintLayout>
+
+
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
