@@ -49,6 +49,7 @@ import ap.student.outlook_mobile_app.DAL.OutlookObjectCall;
 import ap.student.outlook_mobile_app.DAL.enums.SendMailType;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
+import ap.student.outlook_mobile_app.contacts.activity.EditContactActivity;
 import ap.student.outlook_mobile_app.mailing.adapter.AttachmentAdapter;
 import ap.student.outlook_mobile_app.mailing.adapter.FolderAdapter;
 import ap.student.outlook_mobile_app.mailing.model.Attachment;
@@ -465,104 +466,127 @@ public class ReadMailActivity extends AppCompatActivityRest{
                 finish();
                 break;
             case R.id.action_delete:
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReadMailActivity.this);
-                alertDialogBuilder.setTitle(R.string.alert_delete_title)
-                        .setIcon(R.drawable.ic_delete_black_24dp)
-                        .setMessage(R.string.alert_delete_message)
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                try {
-                                    new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL, ReadMailActivity.this,"/" + getIntent().getStringExtra("ID"));
-                                    Toast.makeText(ReadMailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent();
-                                    intent.putExtra("POSITION", getIntent().getIntExtra("POSITION", -1));
-                                    finish();//finishing activity
-                                } catch (IllegalAccessException e) {
-                                    Toast.makeText(ReadMailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
-                                    e.getStackTrace();
+                if(connectivityManager.isConnected()){
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReadMailActivity.this);
+                    alertDialogBuilder.setTitle(R.string.alert_delete_title)
+                            .setIcon(R.drawable.ic_delete_black_24dp)
+                            .setMessage(R.string.alert_delete_message)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface arg0, int arg1) {
+                                    try {
+                                        new GraphAPI().deleteRequest(OutlookObjectCall.UPDATEMAIL, ReadMailActivity.this,"/" + getIntent().getStringExtra("ID"));
+                                        Toast.makeText(ReadMailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent();
+                                        intent.putExtra("POSITION", getIntent().getIntExtra("POSITION", -1));
+                                        finish();//finishing activity
+                                    } catch (IllegalAccessException e) {
+                                        Toast.makeText(ReadMailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
+                                        e.getStackTrace();
+                                    }
+                                    Intent intent = new Intent(ReadMailActivity.this, MailActivity.class);
+                                    startActivity(intent);
                                 }
-                                Intent intent = new Intent(ReadMailActivity.this, MailActivity.class);
-                                startActivity(intent);
-                            }
-                        })
-                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .create()
-                        .show();
+                            })
+                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .create()
+                            .show();
+                } else {
+                    Toast.makeText(ReadMailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case R.id.reply:
-                Intent intentReply = new Intent(this, NewMailActivity.class);
-                intentReply.putExtra("mailType", SendMailType.REPLY.value());
-                intentReply.putExtra("ID", getIntent().getStringExtra("ID"));
-                startActivity(intentReply);
+                if (connectivityManager.isConnected()){
+                    Intent intentReply = new Intent(this, NewMailActivity.class);
+                    intentReply.putExtra("mailType", SendMailType.REPLY.value());
+                    intentReply.putExtra("ID", getIntent().getStringExtra("ID"));
+                    startActivity(intentReply);
+                } else {
+                    Toast.makeText(ReadMailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case R.id.reply_all:
-                Intent intentReplyAll = new Intent(this, NewMailActivity.class);
-                intentReplyAll.putExtra("mailType", SendMailType.REPLYALL.value());
-                intentReplyAll.putExtra("ID", getIntent().getStringExtra("ID"));
-                startActivity(intentReplyAll);
+                if (connectivityManager.isConnected()) {
+                    Intent intentReplyAll = new Intent(this, NewMailActivity.class);
+                    intentReplyAll.putExtra("mailType", SendMailType.REPLYALL.value());
+                    intentReplyAll.putExtra("ID", getIntent().getStringExtra("ID"));
+                    startActivity(intentReplyAll);
+                } else {
+                    Toast.makeText(ReadMailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case R.id.forward:
-                Intent intentForward = new Intent(this, NewMailActivity.class);
-                intentForward.putExtra("mailType", SendMailType.FORWARD.value());
-                intentForward.putExtra("ID", getIntent().getStringExtra("ID"));
-                startActivity(intentForward);
+                if (connectivityManager.isConnected()) {
+                    Intent intentForward = new Intent(this, NewMailActivity.class);
+                    intentForward.putExtra("mailType", SendMailType.FORWARD.value());
+                    intentForward.putExtra("ID", getIntent().getStringExtra("ID"));
+                    startActivity(intentForward);
+                } else {
+                    Toast.makeText(ReadMailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.action_map:
-                folders = new Gson().fromJson(sharedPreferences.getString("AllMailFolders", "[]"), new TypeToken<ArrayList<MailFolder>>(){}.getType());
-                mListView.setVisibility(View.VISIBLE);
-                closeFolderList.setVisibility(View.VISIBLE);
-                bgTemp.setVisibility(View.VISIBLE);
-                FolderAdapter adapter = new FolderAdapter(this, folders);
-                mListView.setAdapter(adapter);
-                mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                        final MailFolder selectedFolder = folders.get(position);
-                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReadMailActivity.this);
-                        alertDialogBuilder.setTitle(R.string.alert_folder_title)
-                                .setIcon(R.drawable.ic_folder_bluevector_24dp)
-                                .setMessage(R.string.alert_folder_message)
-                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                JSONObject jsonObject = new JSONObject();
-                                try {
-                                    jsonObject.put("DestinationId", selectedFolder.getId());
-                                    new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, ReadMailActivity.this, jsonObject, "/" + getIntent().getStringExtra("ID") + "/move");
-                                    Toast.makeText(ReadMailActivity.this, R.string.move_succeed, Toast.LENGTH_SHORT).show();
+                if (connectivityManager.isConnected()){
+                    folders = new Gson().fromJson(sharedPreferences.getString("AllMailFolders", "[]"), new TypeToken<ArrayList<MailFolder>>(){}.getType());
+                    mListView.setVisibility(View.VISIBLE);
+                    closeFolderList.setVisibility(View.VISIBLE);
+                    bgTemp.setVisibility(View.VISIBLE);
+                    FolderAdapter adapter = new FolderAdapter(this, folders);
+                    mListView.setAdapter(adapter);
+                    mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                            final MailFolder selectedFolder = folders.get(position);
+                            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReadMailActivity.this);
+                            alertDialogBuilder.setTitle(R.string.alert_folder_title)
+                                    .setIcon(R.drawable.ic_folder_bluevector_24dp)
+                                    .setMessage(R.string.alert_folder_message)
+                                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface arg0, int arg1) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            try {
+                                                jsonObject.put("DestinationId", selectedFolder.getId());
+                                                new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, ReadMailActivity.this, jsonObject, "/" + getIntent().getStringExtra("ID") + "/move");
+                                                Toast.makeText(ReadMailActivity.this, R.string.move_succeed, Toast.LENGTH_SHORT).show();
 
-                                } catch (JSONException | IllegalAccessException e) {
-                                    Toast.makeText(ReadMailActivity.this, R.string.move_failed, Toast.LENGTH_SHORT).show();
-                                    e.printStackTrace();
-                                }
-                                startActivity(new Intent(ReadMailActivity.this, MailActivity.class));
+                                            } catch (JSONException | IllegalAccessException e) {
+                                                Toast.makeText(ReadMailActivity.this, R.string.move_failed, Toast.LENGTH_SHORT).show();
+                                                e.printStackTrace();
+                                            }
+                                            startActivity(new Intent(ReadMailActivity.this, MailActivity.class));
 
-                            }
-                        })
-                                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                                .create()
-                                .show();
-                    }
-                });
-                closeFolderList.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mListView.setVisibility(View.GONE);
-                        closeFolderList.setVisibility(View.GONE);
-                        bgTemp.setVisibility(View.GONE);
-                    }
-                });
+                                        }
+                                    })
+                                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    })
+                                    .create()
+                                    .show();
+                        }
+                    });
+                    closeFolderList.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mListView.setVisibility(View.GONE);
+                            closeFolderList.setVisibility(View.GONE);
+                            bgTemp.setVisibility(View.GONE);
+                        }
+                    });
+                } else {
+                    Toast.makeText(ReadMailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                }
 
                 break;
         }

@@ -175,6 +175,12 @@
     <string name="download_at"><![CDATA[Do you want to download & open the attachment?]]></string>
     <string name="alert_open_attach">Are you sure you want to open and download this attachment?</string>
     <string name="alert_info_attach">The file will be saved in your download folder</string>
+    <string name="offline_error">This functionality is not supported in the offline version</string>
+    <string name="login_first">Login at least 1 time to start using the app in offline mode</string>
+    <string name="action_addmap">Add folder</string>
+    <string name="add_newmap">Add a new folder</string>
+    <string name="add_foldername">Enter foldername</string>
+    <string name="folder_adderror">Error saving folder</string>
 
 
 </resources>

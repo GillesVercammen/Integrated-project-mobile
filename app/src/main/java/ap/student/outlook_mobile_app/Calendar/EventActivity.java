@@ -117,7 +117,7 @@ public class EventActivity extends AppCompatActivityRest {
         isAllDayCheckBox = (CheckBox) findViewById(R.id.eventAllDayCheckbox);
         isPrivateCheckBox = (CheckBox) findViewById(R.id.eventPrivateCheckbox);
 
-        dateTimeFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+        dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         startTime = java.util.Calendar.getInstance();
         if (getIntent().getStringExtra("time") != null) {
             startTime.setTime(new Gson().fromJson(getIntent().getStringExtra("time"), java.util.Calendar.class).getTime());

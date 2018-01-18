@@ -42,7 +42,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingRight="10dp"
+            android:paddingStart="10dp">
 
             <TextView
                 android:id="@+id/detailsTitle"
@@ -174,8 +176,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textMultiLine"
-                android:hint="@string/event_description_textview"/>
+                android:hint="@string/event_description_textview"
+                android:inputType="textMultiLine" />
 
             <Button
                 android:id="@+id/eventAddAttendeesButton"
