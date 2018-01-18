@@ -77,6 +77,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
     protected ContactsAdapter mAdapter;
     private SearchView searchView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,9 +98,13 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addContactIntent = new Intent(ContactsActivity.this, AddContactActivity.class);
-                startActivity(addContactIntent);
-            }
+                if(connectivityManager.isConnected()) {
+                    Intent addContactIntent = new Intent(ContactsActivity.this, AddContactActivity.class);
+                    startActivity(addContactIntent);
+                } else {
+                    Toast.makeText(ContactsActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                    }
+                }
         });
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
@@ -142,7 +147,21 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                 new Runnable() {
                     @Override
                     public void run() {
-                        getAllContacts();
+                        if (connectivityManager.isConnected()) {
+                            getAllContacts();
+                        } else {
+                            if(sharedPreferences.getString("Contacts", null) != null) {
+                                Type listType = new TypeToken<List<Contact>>() {
+                                }.getType();
+                                contacts = gson.fromJson(sharedPreferences.getString("Contacts", null), listType);
+                                mAdapter = new ContactsAdapter(ContactsActivity.this, contacts, ContactsActivity.this);
+                                recyclerView.setAdapter(mAdapter);
+                                mAdapter.notifyDataSetChanged();
+                                swipeRefreshLayout.setRefreshing(false);
+                            } else {
+                                Toast.makeText(ContactsActivity.this, R.string.login_first, Toast.LENGTH_LONG).show();
+                            }
+                        }
                     }
                 }
         );
@@ -193,6 +212,8 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
         // HANDLE ACTIONBAR CLICKS.
         // AUTOMATICLY SPECIFY HOME/BACK BUTTON IF PARENTACTIVTY IS SET IN MANIFEST
         switch (item.getItemId()) {
+            case R.id.action_logout:
+                actionLogout();
             case android.R.id.home:
                 finish();
                 break;
@@ -257,6 +278,8 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                editor.putString("Contacts", gson.toJson(contacts));
+                editor.commit();
                 mAdapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -282,7 +305,6 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
         if (mAdapter.getSelectedItemCount() > 0) {
             enableActionMode(position);
         } else {
-            // READ THE MESSAGE, REMOVE BOLD FONT
             Contact contact = mAdapter.getItemAtPosition(position);
             Intent intent = new Intent(this, ContactDetailActivity.class);
             intent.putExtra("CONTACT", contact);
@@ -324,38 +346,43 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
             // CHECK WHICH ITEM CLICKED WHEN IN ACTIONMODE
             switch (item.getItemId()) {
                 case R.id.action_delete:
-                    // delete all the selected messages
-                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ContactsActivity.this);
-                    alertDialogBuilder.setTitle(R.string.alert_delete_title_contacts)
-                            .setIcon(R.drawable.ic_delete_black_24dp)
-                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface arg0, int arg1) {
-                                    try {
-                                        deleteContacts();
-                                        Toast.makeText(ContactsActivity.this, R.string.delete_succes_contacts, Toast.LENGTH_SHORT).show();
-                                    } catch (IllegalAccessException e) {
-                                        e.printStackTrace();
-                                        Toast.makeText(ContactsActivity.this, R.string.delete_nosucces_contacts, Toast.LENGTH_SHORT).show();
+                    if (connectivityManager.isConnected()){
+                        // delete all the selected messages
+                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ContactsActivity.this);
+                        alertDialogBuilder.setTitle(R.string.alert_delete_title_contacts)
+                                .setIcon(R.drawable.ic_delete_black_24dp)
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        try {
+                                            deleteContacts();
+                                            Toast.makeText(ContactsActivity.this, R.string.delete_succes_contacts, Toast.LENGTH_SHORT).show();
+                                        } catch (IllegalAccessException e) {
+                                            e.printStackTrace();
+                                            Toast.makeText(ContactsActivity.this, R.string.delete_nosucces_contacts, Toast.LENGTH_SHORT).show();
+                                        }
+                                        mode.finish();
+                                        mode.finish();
                                     }
-                                    mode.finish();
-                                    mode.finish();
-                                }
-                            })
-                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
-                    if (mAdapter.getSelectedItemCount() > 1) {
-                        alertDialogBuilder.setMessage(R.string.alert_delete_contacts_multiple);
-                    } else {
-                        alertDialogBuilder.setMessage(R.string.alert_delete_contact);
-                    }
-                    alertDialogBuilder.create().show();
+                                })
+                                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        if (mAdapter.getSelectedItemCount() > 1) {
+                            alertDialogBuilder.setMessage(R.string.alert_delete_contacts_multiple);
+                        } else {
+                            alertDialogBuilder.setMessage(R.string.alert_delete_contact);
+                        }
+                        alertDialogBuilder.create().show();
 
-                    return true;
+                        return true;
+                    } else {
+                        Toast.makeText(ContactsActivity.this, R.string.offline_error, Toast.LENGTH_SHORT).show();
+                    }
+
 
                 default:
                     return false;
@@ -385,10 +412,13 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
 
     private void getAllContacts() {
-        try {
-            new GraphAPI().getRequest(OutlookObjectCall.CONTACTS, this, "?$top=" + AANTAL_CONTACTS +"&$orderby=displayName");
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+
+        if (connectivityManager.isConnected()){
+            try {
+                new GraphAPI().getRequest(OutlookObjectCall.CONTACTS, this, "?$top=" + AANTAL_CONTACTS +"&$orderby=displayName");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
     }
 

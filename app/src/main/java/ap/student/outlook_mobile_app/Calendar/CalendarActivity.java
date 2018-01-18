@@ -121,7 +121,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+
 
         /**
          * Tabs setup
@@ -265,6 +265,9 @@ public class CalendarActivity extends AppCompatActivityRest {
             case android.R.id.home : {
                 finish();
             }
+            break;
+            case R.id.action_logout:
+                actionLogout();
             break;
         }
         return super.onOptionsItemSelected(item);

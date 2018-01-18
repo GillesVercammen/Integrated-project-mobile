@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -119,9 +120,10 @@ public class EventActivity extends AppCompatActivityRest {
         isAllDayCheckBox = (CheckBox) findViewById(R.id.eventAllDayCheckbox);
         isPrivateCheckBox = (CheckBox) findViewById(R.id.eventPrivateCheckbox);
 
-        attendeesTextview = (TextView) findViewById(R.id.attendeesTextview);
 
-        dateTimeFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+        dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        attendeesTextview = (TextView) findViewById(R.id.attendeesTextview);
         startTime = java.util.Calendar.getInstance();
         if (getIntent().getStringExtra("time") != null) {
             startTime.setTime(new Gson().fromJson(getIntent().getStringExtra("time"), java.util.Calendar.class).getTime());
@@ -230,7 +232,6 @@ public class EventActivity extends AppCompatActivityRest {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
         microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
         microsoftDateFormat.setTimeZone(TimeZone.getDefault());

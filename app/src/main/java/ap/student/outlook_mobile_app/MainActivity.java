@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivityRest {
 
         if (connectivityManager.isConnected()) {
             actionLogin();
+        } else {
+            startActivity(new Intent(this, MailActivity.class));
         }
     }
 
@@ -92,10 +94,12 @@ public class MainActivity extends AppCompatActivityRest {
         switch (outlookObjectCall) {
             case LOGINERROR: {
                 Toast.makeText(this, "Can't connect to the internet.", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(this, MailActivity.class);
+                startActivity(intent);
             }
             break;
             case PERMISSIONSERROR: {
-                Toast.makeText(this, "CANNOT LOG IN", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "CANNOT LOG IN, PERMISSION NOT GRANTED", Toast.LENGTH_LONG).show();
             }
             break;
         }

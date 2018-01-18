@@ -201,10 +201,15 @@ public class ContactDetailActivity extends AppCompatActivityRest {
         emailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent sendMailIntent = new Intent(ContactDetailActivity.this, NewMailActivity.class);
-                sendMailIntent.putExtra("mailType", SendMailType.NORMALSEND.value());
-                sendMailIntent.putExtra("TO", contact.getEmailAddresses().get(0).getAddress());
-                startActivity(sendMailIntent);
+                if (connectivityManager.isConnected()){
+                    Intent sendMailIntent = new Intent(ContactDetailActivity.this, NewMailActivity.class);
+                    sendMailIntent.putExtra("mailType", SendMailType.NORMALSEND.value());
+                    sendMailIntent.putExtra("TO", contact.getEmailAddresses().get(0).getAddress());
+                    startActivity(sendMailIntent);
+                } else {
+                    Toast.makeText(ContactDetailActivity.this, R.string.offline_error, Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -326,9 +331,14 @@ public class ContactDetailActivity extends AppCompatActivityRest {
                 finish();
                 break;
             case R.id.action_edit:
-               Intent intent = new Intent(ContactDetailActivity.this, EditContactActivity.class);
-               intent.putExtra("CONTACT", contact);
-               startActivity(intent);
+                if (connectivityManager.isConnected()){
+                    Intent intent = new Intent(ContactDetailActivity.this, EditContactActivity.class);
+                    intent.putExtra("CONTACT", contact);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, R.string.offline_error, Toast.LENGTH_SHORT).show();
+                }
+
         }
         return super.onOptionsItemSelected(item);
     }

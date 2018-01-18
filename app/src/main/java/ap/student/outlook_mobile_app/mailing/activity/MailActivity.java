@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,13 +98,14 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     private ArrayList<MailFolder> foldersWithMail;
     private ArrayList<String> foldernames;
     private ArrayList<Integer> folderunread;
+    private boolean isConnected;
+    private Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_mail);
         super.onCreate(savedInstanceState);
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         /*
@@ -129,26 +131,41 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         //  ArrayList<MailFolder> folders = (ArrayList<MailFolder>) args.getSerializable("FOLDERS");
 
         // SET TOOLBAR
-        user = Authentication.getAuthentication().getAuthResult().getUser();
-        currentUserEmail = user.getDisplayableId();
-        currentUserName = user.getName();
+        if(connectivityManager.isConnected()) {
+            user = Authentication.getAuthentication().getAuthResult().getUser();
+            currentUserEmail = user.getDisplayableId();
+            currentUserName = user.getName();
+            editor.putString("UserEmail", currentUserEmail);
+            editor.putString("UserName", currentUserName);
+            editor.commit();
+            try {
+                new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this, "?$top=20");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                Toast.makeText(MailActivity.this, R.string.folder_error, Toast.LENGTH_SHORT).show();
+            }
+
+        } else {
+            currentUserEmail = sharedPreferences.getString("UserEmail", "Offline");
+            currentUserName = sharedPreferences.getString("UserName", "Offline");
+        }
+
         setActionBarMail(currentFolderName, currentUserEmail, toolbar);
         setSupportActionBar(toolbar);
 
         // SET DRAWER (HAMBURGER MENU)
-        try {
-            new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this, "?$top=20");
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            Toast.makeText(MailActivity.this, R.string.folder_error, Toast.LENGTH_SHORT).show();
-        }
 
         // SET FLOATINGBUTTON
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onNewMailButtonClicked();
+                if (connectivityManager.isConnected()) {
+                    onNewMailButtonClicked();
+                } else {
+                    Toast.makeText(MailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
@@ -191,11 +208,29 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 new Runnable() {
                     @Override
                     public void run() {
-                        getAllMails(START_AMOUNT_OF_EMAILS);
+                        if (connectivityManager.isConnected()){
+                            getAllMails(START_AMOUNT_OF_EMAILS);
+                        } else {
+                            if(sharedPreferences.getString("Messages" + currentFolderName, null) != null) {
+                                Type listType = new TypeToken<List<Message>>() {
+                                }.getType();
+                                messages = gson.fromJson(sharedPreferences.getString("Messages" + currentFolderName, null), listType);
+                                mAdapter = new MessagesAdapter(MailActivity.this, messages, MailActivity.this);
+                                recyclerView.setAdapter(mAdapter);
+                                mAdapter.notifyDataSetChanged();
+                                swipeRefreshLayout.setRefreshing(false);
+                            } else {
+                                Toast.makeText(MailActivity.this, R.string.login_first, Toast.LENGTH_LONG).show();
+                            }
+                        }
+
                     }
                 }
         );
 
+        if (!connectivityManager.isConnected()) {
+            swipeRefreshLayout.setEnabled(false);
+        }
         // FOR LOADMORE
         final LinearLayoutManager layoutManager = ((LinearLayoutManager)recyclerView.getLayoutManager());
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -207,14 +242,18 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                     if (lastVisiblePosition == recyclerView.getAdapter().getItemCount() -1 &&
                             recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom() <= recyclerView.getHeight() && recyclerView.getAdapter().getItemCount() > 5) {
                         if (loadmore) {
-                            loadmore = false;
-                            loadMoreEmails(recyclerView.getAdapter().getItemCount(), LOAD_MORE_EMAILS);
+                            if (connectivityManager.isConnected()){
+                                loadmore = false;
+                                loadMoreEmails(recyclerView.getAdapter().getItemCount(), LOAD_MORE_EMAILS);
+                            } else {
+                                Toast.makeText(MailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                            }
+
                         }
                     }
                 }
             }
         });
-
 
         /*
         DIRTIEST SHITTY CODE EVER WRITTEN IN JAVA/ANDROID HISTORY
@@ -222,10 +261,26 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         SO WE INITIALIZE MENU WITH 1 NOT FOUND ITEM, WHEN CALL IS DONE, IT REPLACES THE MENU WITH CORRECT MENU
         SORRY :) :) :)
          */
-        foldersWithMail = new ArrayList<>();
-        foldersWithMail.add(new MailFolder("1", "Not found", 0, 0));
+        if (connectivityManager.isConnected()) {
+            foldersWithMail = new ArrayList<>();
+            foldersWithMail.add(new MailFolder("1", "Not found", 0, 0));
+        } else {
+            if (sharedPreferences.getString("MailFolders", "").equals("")){
+                Type listType = new TypeToken<List<MailFolder>>() {
+                }.getType();
+                foldersWithMail = gson.fromJson(sharedPreferences.getString("MailFolders", ""), listType);
+            } else {
+                Toast.makeText(MailActivity.this, R.string.login_first, Toast.LENGTH_LONG).show();
+            }
+        }
 
-        createMenu(toolbar, currentUserName, currentUserEmail, foldersWithMail);
+        if (foldersWithMail != null) {
+            createMenu(toolbar, currentUserName, currentUserEmail, foldersWithMail);
+        } else {
+            foldersWithMail = new ArrayList<>();
+            foldersWithMail.add(new MailFolder("1", "Not found", 0, 0));
+        }
+
     }
 
     @Override
@@ -243,84 +298,127 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
 
         if (id == R.id.action_search) {
-            // UNABLE TO REFRESH/LOADMORE WHEN SEARCH I CLICKED
-            swipeRefreshLayout.setEnabled(false);
-            loadmore = false;
+            if (connectivityManager.isConnected()) {
+                // UNABLE TO REFRESH/LOADMORE WHEN SEARCH I CLICKED
+                swipeRefreshLayout.setEnabled(false);
+                loadmore = false;
 
-            // CHANGE ACTIONBAR TO SEARCH ACTIONBAR
-            linearLayout = (ViewGroup)findViewById(R.id.linear_tool);
-            drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-            linearLayout.setVisibility(View.VISIBLE);
-            getSupportActionBar().setSubtitle("");
-            getSupportActionBar().setTitle("");
-            searchField = (EditText) findViewById(R.id.search_field);
-            final ImageView backbtn = (ImageView) findViewById(R.id.search_back);
-            final ImageView speechbtn = (ImageView) findViewById(R.id.search_speech);
-            speechbtn.setImageResource(R.drawable.ic_mic_whitevector_24dp);
-            backbtn.setImageResource(R.drawable.ic_chevron_left_whitevector_24dp);
-            searchField.setVisibility(View.VISIBLE);
-            speechbtn.setVisibility(View.VISIBLE);
-            backbtn.setVisibility(View.VISIBLE);
+                // CHANGE ACTIONBAR TO SEARCH ACTIONBAR
+                linearLayout = (ViewGroup) findViewById(R.id.linear_tool);
+                drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+                linearLayout.setVisibility(View.VISIBLE);
+                getSupportActionBar().setSubtitle("");
+                getSupportActionBar().setTitle("");
+                searchField = (EditText) findViewById(R.id.search_field);
+                final ImageView backbtn = (ImageView) findViewById(R.id.search_back);
+                final ImageView speechbtn = (ImageView) findViewById(R.id.search_speech);
+                speechbtn.setImageResource(R.drawable.ic_mic_whitevector_24dp);
+                backbtn.setImageResource(R.drawable.ic_chevron_left_whitevector_24dp);
+                searchField.setVisibility(View.VISIBLE);
+                speechbtn.setVisibility(View.VISIBLE);
+                backbtn.setVisibility(View.VISIBLE);
 
-            // SPEECHLISTENER
-            speechbtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startVoiceInput();
-                }
-            });
+                // SPEECHLISTENER
+                speechbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startVoiceInput();
+                    }
+                });
 
-            // LISTEN FOR ENTERKEY PUSHED --> HIDE KEYBOARD, SEARCH WITH GIVEN STRING/EMAIL
-            searchField.setOnKeyListener(new View.OnKeyListener() {
-                public boolean onKey(View v, int keyCode,KeyEvent event){
-                    if((event.getAction()==KeyEvent.ACTION_DOWN) && (keyCode==KeyEvent.KEYCODE_ENTER)){
-                        String inputWord = searchField.getText().toString();
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(searchField.getWindowToken(),0);
-                        // CHECK IF INPUT IS EMAIL OR STRING
-                        if (!isEmailValid(inputWord)) {
-                            try {
-                                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/" + currentFolderId + "/messages?$search=" + inputWord);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
+                // LISTEN FOR ENTERKEY PUSHED --> HIDE KEYBOARD, SEARCH WITH GIVEN STRING/EMAIL
+                searchField.setOnKeyListener(new View.OnKeyListener() {
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                            String inputWord = searchField.getText().toString();
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(searchField.getWindowToken(), 0);
+                            // CHECK IF INPUT IS EMAIL OR STRING
+                            if (!isEmailValid(inputWord)) {
+                                try {
+                                    new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/" + currentFolderId + "/messages?$search=" + inputWord);
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/" + currentFolderId + "/messages?$filter=from/emailAddress/address eq '" + inputWord + "'");
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        } else {
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                // BACKBUTTON ON SEARCHBAR IS CLICK --> LEAVE SEARCHBACK AND GO BACK TO NORMAL STATE
+                backbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getSupportActionBar().setTitle(currentFolderName);
+                        getSupportActionBar().setSubtitle(getIntent().getStringExtra("USER_EMAIL"));
+                        drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                        linearLayout.setVisibility(View.GONE);
+                        searchField.setVisibility(View.GONE);
+                        backbtn.setVisibility(View.GONE);
+                        speechbtn.setVisibility(View.GONE);
+
+                        swipeRefreshLayout.post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getAllMails(START_AMOUNT_OF_EMAILS);
+                                    }
+                                }
+                        );
+                        swipeRefreshLayout.setEnabled(true);
+                        loadmore = true;
+                    }
+                });
+                return true;
+            } else {
+                Toast.makeText(MailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+            }
+        }
+        if (id == R.id.action_logout) {
+            actionLogout();
+        }
+
+        if (id == R.id.action_addmap) {
+            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MailActivity.this);
+            final EditText input = new EditText(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+
+            alertDialogBuilder.setTitle(R.string.add_newmap)
+                    .setIcon(R.drawable.ic_change_folder_whitevector_24dp)
+                    .setView(input)
+                    .setMessage(R.string.add_foldername
+                    )
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            String foldername = input.getText().toString();
+                            JSONObject jsonObject = new JSONObject();
                             try {
-                                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, MailActivity.this, "/" + currentFolderId + "/messages?$filter=from/emailAddress/address eq '" + inputWord + "'");
-                            } catch (IllegalAccessException e) {
+                                jsonObject.put("displayName", foldername);
+                                new GraphAPI().postRequest(OutlookObjectCall.ADDFOLDERS, MailActivity.this, jsonObject);
+                            } catch (JSONException | IllegalAccessException e) {
+                                Toast.makeText(MailActivity.this, R.string.folder_adderror, Toast.LENGTH_SHORT).show();
                                 e.printStackTrace();
                             }
                         }
-                        return true;
-                    }
-                    return false;
-                }
-            });
-            // BACKBUTTON ON SEARCHBAR IS CLICK --> LEAVE SEARCHBACK AND GO BACK TO NORMAL STATE
-            backbtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    getSupportActionBar().setTitle(currentFolderName);
-                    getSupportActionBar().setSubtitle(getIntent().getStringExtra("USER_EMAIL"));
-                    drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-                    linearLayout.setVisibility(View.GONE);
-                    searchField.setVisibility(View.GONE);
-                    backbtn.setVisibility(View.GONE);
-                    speechbtn.setVisibility(View.GONE);
-
-                    swipeRefreshLayout.post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    getAllMails(START_AMOUNT_OF_EMAILS);
-                                }
-                            }
-                    );
-                    swipeRefreshLayout.setEnabled(true);
-                    loadmore = true;
-                }
-            });
-            return true;
+                    })
+                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+            alertDialogBuilder.create().show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -362,17 +460,18 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 try {
                     TextView noEmail = (TextView) findViewById(R.id.no_email);
                     JSONArray mails = list.getJSONArray("value");
-                    // MAP ON POJO
                     Type listType = new TypeToken<List<Message>>() {
                     }.getType();
                     messages = new Gson().fromJson(String.valueOf(mails), listType);
+
                     //IF RESPONSE IS EMPTY SHOW: NO EMAILS FOUND
                     if (!messages.isEmpty()){
                         noEmail.setVisibility(View.GONE);
                         for (Message message : messages) {
                             // RANDOM COLOR OF ICON
-                            System.out.println("First letter here!" + message.getFrom().getEmailAddress().getName().charAt(0));
-                            message.setColor(getColorForCharacter(message.getFrom().getEmailAddress().getName().charAt(0)));
+                            if (message.getFrom() != null) {
+                                message.setColor(getColorForCharacter(message.getFrom().getEmailAddress().getName().charAt(0)));
+                            }
                         }
                     } else {
                         noEmail.setVisibility(View.VISIBLE);
@@ -384,7 +483,8 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+                editor.putString("Messages"+currentFolderName, gson.toJson(messages));
+                editor.commit();
                 mAdapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
 
@@ -400,7 +500,10 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     @Override
     public void onRefresh() {
         // SWIPE REFRESH IS PERFORME, FETCH INITIAL MAILS AGAIN
-        getAllMails(15);
+        if (connectivityManager.isConnected()){
+            getAllMails(15);
+        }
+
     }
 
     @Override
@@ -535,38 +638,41 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             // CHECK WHICH ITEM CLICKED WHEN IN ACTIONMODE
             switch (item.getItemId()) {
                 case R.id.action_delete:
-                    // delete all the selected messages
-                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MailActivity.this);
-                    alertDialogBuilder.setTitle(R.string.alert_delete_title)
-                            .setIcon(R.drawable.ic_delete_black_24dp)
-                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface arg0, int arg1) {
-                                    try {
-                                        deleteMessages();
-                                        Toast.makeText(MailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
-                                    } catch (IllegalAccessException e) {
-                                        e.printStackTrace();
-                                        Toast.makeText(MailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
+                    if(connectivityManager.isConnected()) {
+                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MailActivity.this);
+                        alertDialogBuilder.setTitle(R.string.alert_delete_title)
+                                .setIcon(R.drawable.ic_delete_black_24dp)
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        try {
+                                            deleteMessages();
+                                            Toast.makeText(MailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
+                                        } catch (IllegalAccessException e) {
+                                            e.printStackTrace();
+                                            Toast.makeText(MailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
+                                        }
+                                        mode.finish();
                                     }
-                                    mode.finish();
-                                }
-                            })
-                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
-                    if (mAdapter.getSelectedItemCount() > 1) {
-                        alertDialogBuilder.setMessage(R.string.alert_delete_message_multiple);
+                                })
+                                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        if (mAdapter.getSelectedItemCount() > 1) {
+                            alertDialogBuilder.setMessage(R.string.alert_delete_message_multiple);
+                        } else {
+                            alertDialogBuilder.setMessage(R.string.alert_delete_message);
+                        }
+                        alertDialogBuilder.create().show();
+
+                        return true;
                     } else {
-                        alertDialogBuilder.setMessage(R.string.alert_delete_message);
+                        Toast.makeText(MailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+                        return true;
                     }
-                    alertDialogBuilder.create().show();
-
-                    return true;
-
                 default:
                     return false;
             }
@@ -616,11 +722,14 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
     // GET {AANTALMAIL} MAILS
     private void getAllMails(int aantalMails) {
         swipeRefreshLayout.setRefreshing(true);
-        try {
-            new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "/" + currentFolderId + "/messages?$top=" + aantalMails);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        if (connectivityManager.isConnected()){
+            try {
+                new GraphAPI().getRequest(OutlookObjectCall.READMAIL, this, "/" + currentFolderId + "/messages?$top=" + aantalMails);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     // Pick the color for a specific character
@@ -638,7 +747,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
 
     private void onNewMailButtonClicked() {
         startActivity(new Intent(this, NewMailActivity.class));
-
 
     }
 
