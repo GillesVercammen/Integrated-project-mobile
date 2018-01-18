@@ -1,11 +1,20 @@
 package ap.student.outlook_mobile_app.mailing.activity;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +34,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +53,7 @@ import ap.student.outlook_mobile_app.DAL.models.Message;
 import ap.student.outlook_mobile_app.DAL.models.Recipient;
 import ap.student.outlook_mobile_app.Interfaces.AppCompatActivityRest;
 import ap.student.outlook_mobile_app.R;
+import ap.student.outlook_mobile_app.mailing.model.Attachment;
 
 /**
  * Created by Alexander on 12/7/2017.
@@ -64,6 +79,8 @@ public class NewMailActivity extends AppCompatActivityRest {
     public Body body;
     int columnIndex;
     String attachmentFile;
+    private List<Attachment> attachmentsList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,15 +193,32 @@ public class NewMailActivity extends AppCompatActivityRest {
     {
         if (requestCode == 101 && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
-            System.out.println(data.getData());
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+            //System.out.println(data.getData());
+            //String[] filePathColumn = { MediaStore.Images.Media.DATA, MediaStore.Files };
+            //Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+            //cursor.moveToFirst();
+            //columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            //attachmentFile = cursor.getString(columnIndex); //attachmentFile is null, columnIndex is 0
+            String realPath = getRealPathFromUri(this, selectedImage);
+            Log.e("Attachment Path:", selectedImage.toString());
+            Log.e("Attachment Real Path:", realPath);
+            URI = Uri.parse("file://" + realPath);
+            //cursor.close();
+        }
+    }
+
+    public static String getRealPathFromUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
-            columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            attachmentFile = cursor.getString(columnIndex); //attachmentFile is null, columnIndex is 0
-            Log.e("Attachment Path:", attachmentFile);
-            URI = Uri.parse("file://" + attachmentFile);
-            cursor.close();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 
@@ -315,14 +349,28 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         if (id == R.id.add_attachment) {
 
-            Toast.makeText(getApplicationContext(), R.string.add_attachment, Toast.LENGTH_SHORT).show();
+            if (Build.VERSION.SDK_INT < 23) {
+                Toast.makeText(getApplicationContext(), R.string.add_attachment, Toast.LENGTH_SHORT).show();
 
-            //do stuff
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.putExtra("return-data", true);
-            startActivityForResult(Intent.createChooser(intent, "Complete action using"), 101);
+                //do stuff
+                Intent intent = new Intent();
+                intent.setType("*/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.putExtra("return-data", true);
+                startActivityForResult(Intent.createChooser(intent, "Complete action using"), 101);
+            } else {
+
+                if (checkAndRequestPermissions()) {
+                    Toast.makeText(getApplicationContext(), R.string.add_attachment, Toast.LENGTH_SHORT).show();
+
+                    //do stuff
+                    Intent intent = new Intent();
+                    intent.setType("*/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.putExtra("return-data", true);
+                    startActivityForResult(Intent.createChooser(intent, "Complete action using"), 101);
+                }
+            }
 
 
             return true;
@@ -334,7 +382,7 @@ public class NewMailActivity extends AppCompatActivityRest {
 
             Toast.makeText(getApplicationContext(), R.string.sending_mail, Toast.LENGTH_SHORT).show();
             try {
-                sendMail();
+                sendMail(URI);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -350,7 +398,7 @@ public class NewMailActivity extends AppCompatActivityRest {
         return super.onOptionsItemSelected(item);
     }
 
-    public void sendMail() throws JSONException {
+    public void sendMail(Uri URI) throws JSONException {
 
         //body + addedMessage
 
@@ -396,12 +444,65 @@ public class NewMailActivity extends AppCompatActivityRest {
             message = new Message(subject, body, toRecipients);
         }
 
+        JSONObject JSONMessage = new JSONObject(new Gson().toJson(message));
+
+        //also convert URI thing to itemattachments
+
+        if (URI != null){
+
+            //E/Attachment Path:: content://media/external/images/media/92888 , uriString is file://content://media/external/images/media/92888
+
+
+            File originalFile = new File(URI.getPath());
+            String encodedBase64 = null;
+            try {
+                FileInputStream fileInputStreamReader = new FileInputStream(originalFile);
+                //originalFile = /media/external/images/media/92888
+                //no such file or directory /media/external/images/media/92888
+                System.out.println(originalFile.length());
+                byte[] bytes = new byte[(int)originalFile.length()];
+                fileInputStreamReader.read(bytes);
+                encodedBase64 = new String(Base64.encode(bytes, Base64.DEFAULT));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/user_sendmail
+            //"You can include a file attachment in the same sendMail action call."
+
+            //https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/resources/message
+            //Zie JSON representation onderaan:   "attachments": [{"@odata.type": "microsoft.graph.attachment"}],
+
+            //https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/resources/fileattachment
+            //Informatie over een file attachment
+
+            Attachment attachment = new Attachment();
+            attachment.setName("attachment");
+            attachment.setContentBytes(encodedBase64);
+
+            //attachmentsList.add(attachment);
+
+            JSONObject jsonAttachment = new JSONObject(new Gson().toJson(attachment));
+
+            JSONObject jsonAttachmentWrapped = new JSONObject();
+            jsonAttachmentWrapped.put("attachment", jsonAttachment);
+
+            JSONArray jsonAttachmentArray = new JSONArray();
+            jsonAttachmentArray.put(jsonAttachmentWrapped);
+
+            System.out.println(jsonAttachmentArray.toString());
+
+            JSONMessage.put("attachments", jsonAttachmentArray);
+
+            System.out.println(JSONMessage.toString());
+
+        }
+
         //convert Message object to JSON
-        JSONObject JSON = new JSONObject(new Gson().toJson(message));
 
         //wrap JSONobject in another JSONobject to make sure format is correct {"message": message}
         JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("message", JSON);
+        jsonMessage.put("message", JSONMessage);
 
         System.out.println("Message here!");
         System.out.println(jsonMessage);
@@ -411,11 +512,48 @@ public class NewMailActivity extends AppCompatActivityRest {
             new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, jsonMessage);
             Toast.makeText(getApplicationContext(), R.string.mail_sent, Toast.LENGTH_SHORT).show();
         } catch (IllegalAccessException e) {
-            Toast.makeText(getApplicationContext(), R.string.email_wrong, Toast.LENGTH_SHORT).show();
+                                          Toast.makeText(getApplicationContext(), R.string.email_wrong, Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
         this.finish();
+    }
+
+    private boolean checkAndRequestPermissions() {
+        int storageWritePermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+
+        int storageReadPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (storageReadPermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (storageWritePermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this,
+                    listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 2);
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 2:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    Toast.makeText(NewMailActivity.this, R.string.attachment_error, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
     public void getContacts(){

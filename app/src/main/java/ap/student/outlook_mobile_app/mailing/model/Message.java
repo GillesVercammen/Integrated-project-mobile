@@ -3,6 +3,7 @@ package ap.student.outlook_mobile_app.mailing.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Message implements Serializable{
 
@@ -15,6 +16,7 @@ public class Message implements Serializable{
     private String subject;
     private String bodyPreview;
     private String hasAttachments;
+    private List<Attachment> attachmentList;
     private String isRead;
     private Body body;
     private String importance;
