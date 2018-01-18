@@ -51,7 +51,6 @@
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".HomeActivity" />
         <activity android:name=".Calendar.CalendarActivity" />
         <activity android:name=".Calendar.EventActivity" />
         <activity android:name=".Calendar.CustomRecurrenceActivity" />
@@ -93,7 +92,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
->>>>>>>>> Temporary merge branch 2
-    </application>
+ </application>
 
 </manifest>
