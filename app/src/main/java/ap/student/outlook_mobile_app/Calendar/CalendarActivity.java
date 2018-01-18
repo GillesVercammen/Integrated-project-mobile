@@ -19,6 +19,7 @@ import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -254,7 +255,11 @@ public class CalendarActivity extends AppCompatActivityRest {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_event : {
-                editDayButtonClicked();
+                if (connectivityManager.isConnected()) {
+                    editDayButtonClicked();
+                } else {
+                    Toast.makeText(this, "You are currently offline, you can't create new events while you're offline.", Toast.LENGTH_LONG).show();
+                }
             }
             break;
             case android.R.id.home : {
@@ -284,10 +289,14 @@ public class CalendarActivity extends AppCompatActivityRest {
     @Override
     public void onResume() {
         super.onResume();
-        try {
-            graph.getRequest(OutlookObjectCall.READEVENTS, this);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        if (connectivityManager.isConnected()) {
+            try {
+                graph.getRequest(OutlookObjectCall.READEVENTS, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "The app is currently not connected to the internet. You can still watch the events, but you can't make or edit them.", Toast.LENGTH_LONG).show();
         }
     }
 

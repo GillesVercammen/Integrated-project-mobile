@@ -258,11 +258,19 @@ public class EventActivity extends AppCompatActivityRest {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save_event : {
-                onConfirmButtonClicked();
+                if (connectivityManager.isConnected()) {
+                    onConfirmButtonClicked();
+                } else {
+                    Toast.makeText(this, "You can't perform this action whilst logged out.", Toast.LENGTH_SHORT).show();
+                }
             }
             break;
             case R.id.action_delete : {
-                deleteEvent();
+                if (connectivityManager.isConnected()) {
+                    deleteEvent();
+                } else {
+                    Toast.makeText(this, "You can't perform this action whilst logged out.", Toast.LENGTH_SHORT).show();
+                }
             }
             break;
             case android.R.id.home : {
