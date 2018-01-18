@@ -229,6 +229,16 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@color/black2" />
 
+        <ImageView
+            android:id="@+id/attachment_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            app:layout_constraintBottom_toTopOf="@+id/body_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/subject_content"
+            app:srcCompat="@drawable/ic_attach_file_blackvector_24dp" />
+
         <ListView
             android:id="@+id/folderlist"
             android:layout_width="match_parent"
@@ -254,15 +264,30 @@
             app:layout_constraintTop_toTopOf="@+id/folderlist"
             app:srcCompat="@drawable/ic_close_black_24dp" />
 
+        <ListView
+            android:id="@+id/attachmentlist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/corners"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></ListView>
+
         <ImageView
-            android:id="@+id/attachment_download"
+            android:id="@+id/close_attachment_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            app:layout_constraintBottom_toTopOf="@+id/body_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subject_content"
-            app:srcCompat="@drawable/ic_attach_file_blackvector_24dp" />
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/attachmentlist"
+            app:layout_constraintTop_toTopOf="@+id/attachmentlist"
+            app:srcCompat="@drawable/ic_close_black_24dp" />
 
     </android.support.constraint.ConstraintLayout>
 

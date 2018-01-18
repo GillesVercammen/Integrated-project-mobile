@@ -230,6 +230,7 @@ public class EventActivity extends AppCompatActivityRest {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
         microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
         microsoftDateFormat.setTimeZone(TimeZone.getDefault());

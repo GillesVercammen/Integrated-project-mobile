@@ -1,6 +1,8 @@
 package ap.student.outlook_mobile_app.Calendar;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -118,6 +120,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
         /**
          * Tabs setup
@@ -275,6 +278,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         toolbar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
         // THIS LINE REMOVES ANNOYING LEFT MARGIN
         toolbar.setTitleMarginStart(30);
+
     }
 
     @Override
