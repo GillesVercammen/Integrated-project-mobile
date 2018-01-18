@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -87,8 +88,9 @@ public class EventActivity extends AppCompatActivityRest {
     private Map<Integer, Calendar> calendarMap;
     private Button addAttendeesButton;
     private EmailAddress organiser;
-    private Attendee attendees;
+    private Attendee[] attendees;
     private MenuItem delete;
+    private TextView attendeesTextview;
 
     private String id;
     private Event event;
@@ -99,6 +101,7 @@ public class EventActivity extends AppCompatActivityRest {
         setContentView(R.layout.activity_event);
         super.onCreate(savedInstanceState);
 
+        attendees = new Attendee[0];
         showAsMap = new HashMap<>();
         recurrenceMap = new HashMap<>();
         reminderMap = new HashMap<>();
@@ -117,7 +120,10 @@ public class EventActivity extends AppCompatActivityRest {
         isAllDayCheckBox = (CheckBox) findViewById(R.id.eventAllDayCheckbox);
         isPrivateCheckBox = (CheckBox) findViewById(R.id.eventPrivateCheckbox);
 
+
         dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        attendeesTextview = (TextView) findViewById(R.id.attendeesTextview);
         startTime = java.util.Calendar.getInstance();
         if (getIntent().getStringExtra("time") != null) {
             startTime.setTime(new Gson().fromJson(getIntent().getStringExtra("time"), java.util.Calendar.class).getTime());
@@ -218,6 +224,9 @@ public class EventActivity extends AppCompatActivityRest {
             }
         }
 
+        String text = attendees.length + " ".concat(getResources().getString(R.string.attendees_textview));
+        attendeesTextview.setText(text);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setActionBarMail(title, toolbar);
         setSupportActionBar(toolbar);
@@ -250,11 +259,19 @@ public class EventActivity extends AppCompatActivityRest {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save_event : {
-                onConfirmButtonClicked();
+                if (connectivityManager.isConnected()) {
+                    onConfirmButtonClicked();
+                } else {
+                    Toast.makeText(this, "You can't perform this action whilst logged out.", Toast.LENGTH_SHORT).show();
+                }
             }
             break;
             case R.id.action_delete : {
-                deleteEvent();
+                if (connectivityManager.isConnected()) {
+                    deleteEvent();
+                } else {
+                    Toast.makeText(this, "You can't perform this action whilst logged out.", Toast.LENGTH_SHORT).show();
+                }
             }
             break;
             case android.R.id.home : {
@@ -269,6 +286,8 @@ public class EventActivity extends AppCompatActivityRest {
         titleTextInput.setText(event.getSubject());
 
         String description = event.getBody().getContent();
+
+        attendees = event.getAttendees();
 
         if (description.length() > 2) {
             descriptionText.setText(description.split("<body>")[1].split("</body>")[0].replaceAll("<br>", "").substring(2));
@@ -306,8 +325,8 @@ public class EventActivity extends AppCompatActivityRest {
         // TODO : agenda is fucked
 
         index = 0;
-        for (ReminderMinutesBeforeStart r : reminderMap.values()) {
-            if (r.getValue() == event.getReminderMinutesBeforeStart()) {
+        while (index < reminderMap.values().size()) {
+            if (reminderMap.get(index).getValue() == event.getReminderMinutesBeforeStart()) {
                 break;
             }
             index ++;
@@ -318,8 +337,8 @@ public class EventActivity extends AppCompatActivityRest {
         reminderSpinner.setSelection(index);
 
         index = 0;
-        for (ShowAs s : showAsMap.values()) {
-            if (s.action().equals(event.getShowAs())) {
+        while (index < showAsMap.values().size()) {
+            if (showAsMap.get(index).action().equals(event.getShowAs())) {
                 break;
             }
             index++;
@@ -400,10 +419,20 @@ public class EventActivity extends AppCompatActivityRest {
     }
 
     private void onAddAttendeesButtonClicked() {
-        startActivityForResult(new Intent(this, AttendeesActivity.class), 201);
+        EmailAddress[] emailAddress = new EmailAddress[attendees.length];
+        for (int i = 0; i < attendees.length; i++) {
+            emailAddress[i] = attendees[i].getEmailAddress();
+        }
+        startActivityForResult(new Intent(this, AttendeesActivity.class).putExtra("attendees", new Gson().toJson(emailAddress)), 201);
     }
 
     private void onConfirmButtonClicked() {
+        if (startTime.getTime().after(endTime.getTime())) {
+            Toast.makeText(this, "The startime must be before the endtime, automatically changing the endtime.", Toast.LENGTH_SHORT).show();
+            endTime.setTime(startTime.getTime());
+            endTime.add(java.util.Calendar.HOUR, 1);
+        }
+
         Event event = new Event();
         event.setId(id);
         event.setSubject(titleTextInput.getText().toString());
@@ -439,6 +468,7 @@ public class EventActivity extends AppCompatActivityRest {
         /*event.setAttendees(new Attendee[] {
                 new Attendee("Required", new EmailAddress())
         });*/
+        event.setAttendees(attendees);
 
         String calendar = calendarMap.get(agendaSpinner.getSelectedItemPosition()).getId();
 
@@ -482,6 +512,9 @@ public class EventActivity extends AppCompatActivityRest {
             endTime.set(java.util.Calendar.HOUR, hourPicked);
             endTime.set(java.util.Calendar.MINUTE, minutePicked);
             endTimeTextview.setText(dateTimeFormatter.format(endTime.getTime()));
+        }
+        if (endTime.getTime().before(startTime.getTime())) {
+            Toast.makeText(this, "The current starttime is set after the endtime. While this does not compute you can confirm, but it won't end when you set.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -535,7 +568,16 @@ public class EventActivity extends AppCompatActivityRest {
             break;
             case 201 : {
                 if (resultCode == RESULT_OK) {
-                    System.out.println("Yolo");
+                    EmailAddress[] emailAddresses = new Gson().fromJson(data.getStringExtra("attendees"), EmailAddress[].class);
+                    Attendee[] attendees = new Attendee[emailAddresses.length];
+                    for (int i = 0; i < emailAddresses.length; i++) {
+                        Attendee attendee = new Attendee();
+                        attendee.setEmailAddress(emailAddresses[i]);
+                        attendees[i] = attendee;
+                    }
+                    this.attendees = attendees;
+                    String text = attendees.length + " ".concat(getResources().getString(R.string.attendees_textview));
+                    attendeesTextview.setText(text);
                 }
             }
         }

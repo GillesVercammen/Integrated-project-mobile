@@ -112,13 +112,15 @@
                 android:id="@+id/timeZoneText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/event_timezone_text" />
+                android:text="@string/event_timezone_text"
+                android:visibility="gone"/>
 
             <AutoCompleteTextView
                 android:id="@+id/eventTimezoneAutocomplete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/event_timezone_autocomplete" />
+                android:text="@string/event_timezone_autocomplete"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/eventRepeatText"
@@ -178,6 +180,12 @@
                 android:ems="10"
                 android:hint="@string/event_description_textview"
                 android:inputType="textMultiLine" />
+
+            <TextView
+                android:id="@+id/attendeesTextview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/attendees_textview" />
 
             <Button
                 android:id="@+id/eventAddAttendeesButton"

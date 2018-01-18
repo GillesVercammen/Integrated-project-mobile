@@ -72,9 +72,9 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
     private EditText searchField;
     private RecyclerView recyclerView;
     private ActionModeCallback actionModeCallback;
-    private ActionMode actionMode;
-    private List<Contact> contacts = new ArrayList<>();
-    private ContactsAdapter mAdapter;
+    protected ActionMode actionMode;
+    protected List<Contact> contacts = new ArrayList<>();
+    protected ContactsAdapter mAdapter;
     private SearchView searchView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Gson gson = new Gson();
@@ -266,13 +266,13 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                         noContacts.setVisibility(View.GONE);
                         for (Contact contact : contacts) {
                             // RANDOM COLOR OF ICON
-                            contact.setColor(getColorForCharacter(contact.getDisplayName().charAt(0)));
+                            contact.setColor(getColorForCharacter(contact.getDisplayName().toUpperCase().charAt(0)));
                         }
                     } else {
                         noContacts.setVisibility(View.VISIBLE);
                         noContacts.setText(getString(R.string.no_contacts));
                     }
-                    Collections.sort(contacts);
+                    //Collections.sort(contacts);
                     mAdapter = new ContactsAdapter(this, contacts,this);
                     recyclerView.setAdapter(mAdapter);
                 } catch (JSONException e) {
@@ -412,14 +412,14 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
 
     private void getAllContacts() {
+
         if (connectivityManager.isConnected()){
             try {
-                new GraphAPI().getRequest(OutlookObjectCall.CONTACTS, this, "?$top=" + AANTAL_CONTACTS);
+                new GraphAPI().getRequest(OutlookObjectCall.CONTACTS, this, "?$top=" + AANTAL_CONTACTS +"&$orderby=displayName");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
 

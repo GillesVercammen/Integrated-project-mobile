@@ -1,10 +1,12 @@
 package ap.student.outlook_mobile_app.DAL.models;
 
+import java.io.Serializable;
+
 /**
  * Created by alek on 12/1/17.
  */
 
-public class EmailAddress {
+public class EmailAddress implements Serializable{
     private String address;
     private String name;
 
