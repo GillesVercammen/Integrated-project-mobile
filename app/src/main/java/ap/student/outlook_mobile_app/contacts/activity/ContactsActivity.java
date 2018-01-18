@@ -245,13 +245,13 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
                         noContacts.setVisibility(View.GONE);
                         for (Contact contact : contacts) {
                             // RANDOM COLOR OF ICON
-                            contact.setColor(getColorForCharacter(contact.getDisplayName().charAt(0)));
+                            contact.setColor(getColorForCharacter(contact.getDisplayName().toUpperCase().charAt(0)));
                         }
                     } else {
                         noContacts.setVisibility(View.VISIBLE);
                         noContacts.setText(getString(R.string.no_contacts));
                     }
-                    Collections.sort(contacts);
+                    //Collections.sort(contacts);
                     mAdapter = new ContactsAdapter(this, contacts,this);
                     recyclerView.setAdapter(mAdapter);
                 } catch (JSONException e) {
@@ -386,7 +386,7 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
 
     private void getAllContacts() {
         try {
-            new GraphAPI().getRequest(OutlookObjectCall.CONTACTS, this, "?$top=" + AANTAL_CONTACTS);
+            new GraphAPI().getRequest(OutlookObjectCall.CONTACTS, this, "?$top=" + AANTAL_CONTACTS +"&$orderby=displayName");
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
