@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -222,7 +223,6 @@ public class EventActivity extends AppCompatActivityRest {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
         microsoftDateFormat = new MicrosoftDateFormat().getMicrosoftDateFormat();
         microsoftDateFormat.setTimeZone(TimeZone.getDefault());
@@ -418,12 +418,12 @@ public class EventActivity extends AppCompatActivityRest {
             event.setAllDay(isAllDayCheckBox.isChecked());
             java.util.Calendar time = java.util.Calendar.getInstance();
             time.set(startTime.get(java.util.Calendar.YEAR), startTime.get(java.util.Calendar.MONTH), startTime.get(java.util.Calendar.DAY_OF_MONTH), 0, 0, 0);
-            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getID()));
             time.add(java.util.Calendar.DAY_OF_YEAR, 1);
-            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getDisplayName()));
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(time.getTime()), TimeZone.getDefault().getID()));
         } else {
-            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(startTime.getTime()), TimeZone.getDefault().getDisplayName()));
-            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(endTime.getTime()), TimeZone.getDefault().getDisplayName()));
+            event.setStart(new DateTimeTimeZone(microsoftDateFormat.format(startTime.getTime()), TimeZone.getDefault().getID()));
+            event.setEnd(new DateTimeTimeZone(microsoftDateFormat.format(endTime.getTime()), TimeZone.getDefault().getID()));
         }
 
         if (isPrivateCheckBox.isChecked()) { event.setSensitivity("private"); }

@@ -193,6 +193,8 @@ public class ContactsActivity extends AppCompatActivityRest implements ContactsA
         // HANDLE ACTIONBAR CLICKS.
         // AUTOMATICLY SPECIFY HOME/BACK BUTTON IF PARENTACTIVTY IS SET IN MANIFEST
         switch (item.getItemId()) {
+            case R.id.action_logout:
+                actionLogout();
             case android.R.id.home:
                 finish();
                 break;

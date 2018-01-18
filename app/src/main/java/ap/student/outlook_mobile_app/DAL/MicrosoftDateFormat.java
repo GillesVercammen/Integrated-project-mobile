@@ -12,7 +12,7 @@ public class MicrosoftDateFormat {
     private SimpleDateFormat microsoftDateFormat;
 
     public MicrosoftDateFormat() {
-        microsoftDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        microsoftDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         microsoftDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 

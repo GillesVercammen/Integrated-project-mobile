@@ -322,6 +322,9 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             });
             return true;
         }
+        if (id == R.id.action_logout) {
+            actionLogout();
+        }
         return super.onOptionsItemSelected(item);
     }
 
