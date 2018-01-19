@@ -265,7 +265,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             foldersWithMail = new ArrayList<>();
             foldersWithMail.add(new MailFolder("1", "Not found", 0, 0));
         } else {
-            if (sharedPreferences.getString("MailFolders", "").equals("")){
+            if (!sharedPreferences.getString("MailFolders", "").equals("")){
                 Type listType = new TypeToken<List<MailFolder>>() {
                 }.getType();
                 foldersWithMail = gson.fromJson(sharedPreferences.getString("MailFolders", ""), listType);
