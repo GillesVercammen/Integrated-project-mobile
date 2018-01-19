@@ -139,7 +139,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
             editor.putString("UserName", currentUserName);
             editor.commit();
             try {
-                new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this, "?$top=20");
+                new GraphAPI().getRequest(OutlookObjectCall.READFOLDERS, this, "?$top=15");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
                 Toast.makeText(MailActivity.this, R.string.folder_error, Toast.LENGTH_SHORT).show();
@@ -651,6 +651,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                                             Toast.makeText(MailActivity.this, R.string.delete_succes, Toast.LENGTH_SHORT).show();
                                         } catch (IllegalAccessException e) {
                                             e.printStackTrace();
+                                            swipeRefreshLayout.setEnabled(false);
                                             Toast.makeText(MailActivity.this, R.string.delete_nosucces, Toast.LENGTH_SHORT).show();
                                         }
                                         mode.finish();
