@@ -234,56 +234,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/date_content"
                     app:srcCompat="@drawable/ic_attach_file_blackvector_24dp" />
 
-                <ListView
-                    android:id="@+id/folderlist"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/corners"
-                    android:padding="4dp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"></ListView>
-
-                <ImageView
-                    android:id="@+id/close_folder_list"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@id/folderlist"
-                    app:layout_constraintTop_toTopOf="@+id/folderlist"
-                    app:srcCompat="@drawable/ic_close_black_24dp" />
-
-                <ListView
-                    android:id="@+id/attachmentlist"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/corners"
-                    android:padding="4dp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"></ListView>
-
-                <ImageView
-                    android:id="@+id/close_attachment_list"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@id/attachmentlist"
-                    app:layout_constraintTop_toTopOf="@+id/attachmentlist"
-                    app:srcCompat="@drawable/ic_close_black_24dp" />
-
             </android.support.constraint.ConstraintLayout>
 
             <WebView
@@ -292,7 +242,59 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout"></WebView>
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+            </WebView>
+
+            <ListView
+                android:id="@+id/attachmentlist"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/corners"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"></ListView>
+
+            <ListView
+                android:id="@+id/folderlist"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/corners"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"></ListView>
+
+            <ImageView
+                android:id="@+id/close_folder_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/folderlist"
+                app:layout_constraintTop_toTopOf="@+id/folderlist"
+                app:srcCompat="@drawable/ic_close_black_24dp" />
+
+            <ImageView
+                android:id="@+id/close_attachment_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/attachmentlist"
+                app:layout_constraintTop_toTopOf="@+id/attachmentlist"
+                app:srcCompat="@drawable/ic_close_black_24dp" />
 
         </android.support.constraint.ConstraintLayout>
 

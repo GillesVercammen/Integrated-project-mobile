@@ -51,9 +51,12 @@
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Calendar.CalendarActivity" />
-        <activity android:name=".Calendar.EventActivity" />
-        <activity android:name=".Calendar.CustomRecurrenceActivity" />
+        <activity android:name=".Calendar.CalendarActivity"
+            android:screenOrientation="sensorPortrait"/>
+        <activity android:name=".Calendar.EventActivity"
+            android:screenOrientation="sensorPortrait"/>
+        <activity android:name=".Calendar.CustomRecurrenceActivity"
+            android:screenOrientation="sensorPortrait"/>
         <activity
             android:name=".Calendar.AttendeesActivity" >
             android:screenOrientation="sensorPortrait"
@@ -70,6 +73,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".contacts.activity.AddContactActivity"
+            android:screenOrientation="sensorPortrait"
             android:label="@string/title_activity_add_contact"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan">
@@ -79,9 +83,11 @@
         </activity>
         <activity
             android:name=".contacts.activity.ContactDetailActivity"
+            android:screenOrientation="sensorPortrait"
             android:label="@string/title_activity_contact_detail"
             android:theme="@style/AppTheme" />
         <activity android:name=".contacts.activity.EditContactActivity"
+            android:screenOrientation="sensorPortrait"
                   android:windowSoftInputMode="adjustPan">
         </activity>
       
