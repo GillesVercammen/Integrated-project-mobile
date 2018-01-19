@@ -371,7 +371,6 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                         noEmail.setVisibility(View.GONE);
                         for (Message message : messages) {
                             // RANDOM COLOR OF ICON
-                            System.out.println("First letter here!" + message.getFrom().getEmailAddress().getName().charAt(0));
                             message.setColor(getColorForCharacter(message.getFrom().getEmailAddress().getName().charAt(0)));
                         }
                     } else {

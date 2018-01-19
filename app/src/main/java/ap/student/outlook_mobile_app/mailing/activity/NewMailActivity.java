@@ -80,6 +80,7 @@ public class NewMailActivity extends AppCompatActivityRest {
     int columnIndex;
     String attachmentFile;
     private List<Attachment> attachmentsList = new ArrayList<>();
+    private String path;
 
 
     @Override
@@ -143,15 +144,12 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         getContacts();
 
-        System.out.println("mailType should be here:");
         if (getIntent().getExtras() != null) {
             mailTypeEnum = SendMailType.valueOf(getIntent().getExtras().get("mailType").toString().toUpperCase());
-            System.out.println(mailTypeEnum);
         }
 
         switch (mailTypeEnum) {
             case REPLY:
-                System.out.println("In reply case!");
                 try {
                     new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReply");
                 } catch (IllegalAccessException e) {
@@ -162,7 +160,6 @@ public class NewMailActivity extends AppCompatActivityRest {
 
             case REPLYALL:
 
-                System.out.println("In reply all case!");
                 try {
                     new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createReplyAll");
                 } catch (IllegalAccessException e) {
@@ -173,7 +170,6 @@ public class NewMailActivity extends AppCompatActivityRest {
 
             case FORWARD:
 
-                System.out.println("In forward case!");
                 try {
                     new GraphAPI().postRequest(OutlookObjectCall.UPDATEMAIL, this, "/" + getIntent().getStringExtra("ID") + "/createForward");
                 } catch (IllegalAccessException e) {
@@ -193,15 +189,19 @@ public class NewMailActivity extends AppCompatActivityRest {
     {
         if (requestCode == 101 && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
-            //System.out.println(data.getData());
-            //String[] filePathColumn = { MediaStore.Images.Media.DATA, MediaStore.Files };
-            //Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-            //cursor.moveToFirst();
-            //columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            //attachmentFile = cursor.getString(columnIndex); //attachmentFile is null, columnIndex is 0
-            String realPath = getRealPathFromUri(this, selectedImage);
-            Log.e("Attachment Path:", selectedImage.toString());
-            Log.e("Attachment Real Path:", realPath);
+            String realPath = null;
+            Uri _uri = data.getData();
+            Log.d("","URI = "+ _uri);
+            if (selectedImage != null && "content".equals(selectedImage.getScheme())) {
+                Cursor cursor = this.getContentResolver().query(selectedImage, new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, null, null, null);
+                cursor.moveToFirst();
+                path = cursor.getString(0);
+                realPath = cursor.getString(0);
+                cursor.close();
+            } else {
+                path = selectedImage.getPath();
+                realPath = selectedImage.getPath();
+            }
             URI = Uri.parse("file://" + realPath);
             //cursor.close();
         }
@@ -227,8 +227,7 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         switch (outlookObjectCall) {
             case READCONTACTS: {
-                System.out.println(response.toString());
-                System.out.println("Reading contacts");
+
 
                 JSONObject list = response;
                 try {
@@ -270,7 +269,6 @@ public class NewMailActivity extends AppCompatActivityRest {
 
                 for (String c : contactList
                         ) {
-                    System.out.println(c);
                 }
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -291,13 +289,11 @@ public class NewMailActivity extends AppCompatActivityRest {
             break;
 
             case SENDMAIL: {
-                System.out.println(response.toString());
             }
             break;
 
             case UPDATEMAIL:{
                 try {
-                    System.out.println(response);
                     Gson gson = new Gson();
 
                     JSONArray toRecipientsJSON = response.getJSONArray("toRecipients");
@@ -307,9 +303,7 @@ public class NewMailActivity extends AppCompatActivityRest {
                     String recipientsString = convertRecipientsToString(toRecipients);
 
                     body = gson.fromJson(String.valueOf(response.get("body")), Body.class);
-                    System.out.println(body.getContent());
                     String subject = response.get("subject").toString();
-                    System.out.println(subject);
 
                     subjectTextField.setText(subject);
                     messageTextField.setText("");
@@ -423,24 +417,20 @@ public class NewMailActivity extends AppCompatActivityRest {
 
         if (!bccString.equals("") && !ccString.equals(""))
         {
-            System.out.println("There's CC and BCC!");
             List<Recipient> ccRecipients = splitEmailadresses(ccString);
             List<Recipient> bccRecipients = splitEmailadresses(bccString);
             message = new Message(subject, body, toRecipients, ccRecipients, bccRecipients);
         }
         else if (!ccString.equals("")) {
-            System.out.println("There's CC!");
             List<Recipient> ccRecipients = splitEmailadresses(ccString);
             message = new Message(subject, body, toRecipients, ccRecipients);
         }
 
         else if (!bccString.equals("")) {
-            System.out.println("There's BCC!");
             List<Recipient> bccRecipients = splitEmailadresses(bccString);
             message = new Message(body, toRecipients, bccRecipients, subject);
         }
         else {
-            System.out.println("Else!");
             message = new Message(subject, body, toRecipients);
         }
 
@@ -459,7 +449,6 @@ public class NewMailActivity extends AppCompatActivityRest {
                 FileInputStream fileInputStreamReader = new FileInputStream(originalFile);
                 //originalFile = /media/external/images/media/92888
                 //no such file or directory /media/external/images/media/92888
-                System.out.println(originalFile.length());
                 byte[] bytes = new byte[(int)originalFile.length()];
                 fileInputStreamReader.read(bytes);
                 encodedBase64 = new String(Base64.encode(bytes, Base64.DEFAULT));
@@ -476,25 +465,23 @@ public class NewMailActivity extends AppCompatActivityRest {
             //https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/resources/fileattachment
             //Informatie over een file attachment
 
+            String[] filename = path.split("/");
             Attachment attachment = new Attachment();
-            attachment.setName("attachment");
+            attachment.setName(filename[filename.length-1]);
             attachment.setContentBytes(encodedBase64);
+            
+
 
             //attachmentsList.add(attachment);
 
             JSONObject jsonAttachment = new JSONObject(new Gson().toJson(attachment));
-
-            JSONObject jsonAttachmentWrapped = new JSONObject();
-            jsonAttachmentWrapped.put("attachment", jsonAttachment);
+            jsonAttachment.put("@odata.type", "#microsoft.graph.fileAttachment");
 
             JSONArray jsonAttachmentArray = new JSONArray();
-            jsonAttachmentArray.put(jsonAttachmentWrapped);
+            jsonAttachmentArray.put(jsonAttachment);
 
-            System.out.println(jsonAttachmentArray.toString());
 
             JSONMessage.put("attachments", jsonAttachmentArray);
-
-            System.out.println(JSONMessage.toString());
 
         }
 
@@ -504,9 +491,8 @@ public class NewMailActivity extends AppCompatActivityRest {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("message", JSONMessage);
 
-        System.out.println("Message here!");
-        System.out.println(jsonMessage);
 
+        System.out.println(jsonMessage);
         //do our call
         try {
             new GraphAPI().postRequest(OutlookObjectCall.SENDMAIL, this, jsonMessage);
@@ -562,7 +548,6 @@ public class NewMailActivity extends AppCompatActivityRest {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        System.out.println();
     }
 
     public List<Recipient> splitEmailadresses(String emailString){
@@ -571,7 +556,6 @@ public class NewMailActivity extends AppCompatActivityRest {
         List<Recipient> recipients = new ArrayList<>();
 
         for (String s : recipientsSplit) {
-            System.out.println(s);
             EmailAddress toEmailAddress = new EmailAddress(s);
             Recipient toRecipient = new Recipient(toEmailAddress);
             recipients.add(toRecipient);
