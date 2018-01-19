@@ -472,6 +472,7 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
                             if (message.getFrom() != null) {
                                 message.setColor(getColorForCharacter(message.getFrom().getEmailAddress().getName().charAt(0)));
                             }
+
                         }
                     } else {
                         noEmail.setVisibility(View.VISIBLE);

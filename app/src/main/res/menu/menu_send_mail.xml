@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:mContext="ap.student.outlook_mobile_app.mailing.activity.NewMailActivity">
     <item
+        android:id="@+id/add_attachment"
+        android:icon="@drawable/ic_attach_file_whitevector_24dp"
+        android:orderInCategory="100"
+        android:title=""
+        app:showAsAction="always" />
+    <item
         android:id="@+id/send_mail"
         android:icon="@drawable/ic_send_white_24dp"
         android:orderInCategory="100"
