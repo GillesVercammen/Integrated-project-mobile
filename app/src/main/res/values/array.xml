@@ -18,20 +18,6 @@
         <item name="brown_400" type="color">#8d6e63</item>
         <item name="grey_400" type="color">#bdbdbd</item>
         <item name="blue_grey_400" type="color">#78909c</item>
-        <item name="bright_pink" type="color">#FF007F</item>
-        <item name="red" type="color">#FF0000</item>
-        <item name="orange" type="color">#FF7F00</item>
-        <item name="yellow" type="color">#FFFF00</item>
-        <item name="chartreuse" type="color">#7FFF00</item>
-        <item name="green" type="color">#00FF00</item>
-        <item name="spring_green" type="color">#00FF7F</item>
-        <item name="cyan" type="color">#00FFFF</item>
-        <item name="azure" type="color">#007FFF</item>
-        <item name="blue" type="color">#0000FF</item>
-        <item name="violet" type="color">#7F00FF</item>
-        <item name="magenta" type="color">#FF00FF</item>
-    </array>
-    <array name="mdcolor_500">
         <item name="red_500" type="color">#e51c23</item>
         <item name="pink_500" type="color">#e91e63</item>
         <item name="purple_500" type="color">#9c27b0</item>
@@ -41,9 +27,11 @@
         <item name="light_blue_500" type="color">#03a9f4</item>
         <item name="cyan_500" type="color">#00bcd4</item>
         <item name="teal_500" type="color">#009688</item>
-        <item name="green_500" type="color">#259b24</item>
+        <item name="green_500" type="color">#259b80</item>
         <item name="light_green_500" type="color">#8bc34a</item>
         <item name="lime_500" type="color">#cddc39</item>
+    </array>
+    <array name="mdcolor_500">
         <item name="orange_500" type="color">#ff9800</item>
         <item name="deep_orange_500" type="color">#ff5722</item>
         <item name="brown_500" type="color">#795548</item>

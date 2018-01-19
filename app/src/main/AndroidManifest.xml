@@ -54,7 +54,13 @@
         <activity android:name=".Calendar.CalendarActivity" />
         <activity android:name=".Calendar.EventActivity" />
         <activity android:name=".Calendar.CustomRecurrenceActivity" />
-        <activity android:name=".Calendar.AttendeesActivity" />
+        <activity
+            android:name=".Calendar.AttendeesActivity" >
+            android:screenOrientation="sensorPortrait"
+
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"
+        </activity>
         <activity
             android:name=".contacts.activity.ContactsActivity"
             android:label="@string/title_activity_contacts"
@@ -69,8 +75,6 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -92,7 +96,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
->>>>>>>>> Temporary merge branch 2
-    </application>
+ </application>
 
 </manifest>

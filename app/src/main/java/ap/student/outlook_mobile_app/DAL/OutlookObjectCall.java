@@ -9,6 +9,7 @@ public enum OutlookObjectCall {
     READUSER(""),
     READMAIL("/mailfolders"),
     READFOLDERS("/mailfolders"),
+    ADDFOLDERS("/mailfolders"),
     READCALENDAR("/calendars"),
     READEVENTS("/events"),
     READCONTACTS("/contacts"),

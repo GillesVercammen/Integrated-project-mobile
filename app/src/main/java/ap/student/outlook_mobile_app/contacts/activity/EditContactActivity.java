@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.IllegalFormatCodePointException;
 import java.util.Locale;
 
 import ap.student.outlook_mobile_app.BLL.GraphAPI;
@@ -201,6 +202,9 @@ public class EditContactActivity extends AppCompatActivityRest {
                 } else {
                     Toast.makeText(EditContactActivity.this, R.string.delete_email_first, Toast.LENGTH_SHORT).show();
                 }
+                if (numberOfeditTexts == 0) {
+                    removeEmail.setVisibility(View.GONE);
+                }
 
             }
         });
@@ -218,6 +222,9 @@ public class EditContactActivity extends AppCompatActivityRest {
                 } else {
                     Toast.makeText(EditContactActivity.this, R.string.delete_phone_first, Toast.LENGTH_SHORT).show();
                 }
+                if (numberOfeditTextsHomePhone == 0) {
+                    removeHomephone.setVisibility(View.GONE);
+                }
 
             }
         });
@@ -234,6 +241,9 @@ public class EditContactActivity extends AppCompatActivityRest {
                     numberOfEditTextsBusinessPhone--;
                 } else {
                     Toast.makeText(EditContactActivity.this, R.string.delete_phone_first, Toast.LENGTH_SHORT).show();
+                }
+                if (numberOfEditTextsBusinessPhone == 0) {
+                    removeBusinessphone.setVisibility(View.GONE);
                 }
             }
         });

@@ -241,11 +241,6 @@ public class NewMailActivity extends AppCompatActivityRest {
                     e.printStackTrace();
                 }
 
-                //IF RESPONSE IS EMPTY SHOW: NO CONTACTS FOUND
-                if (contacts.isEmpty()){
-                    Toast.makeText(getApplicationContext(), R.string.no_contacts_found, Toast.LENGTH_SHORT).show();
-                }
-
                 int counter = 0;
 
                 for (int i=0; i<contacts.size(); i++)

@@ -187,6 +187,10 @@ public class AddContactActivity extends AppCompatActivityRest {
                 et.setId(0);
                 et.setVisibility(View.GONE);
                 numberOfeditTexts--;
+
+                if (numberOfeditTexts == 0) {
+                    removeEmail.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -199,6 +203,9 @@ public class AddContactActivity extends AppCompatActivityRest {
                 et.setId(0);
                 et.setVisibility(View.GONE);
                 numberOfeditTextsHomePhone--;
+                if (numberOfeditTextsHomePhone == 0) {
+                    removeHomephone.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -211,6 +218,9 @@ public class AddContactActivity extends AppCompatActivityRest {
                 et.setId(0);
                 et.setVisibility(View.GONE);
                 numberOfEditTextsBusinessPhone--;
+                if (numberOfEditTextsBusinessPhone == 0) {
+                    removeBusinessphone.setVisibility(View.GONE);
+                }
             }
         });
     }

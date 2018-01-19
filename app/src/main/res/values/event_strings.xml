@@ -57,6 +57,7 @@
     <string name="event_title">Add event</string>
     <string name="event_edit_title">Edit event</string>
     <string name="action_save_event">Save event</string>
+    <string name="attendees_textview">attendees</string>
 
     <!--
         These need to be arranged as shown, fuck you android

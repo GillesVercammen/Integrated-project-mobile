@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Outlook Mobile App</string>
+    <string name="app_name">Outlook Mobile</string>
     <string name="action_logout">Log Out</string>
     <string name="action_settings">Settings</string>
     <string name="action_login">Log In</string>
@@ -21,11 +21,11 @@
     <string name="title_activity_mail_other">MailActivityOther</string>
     <string name="concept">Concept Message</string>
     <string name="not_found">Not found</string>
-    <string name="from">From:</string>
-    <string name="from_email">From email:</string>
-    <string name="to">To:</string>
-    <string name="date">Date:</string>
-    <string name="subject">Subject:</string>
+    <string name="from">From</string>
+    <string name="from_email">From email</string>
+    <string name="to">To</string>
+    <string name="date">Date</string>
+    <string name="subject">Subject</string>
     <string name="action_back">Go back</string>
     <string name="action_changefolder">Change folder</string>
     <string name="action_reply">Reply</string>
@@ -173,6 +173,15 @@
     <string name="error_edit_contact">Error while updating contact</string>
     <string name="edit_contact">Edit Contact</string>
     <string name="alert_edit">Are you sure you want to edit this contact?</string>
+    <string name="download_at"><![CDATA[Do you want to download & open the attachment?]]></string>
+    <string name="alert_open_attach">Are you sure you want to open and download this attachment?</string>
+    <string name="alert_info_attach">The file will be saved in your download folder</string>
+    <string name="offline_error">This functionality is not supported in the offline version</string>
+    <string name="login_first">Login at least 1 time to start using the app in offline mode</string>
+    <string name="action_addmap">Add folder</string>
+    <string name="add_newmap">Add a new folder</string>
+    <string name="add_foldername">Enter foldername</string>
+    <string name="folder_adderror">Error saving folder</string>
 
 
 </resources>

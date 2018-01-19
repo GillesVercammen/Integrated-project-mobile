@@ -1,6 +1,8 @@
 package ap.student.outlook_mobile_app.Calendar;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -17,6 +19,7 @@ import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -97,7 +100,8 @@ public class CalendarActivity extends AppCompatActivityRest {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_email:
-                                finish();
+                                Intent intent1 = new Intent(CalendarActivity.this, MailActivity.class);
+                                startActivity(intent1);
                                 break;
                             case R.id.action_calendar:
                                 break;
@@ -117,6 +121,7 @@ public class CalendarActivity extends AppCompatActivityRest {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         /**
          * Tabs setup
@@ -250,12 +255,19 @@ public class CalendarActivity extends AppCompatActivityRest {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_event : {
-                editDayButtonClicked();
+                if (connectivityManager.isConnected()) {
+                    editDayButtonClicked();
+                } else {
+                    Toast.makeText(this, "You are currently offline, you can't create new events while you're offline.", Toast.LENGTH_LONG).show();
+                }
             }
             break;
             case android.R.id.home : {
                 finish();
             }
+            break;
+            case R.id.action_logout:
+                actionLogout();
             break;
         }
         return super.onOptionsItemSelected(item);
@@ -274,15 +286,20 @@ public class CalendarActivity extends AppCompatActivityRest {
         toolbar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
         // THIS LINE REMOVES ANNOYING LEFT MARGIN
         toolbar.setTitleMarginStart(30);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        try {
-            graph.getRequest(OutlookObjectCall.READEVENTS, this);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        if (connectivityManager.isConnected()) {
+            try {
+                graph.getRequest(OutlookObjectCall.READEVENTS, this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "The app is currently not connected to the internet. You can still watch the events, but you can't make or edit them.", Toast.LENGTH_LONG).show();
         }
     }
 
