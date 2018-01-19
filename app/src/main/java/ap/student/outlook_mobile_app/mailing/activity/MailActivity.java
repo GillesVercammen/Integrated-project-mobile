@@ -386,40 +386,45 @@ public class MailActivity extends AppCompatActivityRest implements SwipeRefreshL
         }
 
         if (id == R.id.action_addmap) {
-            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MailActivity.this);
-            final EditText input = new EditText(this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT);
-            input.setLayoutParams(lp);
+            if (connectivityManager.isConnected()){
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MailActivity.this);
+                final EditText input = new EditText(this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
 
-            alertDialogBuilder.setTitle(R.string.add_newmap)
-                    .setIcon(R.drawable.ic_change_folder_whitevector_24dp)
-                    .setView(input)
-                    .setMessage(R.string.add_foldername
-                    )
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface arg0, int arg1) {
-                            String foldername = input.getText().toString();
-                            JSONObject jsonObject = new JSONObject();
-                            try {
-                                jsonObject.put("displayName", foldername);
-                                new GraphAPI().postRequest(OutlookObjectCall.ADDFOLDERS, MailActivity.this, jsonObject);
-                            } catch (JSONException | IllegalAccessException e) {
-                                Toast.makeText(MailActivity.this, R.string.folder_adderror, Toast.LENGTH_SHORT).show();
-                                e.printStackTrace();
+                alertDialogBuilder.setTitle(R.string.add_newmap)
+                        .setIcon(R.drawable.ic_change_folder_whitevector_24dp)
+                        .setView(input)
+                        .setMessage(R.string.add_foldername
+                        )
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                String foldername = input.getText().toString();
+                                JSONObject jsonObject = new JSONObject();
+                                try {
+                                    jsonObject.put("displayName", foldername);
+                                    new GraphAPI().postRequest(OutlookObjectCall.ADDFOLDERS, MailActivity.this, jsonObject);
+                                } catch (JSONException | IllegalAccessException e) {
+                                    Toast.makeText(MailActivity.this, R.string.folder_adderror, Toast.LENGTH_SHORT).show();
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    })
-                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-            alertDialogBuilder.create().show();
-        }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                alertDialogBuilder.create().show();
+            }
+            } else {
+                Toast.makeText(MailActivity.this, R.string.offline_error, Toast.LENGTH_LONG).show();
+            }
+
         return super.onOptionsItemSelected(item);
     }
 
